@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "SchoolManagementSystem"
+version = "0.1.0"
+description = "A Python-based Advanced School Management System"
+authors = ["Akshu <akshitagarwal2204@gmail.com>"]
+license = "GPL-3.0"
+repository = "https://github.com/AkshuAgarwal/SchoolManagementSystem/"
+classifiers = [
+    "Development Status :: Pre-Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django :: 3.2",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Education",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Internet :: WWW/HTTP :: Site Management"
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2.9"
+django-ipware = "^4.0.0"
+django-rest-framework = "^0.1.0"
+django-cors-headers = "^3.10.0"
+python-dotenv = "^0.19.2"
+python-dateutil = "^2.8.2"
+
+[tool.poetry.dev-dependencies]
+black = "^21.11b1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
