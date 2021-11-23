@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "administration.apps.AdministrationConfig",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "administration.middleware.RegisterLastLoginIP",
 ]
 
 ROOT_URLCONF = "SchoolManagementSystem.urls"
@@ -83,11 +86,24 @@ WSGI_APPLICATION = "SchoolManagementSystem.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DB_NAME"),
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASS"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": int(os.getenv("DB_PORT")),
+        "NAME": os.getenv("DB_NAME"),
+        "TEST": {
+            "NAME": os.getenv("TEST_DB_NAME"),
+        },
+    }
+}
+
+
+# Caching
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": os.path.join(BASE_DIR, "tmp"),
     }
 }
 
@@ -109,6 +125,15 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
+
+PASSWORD_RESET_TIMEOUT = 1800
 
 
 # Internationalization
@@ -138,3 +163,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+AUTH_USER_MODEL = "administration.UserModel"
+
+# fmt: off
+DATE_INPUT_FORMATS = [
+    "%Y-%m-%d",     # '2006-10-25'
+    "%d-%m-%Y",     # '25-10-2006'
+    "%d/%m/%Y",     # '25/10/2006'
+    "%b %d %Y",     # 'Oct 25 2006'
+    "%b %d, %Y",    # 'Oct 25, 2006'
+    "%d %b %Y",     # '25 Oct 2006'
+    "%d %b, %Y",    # '25 Oct, 2006'
+    "%B %d %Y",     # 'October 25 2006'
+    "%B %d, %Y",    # 'October 25, 2006'
+    "%d %B %Y",     # '25 October 2006'
+    "%d %B, %Y",    # '25 October, 2006'
+]
+# fmt: on
