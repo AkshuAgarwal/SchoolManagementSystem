@@ -37,6 +37,9 @@ class UserManager(_BUM):
             if isinstance(value, list):
                 FIELDS[key] = value[0]
 
+        if FIELDS["user_type"] not in {"s", "t", "p", "m"}:
+            raise ValueError(_('User Type for normal users can only be "s, t, p, or m"'))
+
         if not all({FIELDS.values()}):
             raise ValueError(_("All the fields must be set. For Optional fields, pass an empty string as the value."))
 
@@ -60,7 +63,7 @@ class UserManager(_BUM):
 
         auth = apps.get_model("administration", "AuthorizationModel").objects.create(user)
 
-        return user, auth
+        return user
 
     def create_superuser(
         self,
@@ -112,7 +115,7 @@ class UserManager(_BUM):
 
         auth = apps.get_model("administration", "AuthorizationModel").objects.create(user)
 
-        return user, auth
+        return user
 
 
 class AuthorizationManager(models.Manager):
