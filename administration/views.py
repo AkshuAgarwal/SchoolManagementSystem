@@ -1,15 +1,45 @@
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAdminUser
 
-from _utils.decorators import auth_required
+from .authentication import UserAuthentication
 from .models import UserModel
+from .serializers import UserSerializer
 
 
-@api_view(["POST"])
-@auth_required(superuser=True)
-def create_user(request):
-    if request.method == "POST":
+class UserViewSet(APIView):
+    authentication_classes = [UserAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, format=None):
+        data = request.data
+
+        try:
+            if x := data.get("username"):
+                user = UserModel.objects.get(username=x)
+                serializer = UserSerializer(user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            elif x := data.get("id"):
+                user = UserModel.objects.get(id=x)
+                serializer = UserSerializer(user)
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+        except UserModel.DoesNotExist:
+            return Response(
+                {
+                    "error": {
+                        "type": "NotFound",
+                        "message": "No user found with given credentials",
+                    },
+                    "status": 404,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def post(self, request, format=None):
         FIELDS = {
             "username",
             "first_name",
@@ -29,7 +59,7 @@ def create_user(request):
                 {
                     "error": {
                         "type": "Bad Request",
-                        "message": f"Required field(s) missing.",
+                        "message": "Required field(s) missing.",
                     },
                     "status": 400,
                 },
@@ -49,3 +79,5 @@ def create_user(request):
             )
 
         user = UserModel.objects.create_user(**data)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
