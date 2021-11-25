@@ -131,8 +131,8 @@ class AuthorizationModel(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("User"),
         primary_key=True,
-        related_name="user",
         to_field="username",
+        db_column="username",
     )
     authorization_token = models.CharField(
         verbose_name=_("Authorization Token"),
