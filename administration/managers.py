@@ -1,11 +1,11 @@
 import uuid
 import hashlib
-from dateutil.parser import parse as _parse_to_datetime
 
+from django.apps import apps
+from django.db import models
 from django.contrib.auth.base_user import BaseUserManager as _BUM
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class UserManager(_BUM):
@@ -42,7 +42,7 @@ class UserManager(_BUM):
 
         email_id = self.normalize_email(FIELDS["email_id"])
 
-        date_of_birth = _parse_to_datetime(FIELDS["date_of_birth"])
+        date_of_birth = FIELDS["date_of_birth"]
 
         extra_fields["is_staff"] = False
         extra_fields["is_superuser"] = False
@@ -50,26 +50,17 @@ class UserManager(_BUM):
 
         cur_time = timezone.now()
 
-        try:
-            cur_id = str(self.latest("id").id + 1)
-        except ObjectDoesNotExist:
-            cur_id = "1"
-
-        auth_token = (
-            f"{hashlib.md5(cur_id.encode('ascii')).hexdigest()}."
-            f"{hashlib.sha256(cur_time.isoformat().encode('ascii')).hexdigest()}."
-            f"{uuid.uuid4()}"
-        )
-
         user = self.model(
             creation_time=cur_time,
-            authorization_token=auth_token,
             **FIELDS,
             **extra_fields,
         )
         user.set_password(FIELDS["password"])
         user.save()
-        return user
+
+        auth = apps.get_model("administration", "AuthorizationModel").objects.create(user)
+
+        return user, auth
 
     def create_superuser(
         self,
@@ -103,7 +94,7 @@ class UserManager(_BUM):
 
         email_id = self.normalize_email(FIELDS["email_id"])
 
-        date_of_birth = _parse_to_datetime(FIELDS["date_of_birth"])
+        date_of_birth = FIELDS["date_of_birth"]
 
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
@@ -111,23 +102,29 @@ class UserManager(_BUM):
 
         cur_time = timezone.now()
 
-        try:
-            cur_id = str(self.latest("id").id + 1)
-        except ObjectDoesNotExist:
-            cur_id = "1"
-
-        auth_token = (
-            f"{hashlib.md5(cur_id.encode('ascii')).hexdigest()}."
-            f"{hashlib.sha256(cur_time.isoformat().encode('ascii')).hexdigest()}."
-            f"{uuid.uuid4()}"
-        )
-
         user = self.model(
             creation_time=cur_time,
-            authorization_token=auth_token,
             **FIELDS,
             **extra_fields,
         )
         user.set_password(FIELDS["password"])
         user.save()
-        return user
+
+        auth = apps.get_model("administration", "AuthorizationModel").objects.create(user)
+
+        return user, auth
+
+
+class AuthorizationManager(models.Manager):
+    def create(self, user):
+        auth_token = (
+            f"{hashlib.md5(str(user.id).encode('ascii')).hexdigest()}."
+            f"{hashlib.sha256(user.creation_time.isoformat().encode('ascii')).hexdigest()}."
+            f"{uuid.uuid4()}"
+        )
+        auth = self.model(
+            user=user,
+            authorization_token=auth_token,
+        )
+        auth.save()
+        return auth
