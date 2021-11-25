@@ -54,7 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "administration.middleware.RegisterLastLoginIP",
+    # "administration.middleware.RegisterLastLoginIP",
 ]
 
 ROOT_URLCONF = "SchoolManagementSystem.urls"
