@@ -1,8 +1,8 @@
 from django.urls import path
 
-from . import views
+from .views import authorize
 
 
 urlpatterns = [
-    path("authorize/", views.AuthViewSet.as_view()),
+    path("authorize/", authorize.AuthViewSet.as_view()),
 ]
