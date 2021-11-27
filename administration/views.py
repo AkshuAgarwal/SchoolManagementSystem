@@ -10,25 +10,32 @@ from .serializers import UserSerializer
 from utils import errors as e
 
 
-class UserViewSet(APIView):
+class UsersViewSet(APIView):
     authentication_classes = [UserAuthentication]
     permission_classes = [IsAdminUser]
 
     def get(self, request, format=None):
-        data = request.data
+        username = request.GET.get("username", None)
+        id = request.GET.get("id", None)
+
+        if username and id:
+            return e.HTTP400Response('Cannot pass both "username" and "id" parameter')
+
+        if not username and not id:
+            return e.HTTP400Response('One of "username" or "id" should be passed')
 
         try:
-            if x := data.get("username"):
-                user = UserModel.objects.get(username=x)
+            if username:
+                user = UserModel.objects.get(username=username)
                 serializer = UserSerializer(user)
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
-            if x := data.get("id"):
-                user = UserModel.objects.get(id=x)
+            if id:
+                user = UserModel.objects.get(id=id)
                 serializer = UserSerializer(user)
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
-            return e.HTTP400Response
+            return e.HTTP400Response()
 
         except ObjectDoesNotExist:
             return e.HTTP404Response("No user found with given credentials")
@@ -49,7 +56,7 @@ class UserViewSet(APIView):
         data = request.data
 
         if FIELDS != set(data):
-            return e.HTTP400Response
+            return e.HTTP400Response()
 
         if data["user_type"] not in {"s", "p", "t", "m"}:
             return e.HTTP403Response('"a" (Administrator) cannot be set for normal users')

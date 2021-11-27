@@ -1,26 +1,30 @@
+from django.conf import settings
 from rest_framework import authentication
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import PermissionDenied
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .models import AuthorizationModel
 
+class UserAuthentication(JWTAuthentication):
+    def authenticate_header(self, request):
+        return "Bearer"
 
-class UserAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        auth_token = request.headers.get("X-Authorization-Token")
-        if auth_token is not None:
-            try:
-                if len(splitted := auth_token.split(" ")) == 2:
-                    keyword, token = splitted
+        header = self.get_header(request)
 
-                    if keyword == "Bearer":
-                        auth = AuthorizationModel.objects.get(authorization_token=token)
-                        return auth.user, auth
+        if header is None:
+            raw_token = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"]) or None
+        else:
+            raw_token = self.get_raw_token(header)
 
-                    raise AuthenticationFailed("Invalid token type passed", 401)
+        if raw_token is None:
+            return None
 
-                raise AuthenticationFailed("Invalid Authorization token", 401)
+        validated_token = self.get_validated_token(raw_token)
 
-            except AuthorizationModel.DoesNotExist:
-                return AuthenticationFailed("Invalid Authorization token", 401)
+        check = authentication.CSRFCheck()
+        check.process_request(request)
+        reason = check.process_view(request, None, (), {})
+        if reason:
+            raise PermissionDenied(f"CSRF Failed: {reason}")
 
-        return AuthenticationFailed("Authorization token required", 401)
+        return self.get_user(validated_token), validated_token
