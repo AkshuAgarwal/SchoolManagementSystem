@@ -27,6 +27,7 @@ django-rest-framework = "^0.1.0"
 django-cors-headers = "^3.10.0"
 python-dotenv = "^0.19.2"
 python-dateutil = "^2.8.2"
+djangorestframework-simplejwt = "^5.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.11b1"
