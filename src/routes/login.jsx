@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React from 'react';
 
+axios.defaults.withCredentials = true;
+
 const Form = ({ onSubmit }) => {
     const usernameOrEmailRef = React.useRef();
     const passwordRef = React.useRef();
@@ -15,13 +17,16 @@ const Form = ({ onSubmit }) => {
 
     const handleSubmit = async e => {
         e.preventDefault();
+
         const usernameOrEmail = usernameOrEmailRef.current.value;
         const data = {};
+
         if (validateEmail(usernameOrEmail)) {
             data['email_id'] = usernameOrEmail
         } else {
             data['username'] = usernameOrEmail
         }
+
         data['password'] = passwordRef.current.value;
         onSubmit(data);
     };
@@ -41,15 +46,29 @@ const Form = ({ onSubmit }) => {
     );
 };
 
-function LoginForm() {
+function Login() {
     const handleSubmit = data => {
         axios.post(
             'http://localhost:8000/api/authorize/',
             data,
-            { 'headers': { 'Content-Type': 'application/json' } }
+            {
+                'headers': { 'Content-Type': 'application/json' }
+            }
         ).then(response => {
-            console.log(response.data);
-        })
+            const type = response.data.user_type;
+
+            if (type === 's') {
+                window.location.href = '/student/dashboard';
+            } else if (type === 't') {
+                window.location.href = '/teacher/dashboard';
+            } else if (type === 'p') {
+                window.location.href = '/parent/dashboard';
+            } else if (type === 'm') {
+                window.location.href = '/manager/dashboard';
+            } else if (type === 'a') {
+                window.location.href = '/admin/dashboard';
+            }
+        });
     };
 
     return (
@@ -59,4 +78,4 @@ function LoginForm() {
     );
 };
 
-export default LoginForm;
+export default Login;
