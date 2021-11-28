@@ -1,6 +1,9 @@
 import axios from 'axios';
 import React from 'react';
 
+import Navbar from '../components/navbar';
+import { BASE_API } from '../constants.js';
+
 axios.defaults.withCredentials = true;
 
 const Form = ({ onSubmit }) => {
@@ -15,7 +18,7 @@ const Form = ({ onSubmit }) => {
             );
     };
 
-    const handleSubmit = async e => {
+    const handleSubmit = e => {
         e.preventDefault();
 
         const usernameOrEmail = usernameOrEmailRef.current.value;
@@ -46,36 +49,62 @@ const Form = ({ onSubmit }) => {
     );
 };
 
-function Login() {
-    const handleSubmit = data => {
-        axios.post(
-            'http://localhost:8000/api/authorize/',
-            data,
-            {
-                'headers': { 'Content-Type': 'application/json' }
-            }
-        ).then(response => {
-            const type = response.data.user_type;
+class Login extends React.Component {
+    constructor(props) {
+        super(props);
 
-            if (type === 's') {
-                window.location.href = '/student/dashboard';
-            } else if (type === 't') {
-                window.location.href = '/teacher/dashboard';
-            } else if (type === 'p') {
-                window.location.href = '/parent/dashboard';
-            } else if (type === 'm') {
-                window.location.href = '/manager/dashboard';
-            } else if (type === 'a') {
-                window.location.href = '/admin/dashboard';
-            }
+        this.onSubmit = data => {
+            axios.post(
+                BASE_API + 'api/authorize/',
+                data
+            ).then(response => {
+                if (response.status === 200) {
+                    const type = response.data.user_type;
+                    if (type === 's') {
+                        window.location.href = '/student/dashboard';
+                    } else if (type === 't') {
+                        window.location.href = '/teacher/dashboard';
+                    } else if (type === 'p') {
+                        window.location.href = '/parent/dashboard';
+                    } else if (type === 'm') {
+                        window.location.href = '/manager/dashboard';
+                    } else if (type === 'a') {
+                        window.location.href = '/admin/dashboard';
+                    };
+                }
+            });
+        };
+    };
+
+    componentDidMount() {
+        axios.get(
+            BASE_API + 'api/authorize/',
+        ).then(response => {
+            if (response.status === 200) {
+                const type = response.data.data.user_type;
+                if (type === 's') {
+                    window.location.href = '/student/dashboard';
+                } else if (type === 't') {
+                    window.location.href = '/teacher/dashboard';
+                } else if (type === 'p') {
+                    window.location.href = '/parent/dashboard';
+                } else if (type === 'm') {
+                    window.location.href = '/manager/dashboard';
+                } else if (type === 'a') {
+                    window.location.href = '/admin/dashboard';
+                };
+            };
         });
     };
 
-    return (
-        <div className="loginForm">
-            <Form onSubmit={handleSubmit} />
-        </div>
-    );
+    render() {
+        return (
+            <div className="loginForm">
+                <Navbar />
+                <Form onSubmit={this.onSubmit} />
+            </div>
+        );
+    };
 };
 
 export default Login;
