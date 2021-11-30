@@ -1,2 +1,9 @@
-export const BASE_API = "http://localhost:8000/";
-export const SCHOOL_NAME = 'MySchool';
+export const BASE_API = "";
+export const SITE_URL = "";
+export const SITE_URL_SHORT = "";
+export const SCHOOL_NAME = '';
+export const SCHOOL_LOGO = '';
+export const SCHOOL_FOOTER_TEXT = ``;
+export const SCHOOL_FOOTER_LINKS = [
+    { name: '', href: '/' },
+];
