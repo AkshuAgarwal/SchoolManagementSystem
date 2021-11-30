@@ -37,7 +37,7 @@ function Footer() {
                 </MDBRow>
             </MDBContainer>
 
-            <div className='text-center p-3 text-light' style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>
+            <div className='text-center p-3 text-light' style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                 &copy; {new Date().getFullYear()}{' '}
                 <a className='text-light' href='/'>
                     {SITE_URL_SHORT}

@@ -26,7 +26,7 @@ data = {
 ]
 */
 
-function Form({ data, onSubmit }) {
+function Form({ onSubmit, data }) {
     var fields = [];
     for (const field of data.fields) {
         fields.push(

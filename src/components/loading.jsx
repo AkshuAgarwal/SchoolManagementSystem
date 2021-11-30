@@ -11,7 +11,7 @@ const messages = [
 
 function Loading() {
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center r-loading">
+        <div id="r-loading-comp" className="d-flex flex-column justify-content-center align-items-center r-loading">
             <img className="r-loading-img" src={SCHOOL_LOGO} alt="Logo" />
             <p className="r-loading-text">
                 {messages[Math.floor(Math.random() * messages.length)]}
