@@ -1,3 +1,25 @@
 .r-content-hide {
     opacity: 0;
 }
+
+.r-login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    min-width: 70vw;
+    min-height: 50vh;
+    
+    form {
+        min-width: 40vw;
+
+        div {
+            margin: 20px;
+        }
+
+        button {
+            margin: 10px 20px;
+        }
+    }
+}
