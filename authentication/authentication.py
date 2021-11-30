@@ -2,6 +2,7 @@ from django.conf import settings
 from rest_framework import authentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 
 class UserAuthentication(JWTAuthentication):
@@ -45,6 +46,9 @@ class CSRFExemptUserAuthentication(JWTAuthentication):
         if raw_token is None:
             return None
 
-        validated_token = self.get_validated_token(raw_token)
+        try:
+            validated_token = self.get_validated_token(raw_token)
+        except InvalidToken:
+            return None
 
         return self.get_user(validated_token), validated_token

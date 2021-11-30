@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.middleware import csrf
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.views import APIView
@@ -26,21 +27,21 @@ class AuthViewSet(APIView):
     permission_classes = [CheckAuthenticatedElseIsAnonymous]
 
     def get(self, request, format=None):
-        if request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"]) is not None:
-            return Response(
-                {
-                    "status": "ok",
-                    "data": {
-                        "id": request.user.id,
-                        "username": request.user.username,
-                        "email_id": request.user.email_id,
-                        "user_type": request.user.user_type,
-                    },
-                },
-                status=status.HTTP_200_OK,
-            )
-        else:
+        if isinstance(request.user, AnonymousUser):
             return e.HTTP401Response()
+
+        return Response(
+            {
+                "status": "ok",
+                "data": {
+                    "id": request.user.id,
+                    "username": request.user.username,
+                    "email_id": request.user.email_id,
+                    "user_type": request.user.user_type,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def post(self, request, format=None):
         data = request.data
