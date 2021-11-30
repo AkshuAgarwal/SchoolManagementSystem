@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import Login from './routes/login';
-import Logout from './routes/logout';
-// import Test from './routes/test';
-import Dashboard from './routes/student/dashboard';
+import Home from "./routes/main/home";
+import Login from "./routes/main/login";
+import Logout from "./routes/main/logout";
+import StudentDashboard from './routes/student/dashboard';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./App.min.css";
+import "./components/components.min.css";
+import "./routes/main/main.min.css";
 
 const portals = ['/student', '/teacher', '/parent', '/management', '/admin'];
 
@@ -13,31 +17,18 @@ function App() {
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route exact path='/' element={<h1>This is home page</h1>} />
+                    <Route exact path='/' element={<Home />} />
 
-                    {/* Login Route */}
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/logout" element={<Logout />} />
-                    {/* <Route exact path="/test" element={<Test />} /> */}
-                    {/* Portals Route - redirecting to dashboard */}
+
+                    {/* Redirect to dashboard in case of navigation to "portals" */}
                     {portals.map((r, index) => {
                         return <Route exact path={r} key={index} element={<Navigate to='dashboard/' />} />
                     })}
 
                     {/* Student */}
-                    <Route path="/student/dashboard" element={<Dashboard />} />
-
-                    {/* Teacher */}
-                    {/* <Route path="/teacher/dashboard" element={<TeacherDashboard />} /> */}
-
-                    {/* Parent */}
-                    {/* <Route path="/parent/dashboard" element={<ParentDashboard />} /> */}
-
-                    {/* Management */}
-                    {/* <Route path="/management/dashboard" element={<ManagementDashboard />} /> */}
-
-                    {/* Admin */}
-                    {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
+                    <Route path="/student/dashboard" element={<StudentDashboard />} />
                 </Routes>
             </BrowserRouter>
         </div>
