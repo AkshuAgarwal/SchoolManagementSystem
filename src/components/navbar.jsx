@@ -10,46 +10,49 @@ import { SCHOOL_NAME } from "../constants.js";
 
 /*
 data = {
+    displayDropdown: true,
     userData: {
         username: "A"
     },
     fieldData: [
         {
-            fieldName: "field",
-            fieldHref: "/"
+            name: "field",
+            href: "/"
         },
         {
-            fieldName: "field",
-            fieldHref: "/"
+            name: "field",
+            href: "/"
         },
     ],
     dropdownFieldData: [
         {
-            fieldName: "dpfield",
-            fieldHref: "/ok"
+            name: "dpfield",
+            href: "/ok"
         }
     ]
 }
 */
 
-function Navbar({ loggedIn = false, data = {} }) {
+function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
     var fields = [];
     if (data.fieldData) {
         for (const field of data.fieldData) {
             fields.push(
-                <NavBS.Link href={field.fieldHref}>{field.fieldName}</NavBS.Link>
+                <NavBS.Link href={field.href}>{field.name}</NavBS.Link>
             );
         };
     };
 
-    var dropdownFields = [];
-    if (data.dropdownFieldData) {
-        for (const field of data.dropdownFieldData) {
-            dropdownFields.push(
-                <NavDropdownBS.Item href={field.fieldHref}>{field.fieldName}</NavDropdownBS.Item>
-            );
+    if (data.displayDropdown) {
+        var dropdownFields = [];
+        if (data.dropdownFieldData) {
+            for (const field of data.dropdownFieldData) {
+                dropdownFields.push(
+                    <NavDropdownBS.Item href={field.href}>{field.name}</NavDropdownBS.Item>
+                );
+            };
         };
-    };
+    }
 
 
 
@@ -62,11 +65,15 @@ function Navbar({ loggedIn = false, data = {} }) {
                     <NavbarBS.Collapse id="basic-navbar-nav">
                         <NavBS className="ms-auto">
                             {fields}
-                            <NavDropdownBS title="More" id="basic-nav-dropdown">
-                                <NavDropdownBS.Item disabled>Hi, {data.userData.username}!</NavDropdownBS.Item>
-                                <NavDropdownBS.Divider />
-                                {dropdownFields}
-                            </NavDropdownBS>
+                            {
+                                data.displayDropdown ? (
+                                    <NavDropdownBS title="More" id="basic-nav-dropdown">
+                                        <NavDropdownBS.Item disabled>Hi, {data.userData.username}!</NavDropdownBS.Item>
+                                        <NavDropdownBS.Divider />
+                                        {dropdownFields}
+                                    </NavDropdownBS>
+                                ) : (null)
+                            }
                         </NavBS>
                     </NavbarBS.Collapse>
                 </ContainerBS>
