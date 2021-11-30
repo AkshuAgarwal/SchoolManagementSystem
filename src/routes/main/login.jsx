@@ -42,8 +42,6 @@ const Form = () => {
 
         setShowAlert(false);
 
-        console.log('ok');
-
         const usernameOrEmail = usernameOrEmailRef.current.value;
         const data = {};
 
@@ -52,7 +50,6 @@ const Form = () => {
         } else {
             data['username'] = usernameOrEmail
         }
-
         data['password'] = passwordRef.current.value;
 
         setValidated(true);
