@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Form as BSForm, Button, FloatingLabel, Alert } from 'react-bootstrap';
+import { Form, Button, FloatingLabel, Alert } from 'react-bootstrap';
 
 import Footer from '../../components/footer.jsx';
 import Navbar from '../../components/navbar.jsx';
@@ -22,7 +22,7 @@ const redirectToDashboard = type => {
     };
 };
 
-const Form = () => {
+const LoginForm = () => {
     const usernameOrEmailRef = React.useRef();
     const passwordRef = React.useRef();
 
@@ -69,22 +69,22 @@ const Form = () => {
     };
 
     return (
-        <BSForm notValidated validated={validated} onSubmit={handleSubmit}>
+        <Form notValidated validated={validated} onSubmit={handleSubmit}>
             {showAlert ? (<Alert variant="danger">Invalid Credentials</Alert>) : null}
-            <BSForm.Group>
-                <FloatingLabel label="Username or Email Address">
-                    <BSForm.Control required ref={usernameOrEmailRef} type="text" placeholder="Username or Email Address" />
+            <Form.Group>
+                <FloatingLabel label="Username or Email">
+                    <Form.Control required ref={usernameOrEmailRef} type="text" placeholder="Username or Email" />
                 </FloatingLabel>
-            </BSForm.Group>
-            <BSForm.Group>
+            </Form.Group>
+            <Form.Group>
                 <FloatingLabel label="Password">
-                    <BSForm.Control required ref={passwordRef} type="password" placeholder="Password" />
+                    <Form.Control required ref={passwordRef} type="password" placeholder="Password" />
                 </FloatingLabel>
-            </BSForm.Group>
-            <BSForm.Group>
+            </Form.Group>
+            <Form.Group>
                 <Button variant="light" type="submit">Submit</Button>
-            </BSForm.Group>
-        </BSForm>
+            </Form.Group>
+        </Form>
     );
 };
 
@@ -112,7 +112,7 @@ function Login() {
             }} />
             <div className="r-login-form bg-dark">
                 <h1 className="text-light">Login</h1>
-                <Form />
+                <LoginForm />
             </div>
             <Footer />
         </>
