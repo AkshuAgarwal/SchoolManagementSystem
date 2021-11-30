@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser
 
-from .authentication import UserAuthentication
+from api.authentication import UserAuthentication
 from .models import UserModel
 from .serializers import UserSerializer
 from utils import errors as e

@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from administration.models import UserModel
-from administration.authentication import CSRFExemptUserAuthentication
+from ..authentication import CSRFExemptUserAuthentication
 from utils import errors as e
 from utils.permissions import CheckAuthenticatedElseIsAnonymous
 
