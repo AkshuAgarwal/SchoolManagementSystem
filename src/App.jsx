@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import Home from "./routes/main/home";
 import About from "./routes/main/about";
+import Contact from "./routes/main/contact";
 import Login from "./routes/main/login";
 import Logout from "./routes/main/logout";
 import StudentDashboard from './routes/student/dashboard';
@@ -20,6 +21,7 @@ function App() {
                 <Routes>
                     <Route exact path="/" element={<Home />} />
                     <Route exact path="/about" element={<About />} />
+                    <Route exact path="/contact" element={<Contact />} />
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/logout" element={<Logout />} />
 
