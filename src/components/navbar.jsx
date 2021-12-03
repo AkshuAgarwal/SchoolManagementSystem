@@ -88,6 +88,8 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
                     <NavbarBS.Collapse id="basic-navbar-nav">
                         <NavBS className="ms-auto">
                             <NavBS.Link href="/">Home</NavBS.Link>
+                            <NavBS.Link href="/about">About</NavBS.Link>
+                            <NavBS.Link href="/contact">Contact Us</NavBS.Link>
                             <NavBS.Link href="/login">Login</NavBS.Link>
                         </NavBS>
                     </NavbarBS.Collapse>
