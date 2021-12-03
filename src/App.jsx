@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import Home from "./routes/main/home";
+import About from "./routes/main/about";
 import Login from "./routes/main/login";
 import Logout from "./routes/main/logout";
 import StudentDashboard from './routes/student/dashboard';
@@ -17,8 +18,8 @@ function App() {
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route exact path='/' element={<Home />} />
-
+                    <Route exact path="/" element={<Home />} />
+                    <Route exact path="/about" element={<About />} />
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/logout" element={<Logout />} />
 
