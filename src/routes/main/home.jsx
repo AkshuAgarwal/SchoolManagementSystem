@@ -5,20 +5,7 @@ import Navbar from "../../components/navbar"
 import Footer from '../../components/footer';
 import Loading from '../../components/loading';
 import { BASE_AUTH } from '../../constants';
-
-const getDashboardType = userType => {
-    if (userType === 's') {
-        return '/student/dashboard';
-    } else if (userType === 't') {
-        return '/teacher/dashboard';
-    } else if (userType === 'p') {
-        return '/parent/dashboard';
-    } else if (userType === 'm') {
-        return '/manager/dashboard';
-    } else if (userType === 'a') {
-        return '/admin/dashboard';
-    };
-}
+import { getDashboardType } from "../../utils";
 
 function Home() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -55,8 +42,13 @@ function Home() {
                 fieldData: [
                     { name: "Home", href: "/" },
                     { name: "Dashboard", href: getDashboardType(userData.user_type) },
+                    { name: "About", href: "/about" },
+                    { name: "Contact Us", href: "/contact" },
                 ],
-                dropdownFieldData: [{ name: "Logout", href: "/logout" }]
+                dropdownFieldData: [
+                    { name: "Profile", href: "/profile" },
+                    { name: "Logout", href: "/logout" },
+                ],
             }} />
             <Loading />
 
