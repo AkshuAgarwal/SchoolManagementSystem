@@ -69,22 +69,24 @@ const LoginForm = () => {
     };
 
     return (
-        <Form notValidated validated={validated} onSubmit={handleSubmit}>
-            {showAlert ? (<Alert variant="danger">Invalid Credentials</Alert>) : null}
-            <Form.Group>
-                <FloatingLabel label="Username or Email *">
-                    <Form.Control required ref={usernameOrEmailRef} type="text" placeholder="Username or Email" />
-                </FloatingLabel>
-            </Form.Group>
-            <Form.Group>
-                <FloatingLabel label="Password *">
-                    <Form.Control required ref={passwordRef} type="password" placeholder="Password" />
-                </FloatingLabel>
-            </Form.Group>
-            <Form.Group>
-                <Button variant="light" type="submit">Submit</Button>
-            </Form.Group>
-        </Form>
+        <>
+            {showAlert ? (<Alert dismissible variant="danger" onClose={() => setShowAlert(false)}>Invalid Credentials</Alert>) : null}
+            <Form notValidated validated={validated} onSubmit={handleSubmit}>
+                <Form.Group>
+                    <FloatingLabel label="Username or Email *">
+                        <Form.Control required ref={usernameOrEmailRef} type="text" placeholder="Username or Email" />
+                    </FloatingLabel>
+                </Form.Group>
+                <Form.Group>
+                    <FloatingLabel label="Password *">
+                        <Form.Control required ref={passwordRef} type="password" placeholder="Password" />
+                    </FloatingLabel>
+                </Form.Group>
+                <Form.Group>
+                    <Button variant="light" type="submit">Submit</Button>
+                </Form.Group>
+            </Form>
+        </>
     );
 };
 
