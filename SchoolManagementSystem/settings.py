@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "administration.apps.AdministrationConfig",
     "authentication.apps.AuthenticationConfig",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
