@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Form, Button, FloatingLabel, Alert } from 'react-bootstrap';
 
 import Footer from '../../components/footer.jsx';
@@ -23,8 +23,8 @@ const redirectToDashboard = type => {
 };
 
 const LoginForm = () => {
-    const usernameOrEmailRef = React.useRef();
-    const passwordRef = React.useRef();
+    const usernameOrEmailRef = useRef();
+    const passwordRef = useRef();
 
     const [validated, setValidated] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
@@ -72,12 +72,12 @@ const LoginForm = () => {
         <Form notValidated validated={validated} onSubmit={handleSubmit}>
             {showAlert ? (<Alert variant="danger">Invalid Credentials</Alert>) : null}
             <Form.Group>
-                <FloatingLabel label="Username or Email">
+                <FloatingLabel label="Username or Email *">
                     <Form.Control required ref={usernameOrEmailRef} type="text" placeholder="Username or Email" />
                 </FloatingLabel>
             </Form.Group>
             <Form.Group>
-                <FloatingLabel label="Password">
+                <FloatingLabel label="Password *">
                     <Form.Control required ref={passwordRef} type="password" placeholder="Password" />
                 </FloatingLabel>
             </Form.Group>
@@ -104,13 +104,12 @@ function Login() {
             <Navbar loggedIn={true} data={{
                 displayDropdown: false,
                 fieldData: [
-                    {
-                        name: "Home",
-                        href: "/"
-                    }
+                    { name: "Home", href: "/" },
+                    { name: "About", href: "/about" },
+                    { name: "Contact Us", href: "/contact" },
                 ]
             }} />
-            <div className="r-login-form bg-dark">
+            <div className="r-form bg-dark">
                 <h1 className="text-light">Login</h1>
                 <LoginForm />
             </div>

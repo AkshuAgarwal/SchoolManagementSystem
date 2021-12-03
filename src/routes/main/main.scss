@@ -2,12 +2,13 @@
     opacity: 0;
 }
 
-.r-login-form {
+.r-form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: auto;
+    margin: 100px auto;
+    padding: 50px 10px;
     min-width: 70vw;
     min-height: 60vh;
     border-radius: 15px;
@@ -18,9 +19,18 @@
         div {
             margin: 20px;
         }
-
         button {
             margin: 10px 20px;
         }
+
+        .row {
+            margin: 0;
+            padding: 0;
+        }
+        .col {
+            margin: 0;
+            padding: 0;
+        }
+
     }
 }
