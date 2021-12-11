@@ -169,6 +169,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+TIME_ZONE = os.getenv("TIME_ZONE")
+
 AUTH_USER_MODEL = "administration.UserModel"
 
 # fmt: off
