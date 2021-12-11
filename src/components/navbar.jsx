@@ -36,9 +36,9 @@ data = {
 function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
     var fields = [];
     if (data.fieldData) {
-        for (const field of data.fieldData) {
+        for (const [index, field] of data.fieldData.entries()) {
             fields.push(
-                <NavBS.Link href={field.href}>{field.name}</NavBS.Link>
+                <NavBS.Link key={index} href={field.href}>{field.name}</NavBS.Link>
             );
         };
     };
@@ -46,9 +46,9 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
     if (data.displayDropdown) {
         var dropdownFields = [];
         if (data.dropdownFieldData) {
-            for (const field of data.dropdownFieldData) {
+            for (const [index, field] of data.dropdownFieldData.entries()) {
                 dropdownFields.push(
-                    <NavDropdownBS.Item href={field.href}>{field.name}</NavDropdownBS.Item>
+                    <NavDropdownBS.Item key={index} href={field.href}>{field.name}</NavDropdownBS.Item>
                 );
             };
         };

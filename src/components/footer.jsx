@@ -5,10 +5,10 @@ import { SCHOOL_FOOTER_TEXT, SCHOOL_FOOTER_LINKS, SITE_URL_SHORT } from "../cons
 
 function Footer() {
     var links = [];
-    for (const link of SCHOOL_FOOTER_LINKS) {
+    for (const [index, link] of SCHOOL_FOOTER_LINKS.entries()) {
         links.push(
-            <li>
-                <a href={link.href} className='text-light'>
+            <li key={index}>
+                <a key={index} href={link.href} className='text-light'>
                     {link.name}
                 </a>
             </li>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
+import Cookies from "universal-cookie";
 import { Form, Button, FloatingLabel, Alert } from 'react-bootstrap';
 
 import Footer from '../../components/footer.jsx';
@@ -7,6 +8,8 @@ import Navbar from '../../components/navbar.jsx';
 import { BASE_AUTH } from '../../constants.js';
 
 axios.defaults.withCredentials = true;
+
+const cookie = new Cookies();
 
 const redirectToDashboard = type => {
     if (type === 's') {
@@ -59,19 +62,22 @@ const LoginForm = () => {
             data
         ).then(response => {
             if (response.status === 200) {
+                cookie.set('__li', 't', { path: '/', expires: new Date(Date.now() + (86400 * 1000)), secure: true, sameSite: 'strict' });
+                cookie.set('__ud', response.data, { path: '/', expires: new Date(Date.now() + (86400 * 1000)), secure: true, sameSite: 'strict' });
                 redirectToDashboard(response.data.user_type);
             };
         }).catch(e => {
             if (e.response.status === 404) {
+                cookie.set('__li', 'f', { path: '/', expires: new Date(Date.now() + (86400 * 1000)), secure: true, sameSite: 'strict' });
                 setShowAlert(true);
-            }
+            };
         });
     };
 
     return (
         <>
             {showAlert ? (<Alert dismissible variant="danger" onClose={() => setShowAlert(false)}>Invalid Credentials</Alert>) : null}
-            <Form notValidated validated={validated} onSubmit={handleSubmit}>
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group>
                     <FloatingLabel label="Username or Email *">
                         <Form.Control required ref={usernameOrEmailRef} type="text" placeholder="Username or Email" />
@@ -92,13 +98,26 @@ const LoginForm = () => {
 
 function Login() {
     useEffect(() => {
-        axios.get(
-            BASE_AUTH + 'authorize/',
-        ).then(response => {
-            if (response.status === 200) {
-                redirectToDashboard(response.data.data.user_type);
-            };
-        });
+        const isAuth = cookie.get('__li');
+        const userData = cookie.get('__ud');
+
+        if (isAuth === 't' && userData) {
+            redirectToDashboard(userData.user_type);
+        } else {
+            axios.get(
+                BASE_AUTH + 'authorize/'
+            ).then(response => {
+                if (response.status === 200) {
+                    cookie.set('__li', 't', { path: '/', expires: new Date(Date.now() + (86400 * 1000)), secure: true, sameSite: 'strict' });
+                    cookie.set('__ud', response.data.data, { path: '/', expires: new Date(Date.now() + (86400 * 1000)), secure: true, sameSite: 'strict' });
+                    redirectToDashboard(response.data.data.user_type);
+                };
+            }).catch(e => {
+                if (e.response.status === 401) {
+                    cookie.set('__li', 'f', { path: '/', expires: new Date(Date.now() + (86400 * 1000)), secure: true, sameSite: 'strict' });
+                };
+            });
+        };
     });
 
     return (

@@ -5,8 +5,8 @@ import { FloatingLabel, Form, Row, Col, Button, Alert } from "react-bootstrap";
 import Navbar from "../../components/navbar";
 import Loading from "../../components/loading";
 import Footer from "../../components/footer";
-import { BASE_AUTH, BASE_API } from "../../constants";
-import { getDashboardType } from "../../utils";
+import { BASE_API } from "../../constants";
+import { getDashboardType, ManageRouteEntry } from "../../utils";
 
 axios.defaults.withCredentials = true;
 
@@ -98,26 +98,7 @@ function Contact() {
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
-        const loader = document.getElementById('r-loading-comp');
-        const content = document.getElementById('r-contact-content');
-
-        axios.get(
-            BASE_AUTH + 'authorize/'
-        ).then(response => {
-            if (response.status === 200) {
-                setUserData(response.data.data);
-                setLoggedIn(true);
-                try {
-                    loader.remove();
-                } catch (error) { }
-                content.classList.remove('r-content-hide');
-            };
-        }).catch(e => {
-            try {
-                loader.remove();
-            } catch (error) { }
-            content.classList.remove('r-content-hide');
-        })
+        ManageRouteEntry('contact', setLoggedIn, setUserData);
     }, []);
 
     return (
