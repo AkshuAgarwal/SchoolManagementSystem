@@ -1,7 +1,7 @@
-import React from 'react';
-import { MDBFooter, MDBContainer, MDBRow, MDBCol } from 'mdb-react-ui-kit';
+import React from "react";
+import { MDBFooter, MDBContainer, MDBRow, MDBCol } from "mdb-react-ui-kit";
 
-import { SCHOOL_FOOTER_TEXT, SCHOOL_FOOTER_LINKS, SITE_URL_SHORT } from "../constants.js"
+import { SCHOOL_FOOTER_TEXT, SCHOOL_FOOTER_LINKS, SITE_URL_SHORT } from "../constants";
 
 function Footer() {
     var links = [];
@@ -13,7 +13,7 @@ function Footer() {
                 </a>
             </li>
         );
-    };
+    }
 
     return (
         <MDBFooter className='text-center text-lg-left bg-dark r-footer'>
@@ -37,14 +37,14 @@ function Footer() {
                 </MDBRow>
             </MDBContainer>
 
-            <div className='text-center p-3 text-light' style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-                &copy; {new Date().getFullYear()}{' '}
+            <div className='text-center p-3 text-light' style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}>
+                &copy; {new Date().getFullYear()}{" "}
                 <a className='text-light' href='/'>
                     {SITE_URL_SHORT}
                 </a>
             </div>
         </MDBFooter>
     );
-};
+}
 
 export default Footer;

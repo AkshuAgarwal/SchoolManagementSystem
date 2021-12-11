@@ -10,7 +10,7 @@ function About() {
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
-        ManageRouteEntry('about', setLoggedIn, setUserData);
+        ManageRouteEntry("about", setLoggedIn, setUserData);
     }, []);
 
     return (
@@ -36,6 +36,6 @@ function About() {
             <Footer />
         </>
     );
-};
+}
 
 export default About;

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import Navbar from "../../components/navbar"
-import Footer from '../../components/footer';
-import Loading from '../../components/loading';
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
+import Loading from "../../components/loading";
 import { getDashboardType, ManageRouteEntry } from "../../utils";
 
 function Home() {
@@ -10,7 +10,7 @@ function Home() {
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
-        ManageRouteEntry('home', setLoggedIn, setUserData);
+        ManageRouteEntry("home", setLoggedIn, setUserData);
     }, []);
 
     return (
@@ -37,6 +37,6 @@ function Home() {
             <Footer />
         </>
     );
-};
+}
 
 export default Home;

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 import Navbar from "../../components/navbar";
 import Loading from "../../components/loading";
 import Footer from "../../components/footer";
-import { ManageRouteEntry } from '../../utils';
+import { ManageRouteEntry } from "../../utils";
 
 function Dashboard() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
-        ManageRouteEntry('student-dashboard', setLoggedIn, setUserData);
+        ManageRouteEntry("student-dashboard", setLoggedIn, setUserData);
     }, []);
 
     return (

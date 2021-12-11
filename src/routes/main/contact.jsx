@@ -23,7 +23,7 @@ const ContactForm = () => {
         e.preventDefault();
 
         axios.post(
-            BASE_API + 'contact/',
+            BASE_API + "contact/",
             {
                 first_name: firstNameRef.current.value,
                 last_name: lastNameRef.current.value,
@@ -34,9 +34,9 @@ const ContactForm = () => {
             if (response.status === 201) {
                 setShowSuccessAlert(true);
             }
-        }).catch(e => {
+        }).catch(() => {
             setShowErrorAlert(true);
-        })
+        });
     };
 
     return (
@@ -98,7 +98,7 @@ function Contact() {
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
-        ManageRouteEntry('contact', setLoggedIn, setUserData);
+        ManageRouteEntry("contact", setLoggedIn, setUserData);
     }, []);
 
     return (

@@ -1,18 +1,19 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./routes/main/home";
 import About from "./routes/main/about";
 import Contact from "./routes/main/contact";
 import Login from "./routes/main/login";
 import Logout from "./routes/main/logout";
-import StudentDashboard from './routes/student/dashboard';
+import StudentDashboard from "./routes/student/dashboard";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.min.css";
 import "./components/components.min.css";
 import "./routes/main/main.min.css";
 
-const portals = ['/student', '/teacher', '/parent', '/management', '/admin'];
+const portals = ["/student", "/teacher", "/parent", "/management", "/admin"];
 
 function App() {
     return (
@@ -27,7 +28,7 @@ function App() {
 
                     {/* Redirect to dashboard in case of navigation to "portals" */}
                     {portals.map((r, index) => {
-                        return <Route exact path={r} key={index} element={<Navigate to='dashboard/' />} />
+                        return <Route exact path={r} key={index} element={<Navigate to='dashboard/' />} />;
                     })}
 
                     {/* Student */}
@@ -36,6 +37,6 @@ function App() {
             </BrowserRouter>
         </div>
     );
-};
+}
 
 export default App;

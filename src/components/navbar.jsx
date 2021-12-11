@@ -6,7 +6,7 @@ import {
     NavDropdown as NavDropdownBS
 } from "react-bootstrap";
 
-import { SCHOOL_NAME } from "../constants.js";
+import { SCHOOL_NAME } from "../constants";
 
 /*
 data = {
@@ -40,8 +40,8 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
             fields.push(
                 <NavBS.Link key={index} href={field.href}>{field.name}</NavBS.Link>
             );
-        };
-    };
+        }
+    }
 
     if (data.displayDropdown) {
         var dropdownFields = [];
@@ -50,8 +50,8 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
                 dropdownFields.push(
                     <NavDropdownBS.Item key={index} href={field.href}>{field.name}</NavDropdownBS.Item>
                 );
-            };
-        };
+            }
+        }
     }
 
 
@@ -96,7 +96,7 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
                 </ContainerBS>
             </NavbarBS>
         );
-    };
-};
+    }
+}
 
 export default Navbar;

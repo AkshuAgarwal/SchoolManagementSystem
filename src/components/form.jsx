@@ -1,4 +1,5 @@
-import { Form as FormComp, Button } from 'react-bootstrap';
+import React from "react";
+import { Form as FormComp, Button } from "react-bootstrap";
 
 /*
 data = {
@@ -41,8 +42,8 @@ function Form({ onSubmit, data }) {
                     ) : (null)
                 }
             </FormComp.Group>
-        )
-    };
+        );
+    }
 
     return (
         <FormComp onSubmit={onSubmit}>
@@ -50,6 +51,6 @@ function Form({ onSubmit, data }) {
             {data.extraComponents}
             <Button varient="primary" type="submit">Submit</Button>
         </FormComp>
-    )
+    );
 }
 export default Form;

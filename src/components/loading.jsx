@@ -1,6 +1,7 @@
-import { MDBSpinner } from 'mdb-react-ui-kit';
+import React from "react";
+import { MDBSpinner } from "mdb-react-ui-kit";
 
-import { SCHOOL_LOGO } from '../constants';
+import { SCHOOL_LOGO } from "../constants";
 
 const messages = [
     "Fetching your Data...",
@@ -20,7 +21,7 @@ function Loading() {
                 <span className="visually-hidden">Loading...</span>
             </MDBSpinner>
         </div>
-    )
+    );
 }
 
 export default Loading;
