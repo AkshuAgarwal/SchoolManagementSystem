@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
 from .models import ContactMessageModel
+from .serializers import ContactMessageSerializer
 from utils import errors as e
 
 
@@ -33,4 +34,11 @@ class ContactMessagesView(APIView):
             email_id=email_id,
             message=message,
         )
-        return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+        serializer = ContactMessageSerializer(contact_message)
+        return Response(
+            {
+                "status": "ok",
+                "data": serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
