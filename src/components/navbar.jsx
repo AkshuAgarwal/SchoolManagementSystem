@@ -1,12 +1,13 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
     Navbar as NavbarBS,
     Container as ContainerBS,
     Nav as NavBS,
     NavDropdown as NavDropdownBS
-} from "react-bootstrap";
+} from 'react-bootstrap';
 
-import { SCHOOL_NAME } from "../constants";
+import { SCHOOL_NAME } from '../constants';
 
 /*
 data = {
@@ -33,10 +34,10 @@ data = {
 }
 */
 
-function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
+function Navbar({ loggedIn = false, data = { displayDropdown : false } }) {
     var fields = [];
     if (data.fieldData) {
-        for (const [index, field] of data.fieldData.entries()) {
+        for (const [ index, field ] of data.fieldData.entries()) {
             fields.push(
                 <NavBS.Link key={index} href={field.href}>{field.name}</NavBS.Link>
             );
@@ -46,15 +47,13 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
     if (data.displayDropdown) {
         var dropdownFields = [];
         if (data.dropdownFieldData) {
-            for (const [index, field] of data.dropdownFieldData.entries()) {
+            for (const [ index, field ] of data.dropdownFieldData.entries()) {
                 dropdownFields.push(
                     <NavDropdownBS.Item key={index} href={field.href}>{field.name}</NavDropdownBS.Item>
                 );
             }
         }
     }
-
-
 
     if (loggedIn) {
         return (
@@ -98,5 +97,23 @@ function Navbar({ loggedIn = false, data = { displayDropdown: false } }) {
         );
     }
 }
+
+Navbar.propTypes = {
+    loggedIn : PropTypes.bool,
+    data     : PropTypes.exact({
+        displayDropdown : PropTypes.bool,
+        userData        : PropTypes.exact({
+            username: PropTypes.string
+        }),
+        fieldData: PropTypes.arrayOf(PropTypes.exact({
+            name : PropTypes.string,
+            href : PropTypes.string
+        })),
+        dropdownFieldData: PropTypes.arrayOf(PropTypes.exact({
+            name : PropTypes.string,
+            href : PropTypes.string
+        }))
+    })
+};
 
 export default Navbar;

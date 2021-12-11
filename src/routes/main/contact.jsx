@@ -1,34 +1,34 @@
-import axios from "axios";
-import React, { useState, useEffect, useRef } from "react";
-import { FloatingLabel, Form, Row, Col, Button, Alert } from "react-bootstrap";
+import axios from 'axios';
+import React, { useState, useEffect, useRef } from 'react';
+import { FloatingLabel, Form, Row, Col, Button, Alert } from 'react-bootstrap';
 
-import Navbar from "../../components/navbar";
-import Loading from "../../components/loading";
-import Footer from "../../components/footer";
-import { BASE_API } from "../../constants";
-import { getDashboardType, ManageRouteEntry } from "../../utils";
+import Navbar from '../../components/navbar';
+import Loading from '../../components/loading';
+import Footer from '../../components/footer';
+import { BASE_API } from '../../constants';
+import { getDashboardType, ManageRouteEntry } from '../../utils';
 
 axios.defaults.withCredentials = true;
 
 const ContactForm = () => {
     const firstNameRef = useRef();
-    const lastNameRef = useRef("");
+    const lastNameRef = useRef('');
     const emailRef = useRef();
     const messageRef = useRef();
 
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [ showSuccessAlert, setShowSuccessAlert ] = useState(false);
+    const [ showErrorAlert, setShowErrorAlert ] = useState(false);
 
     const handleSubmit = e => {
         e.preventDefault();
 
         axios.post(
-            BASE_API + "contact/",
+            BASE_API + 'contact/',
             {
-                first_name: firstNameRef.current.value,
-                last_name: lastNameRef.current.value,
-                email_id: emailRef.current.value,
-                message: messageRef.current.value,
+                first_name : firstNameRef.current.value,
+                last_name  : lastNameRef.current.value,
+                email_id   : emailRef.current.value,
+                message    : messageRef.current.value,
             }
         ).then(response => {
             if (response.status === 201) {
@@ -46,6 +46,7 @@ const ContactForm = () => {
                     <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible>
                         <Alert.Heading>Thank you for getting in touch!</Alert.Heading>
                         <p>
+                            {/* eslint-disable max-len */}
                             We appreciate you contacting us. One of our staff will get back in touch with you soon! Have a great day!
                         </p>
                     </Alert>
@@ -79,7 +80,7 @@ const ContactForm = () => {
                 <Row>
                     <Form.Group as={Col}>
                         <FloatingLabel label="Your Message *">
-                            <Form.Control required ref={messageRef} as="textarea" style={{ height: "150px" }} placeholder="Leave your message here" />
+                            <Form.Control required ref={messageRef} as="textarea" style={{ height : '150px' }} placeholder="Leave your message here" />
                         </FloatingLabel>
                     </Form.Group>
                 </Row>
@@ -94,27 +95,27 @@ const ContactForm = () => {
 };
 
 function Contact() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [userData, setUserData] = useState({});
+    const [ loggedIn, setLoggedIn ] = useState(false);
+    const [ userData, setUserData ] = useState({});
 
     useEffect(() => {
-        ManageRouteEntry("contact", setLoggedIn, setUserData);
+        ManageRouteEntry('contact', setLoggedIn, setUserData);
     }, []);
 
     return (
         <>
             <Navbar loggedIn={loggedIn} data={{
-                displayDropdown: true,
-                userData: userData,
-                fieldData: [
-                    { name: "Home", href: "/" },
-                    { name: "Dashboard", href: getDashboardType(userData.user_type) },
-                    { name: "About", href: "/about" },
-                    { name: "Contact Us", href: "/contact" },
+                displayDropdown : true,
+                userData        : userData,
+                fieldData       : [
+                    { name : 'Home', href : '/' },
+                    { name : 'Dashboard', href : getDashboardType(userData.user_type) },
+                    { name : 'About', href : '/about' },
+                    { name : 'Contact Us', href : '/contact' },
                 ],
                 dropdownFieldData: [
-                    { name: "Profile", href: "/profile" },
-                    { name: "Logout", href: "/logout" },
+                    { name : 'Profile', href : '/profile' },
+                    { name : 'Logout', href : '/logout' },
                 ],
             }} />
             <Loading />

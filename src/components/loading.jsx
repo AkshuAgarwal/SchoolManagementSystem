@@ -1,13 +1,13 @@
-import React from "react";
-import { MDBSpinner } from "mdb-react-ui-kit";
+import React from 'react';
+import { MDBSpinner } from 'mdb-react-ui-kit';
 
-import { SCHOOL_LOGO } from "../constants";
+import { SCHOOL_LOGO } from '../constants';
 
 const messages = [
-    "Fetching your Data...",
-    "Hold on...",
-    "Wait a minute...",
-    "Loading..."
+    'Fetching your Data...',
+    'Hold on...',
+    'Wait a minute...',
+    'Loading...'
 ];
 
 function Loading() {
