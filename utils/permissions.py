@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, AllowAny
+from rest_framework.permissions import BasePermission, AllowAny, IsAuthenticated
 
 
 class IsAnonymous(BasePermission):
@@ -10,7 +10,7 @@ class IsAnonymous(BasePermission):
 
 class CheckAuthenticatedElseIsAnonymous(BasePermission):
     """Allow permissions based on request method.
-    `/api/authorize/`
+    `/auth/authorize/`
 
     If GET:
         Allow anyone (to check if they're authenticated or not)
@@ -25,3 +25,20 @@ class CheckAuthenticatedElseIsAnonymous(BasePermission):
             return AllowAny().has_permission(request, view)
         elif request.method == "POST":
             return IsAnonymous().has_permission(request, view)
+
+
+class TimetableRoutePermission(BasePermission):
+    """Manage Permissions of Timetable View based on request method.
+    `/api/timetable/`
+
+    If GET:
+        Allow Authenticated Users of any type
+    If POST:
+        Allow only Teachers, Management and Admins (users with user_type=`t`, `m`, `a`)
+    """
+
+    def has_permission(self, request, view):
+        if request.method == "GET":
+            return IsAuthenticated().has_permission(request, view)
+        elif request.method == "POST":
+            return bool(request.user.is_anonymous is not True and request.user.user_type in ("t", "m", "a"))
