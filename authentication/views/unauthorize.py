@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,7 +14,7 @@ class UnAuthViewSet(APIView):
     def get(self, request, format=None):
         _response = Response()
 
-        _response.delete_cookie("token")
+        _response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
         _response.delete_cookie("csrftoken")
 
         _response.status_code = status.HTTP_205_RESET_CONTENT

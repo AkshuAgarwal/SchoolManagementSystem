@@ -20,6 +20,8 @@ function Logout() {
             }
         }).catch(e => {
             if (e.response.status === 401) {
+                cookie.set('__li', 'f', { path : '/', expires : new Date(Date.now() + (86400 * 1000)), secure : true, sameSite : 'strict' });
+                cookie.remove('__ud');
                 return window.history.go(-1);
             }
         });
