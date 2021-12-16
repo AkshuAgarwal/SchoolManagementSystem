@@ -2,9 +2,11 @@
 name = "SchoolManagementSystem"
 version = "0.1.0"
 description = "A Python-based Advanced School Management System"
-authors = ["Akshu <akshitagarwal2204@gmail.com>"]
 license = "GPL-3.0"
+authors = ["Akshu <akshitagarwal2204@gmail.com>"]
+readme = "README.md"
 repository = "https://github.com/AkshuAgarwal/SchoolManagementSystem/"
+keywords = ["SchoolManagementSystem", "Django", "React"]
 classifiers = [
     "Development Status :: Pre-Alpha",
     "Environment :: Web Environment",
