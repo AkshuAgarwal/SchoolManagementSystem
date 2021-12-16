@@ -20,6 +20,7 @@ load_dotenv("./.env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGS_DIR = os.path.join(BASE_DIR, "tmp")
 
 
 # Quick-start development settings - unsuitable for production
@@ -29,9 +30,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
@@ -188,6 +189,212 @@ DATE_INPUT_FORMATS = [
     "%d %B, %Y",    # '25 October, 2006'
 ]
 # fmt: on
+
+# SMTP Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+_service = os.getenv("EMAIL_SERVICE")
+if _service == "gmail":
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_PORT = 587
+elif _service == "outlook":
+    EMAIL_HOST = "smtp-mail.outlook.com"
+    EMAIL_PORT = 587
+elif _service == "yahoo":
+    EMAIL_HOST = "smtp.mail.yahoo.com"
+    EMAIL_PORT = 587
+elif _service == "icloud":
+    EMAIL_HOST = "smtp.mail.me.com"
+    EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+# Logging Configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "general": {
+            "format": "[{asctime}] [{levelname:<7}] [{name} - {filename}:{lineno}]: {message} (EXCEPTION: {exc_info})",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "style": "{",
+        },
+        "request": {
+            "format": "[{asctime}] [{levelname:<7}] [{name} - {filename}:{lineno}]: {message} (STATUS: {status_code}; REQUEST: {request}; EXCEPTION: {exc_info}",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "style": "{",
+        },
+        "db": {
+            "format": "[{asctime}] [{levelname:<7}] [{name} - {filename}:{lineno}]: {message} (DURATION: {duration}; SQL: {sql}; PARAMS: {params}; EXCEPTION: {exc_info})",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "null": {
+            "class": "logging.NullHandler",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "filters": ["require_debug_true"],
+            "formatter": "general",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "include_html": True,
+        },
+        "django": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "django.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "general",
+        },
+        "security": {
+            "level": "WARNING",
+            # "filters": ["require_debug_false"],
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "security.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "general",
+        },
+        "db": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "db.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "db",
+        },
+        "db_debug": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "db_debug.log"),
+            "maxBytes": 256 * 1024 * 1024,  # 256 MB
+            "backupCount": 5,
+            "formatter": "db",
+            "filters": ["require_debug_true"],
+        },
+        "request": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "request.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "request",
+        },
+        "request_all": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "request_all.log"),
+            "maxBytes": 256 * 1024 * 1024,  # 256 MB
+            "backupCount": 5,
+            "formatter": "request",
+            "filters": ["require_debug_true"],
+        },
+        "celery": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "celery.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "general",
+        },
+        "delayed_tasks": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "delayed_tasks.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "general",
+        },
+        "apps": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "apps.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "general",
+        },
+        "api": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "api.log"),
+            "maxBytes": 16 * 1024 * 1024,  # 16 MB
+            "backupCount": 5,
+            "formatter": "general",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["django"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["request", "mail_admins"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["request_all"],
+            "level": "INFO",
+        },
+        "django.security": {
+            "handlers": ["security", "mail_admins"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "handlers": ["db", "mail_admins"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "handlers": ["db_debug"],
+            "level": "DEBUG",
+        },
+        "celery": {
+            "handlers": ["celery"],
+            "level": "ERROR",
+        },
+        "celery.task": {
+            "handlers": ["delayed_tasks"],
+            "level": "INFO",
+        },
+        "apps": {
+            "handlers": ["apps"],
+            "level": "WARNING",
+        },
+        "common": {
+            "handlers": ["apps"],
+            "level": "WARNING",
+        },
+        "api": {
+            "handlers": ["api"],
+            "level": "ERROR",
+        },
+        "py.warnings": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "": {
+            "handlers": ["console"],
+            "level": "CRITICAL",
+        },
+    },
+}
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
