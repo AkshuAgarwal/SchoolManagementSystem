@@ -44,6 +44,10 @@
                 "after": true
             }
         ],
+        "block-spacing": [
+            "error",
+            "always"
+        ],
         "comma-style": [
             "error",
             "last"
@@ -110,6 +114,13 @@
         "no-empty": "off",
         "no-trailing-spaces": [
             "error"
+        ],
+        "no-unused-vars": [
+            "warn"
+        ],
+        "object-curly-spacing": [
+            "error",
+            "always"
         ],
         "operator-linebreak": [
             "error",
