@@ -241,7 +241,12 @@ Thumbs.db
 # Project
 /src/constants.js
 
+migrations
+/migrations
+migrations/
+
 # Other
 test.*
 test
 /test
+test/
