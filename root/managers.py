@@ -55,11 +55,11 @@ class UserManager(_BUM):
         }
 
         # Filtering
-        for key, value in FIELDS.items():
+        for key, value in FIELDS.copy().items():
             if isinstance(value, list):
                 FIELDS[key] = value[0]
 
-        for key, value in FIELDS.items():
+        for key, value in FIELDS.copy().items():
             if not value:
                 FIELDS.pop(key)
 
@@ -116,7 +116,7 @@ class UserManager(_BUM):
             raise AlreadyExists(existing_fields=list(existing_fields))
 
         # Creating Avatar
-        if pfp_scheme := FIELDS["avatar"]:
+        if pfp_scheme := FIELDS.get("avatar"):
             __parsed = parse_data_scheme(pfp_scheme)
 
             if __parsed["media_type"] != "image":
@@ -164,7 +164,7 @@ class UserManager(_BUM):
             "last_name": last_name,
             "email_id": email_id,
             "avatar": avatar,
-            "use_type": "a",
+            "user_type": "a",
             "date_of_birth": date_of_birth,
             "gender": gender,
             "contact_no": contact_no,
@@ -173,11 +173,11 @@ class UserManager(_BUM):
         }
 
         # Filtering
-        for key, value in FIELDS.items():
+        for key, value in FIELDS.copy().items():
             if isinstance(value, list):
                 FIELDS[key] = value[0]
 
-        for key, value in FIELDS.items():
+        for key, value in FIELDS.copy().items():
             if not value:
                 FIELDS.pop(key)
 
@@ -231,7 +231,7 @@ class UserManager(_BUM):
             raise AlreadyExists(existing_fields=list(existing_fields))
 
         # Creating Avatar
-        if pfp_scheme := FIELDS["avatar"]:
+        if pfp_scheme := FIELDS.get("avatar"):
             __parsed = parse_data_scheme(pfp_scheme)
 
             if __parsed["media_type"] != "image":
