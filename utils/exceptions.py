@@ -20,6 +20,9 @@ class InvalidAuthenticationArguments(AuthenticationBackendError):
     ) -> None:
         self.fields = fields
 
+        if fields:
+            message += f"\nFields: {', '.join(f for f in fields)}"
+
         super().__init__(message)
 
 
@@ -41,6 +44,9 @@ class MissingRequiredFields(ModelValidationError):
     def __init__(self, message: str = "Missing required fields", missing_fields: Optional[List[str]] = None) -> None:
         self.missing_fields = missing_fields
 
+        if missing_fields:
+            message += f"\nMissing Fields: {', '.join(f for f in missing_fields)}"
+
         super().__init__(message)
 
 
@@ -51,5 +57,8 @@ class AlreadyExists(ModelValidationError):
         self, message: str = "Object with same fields already exists", existing_fields: Optional[List[str]] = None
     ) -> None:
         self.existing_fields = existing_fields
+
+        if existing_fields:
+            message += f"\nExisting Fields: {', '.join(f for f in existing_fields)}"
 
         super().__init__(message)
