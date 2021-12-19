@@ -241,6 +241,8 @@ Thumbs.db
 # Project
 /src/constants.js
 
+/files
+
 # Other
 test.*
 test
