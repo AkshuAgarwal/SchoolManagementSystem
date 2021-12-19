@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AdministrationConfig(AppConfig):
+class RootConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "administration"
+    name = "root"
