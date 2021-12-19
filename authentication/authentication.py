@@ -1,15 +1,31 @@
+from __future__ import annotations
+from typing import Optional, TYPE_CHECKING, Tuple
+
 from django.conf import settings
-from rest_framework import authentication
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework.authentication import CSRFCheck
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken
+
+if TYPE_CHECKING:
+    from django.http.request import HttpRequest
+    from rest_framework_simplejwt.tokens import AccessToken
+
+    from root.models import User as UserModel
 
 
-class UserAuthentication(JWTAuthentication):
-    def authenticate_header(self, request):
-        return "Bearer"
+def enforce_csrf(request: HttpRequest) -> None:
+    check = CSRFCheck()
+    check.process_request(request)
 
-    def authenticate(self, request):
+    reason = check.process_view(request, None, (), {})
+    if reason:
+        raise PermissionDenied(_("CSRF Failed: %{reason}s") % {"reason": reason})
+
+
+class CSRFExemptAuthentication(JWTAuthentication):
+    def authenticate(self, request: HttpRequest) -> Tuple[Optional[UserModel], AccessToken]:
         header = self.get_header(request)
 
         if header is None:
@@ -21,34 +37,10 @@ class UserAuthentication(JWTAuthentication):
             return None
 
         validated_token = self.get_validated_token(raw_token)
-
-        # check = authentication.CSRFCheck()
-        # check.process_request(request)
-        # reason = check.process_view(request, None, (), {})
-        # if reason:
-        #     raise PermissionDenied(f"CSRF Failed: {reason}")
-
         return self.get_user(validated_token), validated_token
 
 
-class CSRFExemptUserAuthentication(JWTAuthentication):
-    def authenticate_header(self, request):
-        return "Bearer"
-
-    def authenticate(self, request):
-        header = self.get_header(request)
-
-        if header is None:
-            raw_token = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"]) or None
-        else:
-            raw_token = self.get_raw_token(header)
-
-        if raw_token is None:
-            return None
-
-        try:
-            validated_token = self.get_validated_token(raw_token)
-        except InvalidToken:
-            return None
-
-        return self.get_user(validated_token), validated_token
+class Authentication(CSRFExemptAuthentication):
+    def authenticate(self, request: HttpRequest) -> Tuple[Optional[UserModel], AccessToken]:
+        enforce_csrf(request)
+        return super().authenticate(request)
