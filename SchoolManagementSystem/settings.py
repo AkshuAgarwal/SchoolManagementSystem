@@ -20,19 +20,37 @@ load_dotenv("./.env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOGS_DIR = os.path.join(BASE_DIR, "tmp")
+
+_TEMP_DIR = BASE_DIR / "tmp"
+_LOGS_DIR = _TEMP_DIR / "logs"
+_TEMPLATES_DIR = BASE_DIR / "templates"
+_CACHE_DIR = _TEMP_DIR / "cache"
+_TEMP_FILES_DIR = _TEMP_DIR / "temp_files"
+_FILES_DIR = BASE_DIR / "files"
+_EMAIL_FILES_DIR = _FILES_DIR / "email_files"
+_STATIC_FILES_DIR = BASE_DIR / "static"
+
+# Creating required directories
+_TEMP_DIR.mkdir(exist_ok=True)
+_LOGS_DIR.mkdir(exist_ok=True)
+_TEMPLATES_DIR.mkdir(exist_ok=True)
+_CACHE_DIR.mkdir(exist_ok=True)
+_TEMP_FILES_DIR.mkdir(exist_ok=True)
+_FILES_DIR.mkdir(exist_ok=True)
+_EMAIL_FILES_DIR.mkdir(exist_ok=True)
+_STATIC_FILES_DIR.mkdir(exist_ok=True)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.getenv("DEBUG") == "True" else False
+DEBUG = os.environ["DEBUG"] == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
 
 
 # Application definition
@@ -47,9 +65,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
-    "administration.apps.AdministrationConfig",
+    "rest_framework_simplejwt.token_blacklist",
+    "root.apps.RootConfig",
     "authentication.apps.AuthenticationConfig",
-    "api.apps.ApiConfig",
+    # "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
@@ -69,7 +88,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, "templates"),
+            _TEMPLATES_DIR,
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -92,15 +111,16 @@ WSGI_APPLICATION = "SchoolManagementSystem.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASS"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": int(os.getenv("DB_PORT")),
-        "NAME": os.getenv("DB_NAME"),
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASS"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": int(os.environ["DB_PORT"]),
+        "NAME": os.environ["DB_NAME"],
+        "TIME_ZONE": os.environ["TIME_ZONE"],
         "TEST": {
-            "NAME": os.getenv("TEST_DB_NAME"),
+            "NAME": os.environ["TEST_DB_NAME"],
         },
-    }
+    },
 }
 
 
@@ -109,7 +129,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": os.path.join(BASE_DIR, "tmp"),
+        "LOCATION": _CACHE_DIR,
     }
 }
 
@@ -139,7 +159,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
 
-PASSWORD_RESET_TIMEOUT = 1800
+PASSWORD_RESET_TIMEOUT = 600
 
 
 # Internationalization
@@ -147,36 +167,16 @@ PASSWORD_RESET_TIMEOUT = 1800
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
-
-USE_I18N = True
+USE_I18N = False
 
 USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = "/static/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-TIME_ZONE = os.getenv("TIME_ZONE")
-
-AUTH_USER_MODEL = "administration.UserModel"
+TIME_ZONE = os.environ["TIME_ZONE"]
 
 # fmt: off
 DATE_INPUT_FORMATS = [
-    "%Y-%m-%d",     # '2006-10-25'
     "%d-%m-%Y",     # '25-10-2006'
     "%d/%m/%Y",     # '25/10/2006'
     "%b %d %Y",     # 'Oct 25 2006'
@@ -190,25 +190,164 @@ DATE_INPUT_FORMATS = [
 ]
 # fmt: on
 
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [
+    _STATIC_FILES_DIR,
+]
+
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# User Model
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-user-model
+
+AUTH_USER_MODEL = "root.User"
+
+
+# Media Settings
+# https://docs.djangoproject.com/en/3.2/topics/files/
+
+MEDIA_ROOT = "/uploads/"
+MEDIA_URL = "/media/"
+
+FILE_UPLOAD_HANDLERS = [
+    "django.core.files.uploadhandler.FileUploadHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
+
+FILE_UPLOAD_TEMP_DIR = _TEMP_FILES_DIR
+
+
 # SMTP Configuration
+# https://docs.djangoproject.com/en/3.2/topics/email/
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-_service = os.getenv("EMAIL_SERVICE")
-if _service == "gmail":
+DEFAULT_FROM_EMAIL = os.environ["EMAIL_FROM"]
+EMAIL_FILE_PATH = _EMAIL_FILES_DIR
+
+SERVER_EMAIL = os.environ["SERVER_EMAIL"]
+
+_service = os.environ["EMAIL_SERVICE"]
+if _service == "localhost":
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = int(os.environ["EMAIL_PORT"])
+elif _service == "gmail":
     EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 elif _service == "outlook":
     EMAIL_HOST = "smtp-mail.outlook.com"
     EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 elif _service == "yahoo":
     EMAIL_HOST = "smtp.mail.yahoo.com"
     EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 elif _service == "icloud":
     EMAIL_HOST = "smtp.mail.me.com"
     EMAIL_PORT = 587
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+EMAIL_SUBJECT_PREFIX = os.environ["EMAIL_SUBJECT_PREFIX"]
+EMAIL_USE_LOCALTIME = True
+
+ADMINS = [(os.environ["ROOT_ADMIN_NAME"], os.environ["ROOT_ADMIN_EMAIL_ID"])]
+MANAGERS = [(os.environ["MANAGER_NAME"], os.environ["MANAGER_EMAIL_ID"])]
+
+
+# Cors Configuration
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+# CSRF Configuration
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_NAME = "X-CSRF-Token"
+CSRF_COOKIE_SAMESITE = "Strict"
+
+
+# RestFramework Configuration
+# https://www.django-rest-framework.org/api-guide/settings/
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        # "rest_framework_simeplejwt.authentication.JWTAuthentication",
+        "authentication.authentication.Authentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+    # Test Settings
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "TEST_REQUEST_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    # Encodings
+    "UNICODE_JSON": False,
+    "COERCE_DECIMAL_TO_STRING": False,
+}
+
+
+# Simple JWT Configuration
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(hours=1),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+    # custom
+    "AUTH_COOKIE": "X-Authorization-Token",  # Cookie name. Enables cookies if value is set.
+    "AUTH_COOKIE_DOMAIN": None,  # A string like "example.com", or None for standard domain cookie.
+    "AUTH_COOKIE_SECURE": False,  # Whether the auth cookies should be secure (https:// only).
+    "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag. It's not fetch by javascript.
+    "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
+    "AUTH_COOKIE_SAMESITE": "Strict",  # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or None to disable the flag.
+}
+
 
 # Logging Configuration
+# https://docs.djangoproject.com/en/3.2/topics/logging/
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -232,7 +371,7 @@ LOGGING = {
             "style": "{",
         },
         "db": {
-            "format": "[{asctime}] [{levelname:<7}] [{name} - {filename}:{lineno}]: {message} (DURATION: {duration}; SQL: {sql}; PARAMS: {params}; EXCEPTION: {exc_info})",
+            "format": "[{asctime}] [{levelname:<7}] [{name} - {filename}:{lineno}]: {message} (SQL: {sql}; PARAMS: {params}; EXCEPTION: {exc_info})",
             "datefmt": "%d/%b/%Y %H:%M:%S",
             "style": "{",
         },
@@ -254,7 +393,7 @@ LOGGING = {
         "django": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "django.log"),
+            "filename": _LOGS_DIR / "django.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "general",
@@ -263,7 +402,7 @@ LOGGING = {
             "level": "WARNING",
             # "filters": ["require_debug_false"],
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "security.log"),
+            "filename": _LOGS_DIR / "security.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "general",
@@ -271,7 +410,7 @@ LOGGING = {
         "db": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "db.log"),
+            "filename": _LOGS_DIR / "db.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "db",
@@ -279,7 +418,7 @@ LOGGING = {
         "db_debug": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "db_debug.log"),
+            "filename": _LOGS_DIR / "db_debug.log",
             "maxBytes": 256 * 1024 * 1024,  # 256 MB
             "backupCount": 5,
             "formatter": "db",
@@ -288,7 +427,7 @@ LOGGING = {
         "request": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "request.log"),
+            "filename": _LOGS_DIR / "request.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "request",
@@ -296,7 +435,7 @@ LOGGING = {
         "request_all": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "request_all.log"),
+            "filename": _LOGS_DIR / "request_all.log",
             "maxBytes": 256 * 1024 * 1024,  # 256 MB
             "backupCount": 5,
             "formatter": "request",
@@ -305,7 +444,7 @@ LOGGING = {
         "celery": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "celery.log"),
+            "filename": _LOGS_DIR / "celery.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "general",
@@ -313,7 +452,7 @@ LOGGING = {
         "delayed_tasks": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "delayed_tasks.log"),
+            "filename": _LOGS_DIR / "delayed_tasks.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "general",
@@ -321,7 +460,7 @@ LOGGING = {
         "apps": {
             "level": "WARNING",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "apps.log"),
+            "filename": _LOGS_DIR / "apps.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "general",
@@ -329,7 +468,7 @@ LOGGING = {
         "api": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGS_DIR, "api.log"),
+            "filename": _LOGS_DIR / "api.log",
             "maxBytes": 16 * 1024 * 1024,  # 16 MB
             "backupCount": 5,
             "formatter": "general",
@@ -394,41 +533,4 @@ LOGGING = {
             "level": "CRITICAL",
         },
     },
-}
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-
-CORS_ALLOW_CREDENTIALS = True
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": False,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
-    "ALGORITHM": "HS256",
-    "SIGNING_KEY": SECRET_KEY,
-    "VERIFYING_KEY": None,
-    "AUDIENCE": None,
-    "ISSUER": None,
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "user_id",
-    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "TOKEN_TYPE_CLAIM": "token_type",
-    "JTI_CLAIM": "jti",
-    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(hours=1),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
-    # custom
-    "AUTH_COOKIE": "token",  # Cookie name. Enables cookies if value is set.
-    "AUTH_COOKIE_DOMAIN": None,  # A string like "example.com", or None for standard domain cookie.
-    "AUTH_COOKIE_SECURE": False,  # Whether the auth cookies should be secure (https:// only).
-    "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag.It's not fetch by javascript.
-    "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
-    "AUTH_COOKIE_SAMESITE": "Strict",  # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or None to disable the flag.
 }
