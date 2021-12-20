@@ -238,10 +238,14 @@ lerna-debug.log
 .DS_Store
 Thumbs.db
 
+# Archived files
+/archive
+
 # Project
 /src/constants.js
 
 /files
+/uploads
 
 # Other
 test.*
