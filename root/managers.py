@@ -54,11 +54,6 @@ class UserManager(_BUM):
             "password": password,
         }
 
-        # Filtering
-        for key, value in FIELDS.copy().items():
-            if isinstance(value, list):
-                FIELDS[key] = value[0]
-
         for key, value in FIELDS.copy().items():
             if not value:
                 FIELDS.pop(key)
@@ -101,37 +96,37 @@ class UserManager(_BUM):
         )(FIELDS["contact_no"])
 
         # Unique constraint checking
-        existing_fields: set = {}
+        colliding_fields: set = set()
         __existing_user = self.filter(OR(username=FIELDS["username"]) | OR(email_id=FIELDS["email_id"]))
         if __existing_user:
             for __user in __existing_user:
-                if __user["username"] == FIELDS["username"]:
-                    existing_fields.add("username")
-                if __user["email_id"] == FIELDS["email_id"]:
-                    existing_fields.add("email_id")
+                if __user.username == FIELDS["username"]:
+                    colliding_fields.add("username")
+                if __user.email_id == FIELDS["email_id"]:
+                    colliding_fields.add("email_id")
 
-                if {"username", "email_id"} == existing_fields:
+                if {"username", "email_id"} == colliding_fields:
                     break
 
-            raise AlreadyExists(existing_fields=list(existing_fields))
+            raise AlreadyExists(colliding_fields=list(colliding_fields))
 
         # Creating Avatar
         if pfp_scheme := FIELDS.get("avatar"):
             __parsed = parse_data_scheme(pfp_scheme)
 
-            if __parsed["media_type"] != "image":
+            if __parsed["type"] != "image":
                 raise ValidationError("Invalid avatar data URI")
 
-            if x := __parsed["media_format"] not in {"jpg", "jpeg", "png", "gif"}:
+            if x := __parsed["format"] not in {"jpg", "jpeg", "png", "gif"}:
                 raise ValidationError(f"Image format {x!r} is invalid or not supported")
 
             _image = ImageFile(
-                file=__parsed["decoded_media_data"],
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{__parsed['media_format']}",
+                file=__parsed["file_like"],
+                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{__parsed['format']}",
             )
 
             asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
-            FIELDS["avatar"] = int(asset.id)
+            FIELDS["avatar"] = asset
 
         FIELDS["is_staff"] = FIELDS["user_type"] == "m"
         FIELDS["is_superuser"] = False
@@ -172,11 +167,6 @@ class UserManager(_BUM):
             "password": password,
         }
 
-        # Filtering
-        for key, value in FIELDS.copy().items():
-            if isinstance(value, list):
-                FIELDS[key] = value[0]
-
         for key, value in FIELDS.copy().items():
             if not value:
                 FIELDS.pop(key)
@@ -216,37 +206,37 @@ class UserManager(_BUM):
         )(FIELDS["contact_no"])
 
         # Unique constraint checking
-        existing_fields: set = {}
+        colliding_fields: set = set()
         __existing_user = self.filter(OR(username=FIELDS["username"]) | OR(email_id=FIELDS["email_id"]))
         if __existing_user:
             for __user in __existing_user:
-                if __user["username"] == FIELDS["username"]:
-                    existing_fields.add("username")
-                if __user["email_id"] == FIELDS["email_id"]:
-                    existing_fields.add("email_id")
+                if __user.username == FIELDS["username"]:
+                    colliding_fields.add("username")
+                if __user.email_id == FIELDS["email_id"]:
+                    colliding_fields.add("email_id")
 
-                if {"username", "email_id"} == existing_fields:
+                if {"username", "email_id"} == colliding_fields:
                     break
 
-            raise AlreadyExists(existing_fields=list(existing_fields))
+            raise AlreadyExists(colliding_fields=list(colliding_fields))
 
         # Creating Avatar
         if pfp_scheme := FIELDS.get("avatar"):
             __parsed = parse_data_scheme(pfp_scheme)
 
-            if __parsed["media_type"] != "image":
+            if __parsed["type"] != "image":
                 raise ValidationError("Invalid avatar data URI")
 
-            if x := __parsed["media_format"] not in {"jpg", "jpeg", "png", "gif"}:
+            if x := __parsed["format"] not in {"jpg", "jpeg", "png", "gif"}:
                 raise ValidationError(f"Image format {x!r} is invalid or not supported")
 
             _image = ImageFile(
-                file=__parsed["decoded_media_data"],
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{__parsed['media_format']}",
+                file=__parsed["file_like"],
+                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{__parsed['format']}",
             )
 
             asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
-            FIELDS["avatar"] = int(asset.id)
+            FIELDS["avatar"] = asset
 
         FIELDS["is_staff"] = True
         FIELDS["is_superuser"] = True

@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import List, Optional
 
+from django.utils.translation import gettext_lazy as _
+
 
 class AuthenticationException(Exception):
     """Base class for all authentication related exceptions."""
@@ -23,7 +25,7 @@ class InvalidAuthenticationArguments(AuthenticationBackendError):
         if fields:
             message += f"\nFields: {', '.join(f for f in fields)}"
 
-        super().__init__(message)
+        super().__init__(_(message))
 
 
 class ModelException(Exception):
@@ -47,18 +49,18 @@ class MissingRequiredFields(ModelValidationError):
         if missing_fields:
             message += f"\nMissing Fields: {', '.join(f for f in missing_fields)}"
 
-        super().__init__(message)
+        super().__init__(_(message))
 
 
 class AlreadyExists(ModelValidationError):
     """Raised when a field with same details already exists."""
 
     def __init__(
-        self, message: str = "Object with same fields already exists", existing_fields: Optional[List[str]] = None
+        self, message: str = "Object with same fields already exists", colliding_fields: Optional[List[str]] = None
     ) -> None:
-        self.existing_fields = existing_fields
+        self.colliding_fields = colliding_fields
 
-        if existing_fields:
-            message += f"\nExisting Fields: {', '.join(f for f in existing_fields)}"
+        if colliding_fields:
+            message += f"\Colliding Fields: {', '.join(f for f in colliding_fields)}"
 
-        super().__init__(message)
+        super().__init__(_(message))

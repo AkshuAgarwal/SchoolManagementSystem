@@ -21,7 +21,7 @@ def enforce_csrf(request: HttpRequest) -> None:
 
     reason = check.process_view(request, None, (), {})
     if reason:
-        raise PermissionDenied(_("CSRF Failed: %{reason}s") % {"reason": reason})
+        raise PermissionDenied(_("CSRF Failed: %(reason)s") % {"reason": reason})
 
 
 class CSRFExemptAuthentication(JWTAuthentication):
