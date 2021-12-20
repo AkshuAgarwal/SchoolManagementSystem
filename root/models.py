@@ -43,7 +43,7 @@ class User(_ABU, _PM):
         validators=[EmailValidator(message="Invalid email_id")],
         help_text=_("Email ID of the user, must be unique (only 1 account with an email id)"),
     )
-    avatar = models.IntegerField(verbose_name=_("Avatar ID"), null=True, blank=True)
+    avatar = models.ForeignKey(to="ImageAssets", on_delete=models.SET_NULL, null=True, blank=True)
     user_type = models.CharField(
         verbose_name=_("User Type"),
         max_length=5,
@@ -104,7 +104,7 @@ class User(_ABU, _PM):
         "contact_no",
     ]
 
-    objects = UserManager()
+    objects: UserManager = UserManager()
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, User) and self.id == __o.id
