@@ -29,6 +29,7 @@ _TEMP_FILES_DIR = _TEMP_DIR / "temp_files"
 _FILES_DIR = BASE_DIR / "files"
 _EMAIL_FILES_DIR = _FILES_DIR / "email_files"
 _STATIC_FILES_DIR = BASE_DIR / "static"
+_MEDIA_FILES_DIR = BASE_DIR / "uploads"
 
 # Creating required directories
 _TEMP_DIR.mkdir(exist_ok=True)
@@ -39,6 +40,7 @@ _TEMP_FILES_DIR.mkdir(exist_ok=True)
 _FILES_DIR.mkdir(exist_ok=True)
 _EMAIL_FILES_DIR.mkdir(exist_ok=True)
 _STATIC_FILES_DIR.mkdir(exist_ok=True)
+_MEDIA_FILES_DIR.mkdir(exist_ok=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -201,22 +203,10 @@ STATICFILES_DIRS = [
 ]
 
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# User Model
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-user-model
-
-AUTH_USER_MODEL = "root.User"
-
-
 # Media Settings
 # https://docs.djangoproject.com/en/3.2/topics/files/
 
-MEDIA_ROOT = "/uploads/"
+MEDIA_ROOT = _MEDIA_FILES_DIR
 MEDIA_URL = "/media/"
 
 FILE_UPLOAD_HANDLERS = [
@@ -226,6 +216,18 @@ FILE_UPLOAD_HANDLERS = [
 ]
 
 FILE_UPLOAD_TEMP_DIR = _TEMP_FILES_DIR
+
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+
+# User Model
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-user-model
+
+AUTH_USER_MODEL = "root.User"
 
 
 # SMTP Configuration
@@ -293,11 +295,10 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.JSONParser",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # "rest_framework_simeplejwt.authentication.JWTAuthentication",
         "authentication.authentication.Authentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     # Test Settings
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
@@ -342,6 +343,12 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag. It's not fetch by javascript.
     "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
     "AUTH_COOKIE_SAMESITE": "Strict",  # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or None to disable the flag.
+    "REFRESH_COOKIE": "X-Refresh-Token",
+    "REFRESH_COOKIE_DOMAIN": None,
+    "REFRESH_COOKIE_SECURE": False,
+    "REFRESH_COOKIE_HTTP_ONLY": True,
+    "REFRESH_COOKIE_PATH": "/",
+    "REFRESH_COOKIE_SAMESITE": "Strict",
 }
 
 
