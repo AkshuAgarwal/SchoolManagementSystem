@@ -279,9 +279,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 # CSRF Configuration
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_NAME = "X-CSRF-Token"
-CSRF_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_SAMESITE = "Lax"
 
 
 # RestFramework Configuration
