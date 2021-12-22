@@ -1,3 +1,4 @@
+export const BASE_URL = "";
 export const BASE_API = "";
 export const BASE_AUTH = "";
 export const SITE_URL = "";
