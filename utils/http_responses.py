@@ -70,3 +70,17 @@ def HTTP500Response(message: str = None) -> Response:
         },
         status=s.HTTP_500_INTERNAL_SERVER_ERROR,
     )
+
+
+def HTTP502Response(message: str = None) -> Response:
+    return Response(
+        {
+            "status": "error",
+            "status_code": 404,
+            "error": {
+                "error_type": "BadGateway",
+                "error_message": message or "Some error occured while preparing response. Please try again later",
+            },
+        },
+        status=s.HTTP_502_BAD_GATEWAY,
+    )
