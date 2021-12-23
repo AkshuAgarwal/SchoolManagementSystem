@@ -37,7 +37,7 @@ class AuthViewSet(APIView):
         if request.user.is_authenticated:
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return r.HTTP401Response()
 
     def post(self, request: HttpRequest, format=None) -> Response:
         if TYPE_CHECKING:
@@ -66,6 +66,8 @@ class AuthViewSet(APIView):
 
         _response = Response()
 
+        csrf.get_token(request)
+
         _response.set_cookie(
             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
             value=data["access"],
@@ -84,8 +86,6 @@ class AuthViewSet(APIView):
             httponly=settings.SIMPLE_JWT["REFRESH_COOKIE_HTTP_ONLY"],
             samesite=settings.SIMPLE_JWT["REFRESH_COOKIE_SAMESITE"],
         )
-
-        csrf.get_token(request)
 
         _response.data = {
             "status": "success",
