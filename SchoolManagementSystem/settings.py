@@ -85,6 +85,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+AUTHENTICATION_BACKENDS = [
+    "authentication.backend.AuthenticationBackend",
+]
+
 ROOT_URLCONF = "SchoolManagementSystem.urls"
 
 TEMPLATES = [
