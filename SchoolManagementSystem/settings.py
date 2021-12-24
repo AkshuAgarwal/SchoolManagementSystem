@@ -147,15 +147,32 @@ CACHES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "OPTIONS": {
+            "max_similarity": 0.7,
+        },
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+    {
+        "NAME": "root.validators.RequiredPasswordCharactersValidator",
+        "OPTIONS": {
+            "required_chars": {
+                "ascii_lowercase": {"minimum_length": 1},
+                "ascii_uppercase": {"minimum_length": 1},
+                "digits": {"minimum_length": 1},
+                "punctuation": {"minimum_length": 1},
+            },
+        },
     },
 ]
 
