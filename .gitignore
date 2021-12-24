@@ -241,6 +241,9 @@ Thumbs.db
 # Archived files
 /archive
 
+# Redis
+*.rdb
+
 # Project
 /src/constants.js
 
