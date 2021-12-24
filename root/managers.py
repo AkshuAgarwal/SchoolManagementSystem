@@ -5,9 +5,10 @@ from django.apps import apps
 from django.db.models import Q as OR
 from django.core.files.images import ImageFile
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator, EmailValidator
 from django.contrib.auth.base_user import BaseUserManager as _BUM
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.password_validation import validate_password
 
 from utils.exceptions import AlreadyExists, MissingRequiredFields
 from utils.files import parse_data_scheme
@@ -134,6 +135,7 @@ class UserManager(_BUM):
 
         password = FIELDS.pop("password")
         user = self.model(**FIELDS, **extra_fields)
+        validate_password(password, user)
         user.set_password(password)
         user.save()
 
@@ -244,6 +246,7 @@ class UserManager(_BUM):
 
         password = FIELDS.pop("password")
         user = self.model(**FIELDS, **extra_fields)
+        validate_password(password, user)
         user.set_password(password)
         user.save()
 
