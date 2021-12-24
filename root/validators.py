@@ -27,7 +27,7 @@ class RequiredPasswordCharactersValidator:
             setattr(self, f"__{key}", value)
 
     def validate(self, password: str, user: Optional[UserModel] = None):
-        if __ascii_lowercase := getattr(self, "__ascii_lowercase"):
+        if __ascii_lowercase := getattr(self, "__ascii_lowercase", None):
             _list = list(filter((-1).__ne__, [password.find(letter) for letter in string.ascii_lowercase]))
             if min_length := __ascii_lowercase.get("minimum_length"):
                 if len(_list) < min_length:
@@ -35,7 +35,7 @@ class RequiredPasswordCharactersValidator:
                         f"Password must contain atleast {min_length} ascii lowercase chatacter{'s' if min_length > 1 else ''}"
                     )
 
-        if __ascii_uppercase := getattr(self, "__ascii_uppercase"):
+        if __ascii_uppercase := getattr(self, "__ascii_uppercase", None):
             _list = list(filter((-1).__ne__, [password.find(letter) for letter in string.ascii_uppercase]))
             if min_length := __ascii_uppercase.get("minimum_length"):
                 if len(_list) < min_length:
@@ -43,7 +43,7 @@ class RequiredPasswordCharactersValidator:
                         f"Password must contain atleast {min_length} ascii uppercase chatacter{'s' if min_length > 1 else ''}"
                     )
 
-        if __digits := getattr(self, "__digits"):
+        if __digits := getattr(self, "__digits", None):
             _list = list(filter((-1).__ne__, [password.find(str(digit)) for digit in string.digits]))
             if min_length := __digits.get("minimum_length"):
                 if len(_list) < min_length:
@@ -51,7 +51,7 @@ class RequiredPasswordCharactersValidator:
                         f"Password must contain atleast {min_length} digit{'s' if min_length > 1 else ''}"
                     )
 
-        if __punctuation := getattr(self, "__punctuation"):
+        if __punctuation := getattr(self, "__punctuation", None):
             _list = list(filter((-1).__ne__, [password.find(str(letter)) for letter in string.punctuation]))
             if min_length := __punctuation.get("minimum_length"):
                 if len(_list) < min_length:
@@ -66,30 +66,30 @@ class RequiredPasswordCharactersValidator:
 
         if any(
             [
-                getattr(self, "__ascii_lowercase"),
-                getattr(self, "__ascii_uppercase"),
-                getattr(self, "__digits"),
-                getattr(self, "__punctuation"),
+                getattr(self, "__ascii_lowercase", None),
+                getattr(self, "__ascii_uppercase", None),
+                getattr(self, "__digits", None),
+                getattr(self, "__punctuation", None),
             ]
         ):
             text += "Your password must contain "
 
-        if x := getattr(self, "__ascii_lowercase"):
+        if x := getattr(self, "__ascii_lowercase", None):
             if min_length := x.get("minimum_length"):
                 text += f"atleast {min_length} ascii lowercase character{'s' if min_length > 1 else ''}"
             text += "ascii lowercase characters"
 
-        if x := getattr(self, "__ascii_uppercase"):
+        if x := getattr(self, "__ascii_uppercase", None):
             if min_length := x.get("minimum_length"):
                 text += f", {min_length} ascii uppercase character{'s' if min_length > 1 else ''}"
             text += ", ascii uppercase characters"
 
-        if x := getattr(self, "__digits"):
+        if x := getattr(self, "__digits", None):
             if min_length := x.get("minimum_length"):
                 text += f", {min_length} digits{'s' if min_length > 1 else ''}"
             text += ", digits"
 
-        if x := getattr(self, "__punctuation"):
+        if x := getattr(self, "__punctuation", None):
             if min_length := x.get("minimum_length"):
                 text += f", {min_length} punctuations{'s' if min_length > 1 else ''}"
             text += ", punctuations"
