@@ -131,13 +131,21 @@ DATABASES = {
 }
 
 
-# Caching
+# Caching (Redis)
+
+CACHE_TTL = 15 * 60  # 15 Minutes
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": _CACHE_DIR,
-    }
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ["REDIS_URL"],
+        "TIMEOUT": CACHE_TTL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": os.environ["REDIS_KEY_PREFIX"],
+        "VERSION": 1,
+    },
 }
 
 
