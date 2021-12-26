@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 _TEMP_DIR = BASE_DIR / "tmp"
 _LOGS_DIR = _TEMP_DIR / "logs"
 _TEMPLATES_DIR = BASE_DIR / "templates"
-_CACHE_DIR = _TEMP_DIR / "cache"
+# _CACHE_DIR = _TEMP_DIR / "cache"
 _TEMP_FILES_DIR = _TEMP_DIR / "temp_files"
 _FILES_DIR = BASE_DIR / "files"
 _EMAIL_FILES_DIR = _FILES_DIR / "email_files"
@@ -36,7 +36,7 @@ _MEDIA_FILES_DIR = BASE_DIR / "uploads"
 _TEMP_DIR.mkdir(exist_ok=True)
 _LOGS_DIR.mkdir(exist_ok=True)
 _TEMPLATES_DIR.mkdir(exist_ok=True)
-_CACHE_DIR.mkdir(exist_ok=True)
+# _CACHE_DIR.mkdir(exist_ok=True)
 _TEMP_FILES_DIR.mkdir(exist_ok=True)
 _FILES_DIR.mkdir(exist_ok=True)
 _EMAIL_FILES_DIR.mkdir(exist_ok=True)
@@ -191,7 +191,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
 
-PASSWORD_RESET_TIMEOUT = 600
+PASSWORD_RESET_TIMEOUT = 300
 
 
 # Internationalization
@@ -391,4 +391,4 @@ with open("logging.yaml", "r") as stream:
 _data = _data.format(LOGS_DIR=_LOGS_DIR.as_posix())
 _config = yaml.load(_data, Loader=yaml.FullLoader)
 
-LOGGING = _config
+# LOGGING = _config
