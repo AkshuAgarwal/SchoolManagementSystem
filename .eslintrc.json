@@ -5,7 +5,7 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended"
+        "next/core-web-vitals"
     ],
     "parserOptions": {
         "ecmaFeatures": {
@@ -13,14 +13,6 @@
         },
         "ecmaVersion": 12,
         "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
     },
     "rules": {
         "array-bracket-newline": [
@@ -103,18 +95,6 @@
         "linebreak-style": [
             "error",
             "windows"
-        ],
-        "max-len": [
-            "error",
-            {
-                "code": 120,
-                "ignoreComments": true,
-                "ignoreTrailingComments": true,
-                "ignoreUrls": true,
-                "ignoreStrings": true,
-                "ignoreTemplateLiterals": true,
-                "ignoreRegExpLiterals": true
-            }
         ],
         "no-empty": "off",
         "no-trailing-spaces": [

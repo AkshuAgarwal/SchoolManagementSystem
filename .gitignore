@@ -238,6 +238,9 @@ lerna-debug.log
 .DS_Store
 Thumbs.db
 
+# vercel
+.vercel
+
 # Archived files
 /archive
 
@@ -245,9 +248,7 @@ Thumbs.db
 *.rdb
 
 # Project
-/src/constants.js
-
-/files
+constants.json
 /uploads
 
 # Other
