@@ -15,9 +15,9 @@ from rest_framework_simplejwt.settings import api_settings as simplejwt_api_sett
 from rest_framework_simplejwt.utils import datetime_to_epoch
 from rest_framework_simplejwt.exceptions import TokenBackendError
 
-from SchoolManagementSystem import redis_client
+from core.redis import redis_client
 from root.models import User as UserModel
-from utils.exceptions import InvalidAuthenticationArguments
+from utils.py.exceptions import InvalidAuthenticationArguments
 
 if TYPE_CHECKING:
     from django.http.request import HttpRequest

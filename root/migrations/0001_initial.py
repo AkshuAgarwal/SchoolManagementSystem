@@ -3,7 +3,7 @@
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import utils.files
+import utils.py.files
 
 
 class Migration(migrations.Migration):
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('uploaded_at', models.DateTimeField(auto_created=True, auto_now_add=True, verbose_name='Uploaded at')),
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=utils.files.get_asset_directory_path, verbose_name='File')),
+                ('file', models.FileField(upload_to=utils.py.files.get_asset_directory_path, verbose_name='File')),
             ],
         ),
         migrations.CreateModel(
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('uploaded_at', models.DateTimeField(auto_created=True, auto_now_add=True, verbose_name='Uploaded at')),
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to=utils.files.get_asset_directory_path, verbose_name='Image')),
+                ('image', models.ImageField(upload_to=utils.py.files.get_asset_directory_path, verbose_name='Image')),
             ],
         ),
         migrations.CreateModel(

@@ -1,11 +1,14 @@
 from django.urls import path
 
-from .views import authenticate, unauthenticate, refresh_token, reset_password
+from .views import authenticate, unauthenticate
+from .views.token import refresh as token_refresh
+from .views.password import reset as password_reset, change as password_change
 
 
 urlpatterns = [
     path("authenticate/", authenticate.AuthViewSet.as_view(), name="authenticate"),
     path("unauthenticate/", unauthenticate.UnAuthViewSet.as_view(), name="unauthenticate"),
-    path("token/refresh/", refresh_token.RefreshTokenViewSet.as_view(), name="refresh_token"),
-    path("password/reset/", reset_password.ResetPasswordViewSet.as_view(), name="reset_password"),
+    path("token/refresh/", token_refresh.TokenRefreshViewSet.as_view(), name="token_refresh"),
+    path("password/reset/", password_reset.PasswordResetViewSet.as_view(), name="password_reset"),
+    path("password/change/", password_change.PasswordChangeViewSet.as_view(), name="password_change"),
 ]

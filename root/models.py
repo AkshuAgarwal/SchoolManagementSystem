@@ -9,7 +9,7 @@ from django.contrib.auth.models import AbstractBaseUser as _ABU, PermissionsMixi
 from django.utils.translation import gettext_lazy as _
 
 from .managers import UserManager
-from utils.files import get_asset_directory_path
+from utils.py.files import get_asset_directory_path
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet

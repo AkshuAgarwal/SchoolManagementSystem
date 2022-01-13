@@ -10,8 +10,8 @@ from django.core.validators import RegexValidator, EmailValidator
 from django.contrib.auth.base_user import BaseUserManager as _BUM
 from django.contrib.auth.password_validation import validate_password
 
-from utils.exceptions import AlreadyExists, MissingRequiredFields
-from utils.files import parse_data_scheme
+from utils.py.exceptions import AlreadyExists, MissingRequiredFields
+from utils.py.files import parse_data_scheme
 
 
 class UserManager(_BUM):

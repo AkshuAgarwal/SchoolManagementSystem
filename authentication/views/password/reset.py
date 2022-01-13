@@ -10,14 +10,14 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
 from root.models import User as UserModel
-from ..backend import PasswordResetTokenBackend
-from utils import http_responses as r
+from authentication.backend import PasswordResetTokenBackend
+from utils.py import http_responses as r
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-class ResetPasswordViewSet(APIView):
+class PasswordResetViewSet(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
 
@@ -43,12 +43,12 @@ class ResetPasswordViewSet(APIView):
         except UserModel.DoesNotExist:
             return r.HTTP404Response("No user found with the given credentials")
 
-        response = self.pwt_backend.create(user)
+        token_data = self.pwt_backend.create(user)
 
-        if isinstance(response, bool):
+        if isinstance(token_data, bool):
             return r.HTTP403Response("An unexpired token is already associated with the user")
 
-        token, generation_time, lifetime = response
+        token, generation_time, lifetime = token_data
 
         return Response(
             {
@@ -93,7 +93,9 @@ class ResetPasswordViewSet(APIView):
         elif validated is False:
             return r.HTTP400Response("Token does not match")
         else:  # validation successful
-            self.pwt_backend.delete(user.username)  # delete the token since it's no longer needed (and shouldn't be used more than once)
+            self.pwt_backend.delete(
+                user.username
+            )  # delete the token since it's no longer needed (and shouldn't be used more than once)
             try:
                 validate_password(new_password, user)
             except ValidationError as e:

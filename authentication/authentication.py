@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.authentication import CSRFCheck
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.settings import api_settings as simplejwt_settings
 
 if TYPE_CHECKING:
     from django.http.request import HttpRequest
@@ -37,7 +39,18 @@ class CSRFExemptAuthentication(JWTAuthentication):
             return None
 
         validated_token = self.get_validated_token(raw_token)
+        if not validated_token:
+            return None
         return self.get_user(validated_token), validated_token
+
+    def get_validated_token(self, raw_token):
+        for AuthToken in simplejwt_settings.AUTH_TOKEN_CLASSES:
+            try:
+                return AuthToken(raw_token)
+            except TokenError as e:
+                pass
+
+        return None
 
 
 class Authentication(CSRFExemptAuthentication):

@@ -6,7 +6,17 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SchoolManagementSystem.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+
+    __import__("dotenv").load_dotenv(".env")
+    __import__("django").setup()
+
+    from django.core.management.commands.runserver import Command as runserver
+
+    runserver.protocol = os.environ["DJANGO_PROTOCOL"]
+    runserver.default_addr = os.environ["DJANGO_HOSTNAME"]
+    runserver.default_port = os.environ["DJANGO_PORT"]
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -18,5 +28,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

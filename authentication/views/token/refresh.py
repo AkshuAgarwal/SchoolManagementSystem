@@ -10,13 +10,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import token_refresh
 
-from utils import http_responses as r
+from utils.py import http_responses as r
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-class RefreshTokenViewSet(APIView):
+class TokenRefreshViewSet(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
 
@@ -34,7 +34,7 @@ class RefreshTokenViewSet(APIView):
 
         _fakeresponse = token_refresh(_fakerequest)
         if _fakeresponse.status_code == 200:
-            return Response(
+            response = Response(
                 {
                     "status": "success",
                     "status_code": 201,
@@ -44,6 +44,16 @@ class RefreshTokenViewSet(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+            response.set_cookie(
+                key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+                value=_fakeresponse.data["access"],
+                expires=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
+                path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
+                secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
+                httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
+                samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+            )
+            return response
         elif _fakeresponse.status_code == 401:
             return r.HTTP401Response("Refresh token is invalid or expired")
         else:
