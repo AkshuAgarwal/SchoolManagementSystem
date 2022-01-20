@@ -8,7 +8,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer({
     reactStrictMode     : true,
     publicRuntimeConfig : {
-        BACKEND_BASE_URL : `${process.env.DJANGO_PROTOCOL}://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}`,
+        BACKEND_BASE_URL : `${process.env.DJANGO_PROTOCOL}://${process.env.DJANGO_HOSTNAME}:${process.env.DJANGO_PORT}/`,
+        FRONTEND_URL     : process.env.SITE_URL,
         SCHOOL_NAME      : constants['SCHOOL_NAME'],
         FOOTER_TEXT      : constants['FOOTER_TEXT'],
     }

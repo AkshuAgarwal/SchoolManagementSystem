@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
+import datetime
+
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
@@ -14,7 +19,7 @@ from authentication.backend import PasswordResetTokenBackend
 from utils.py import http_responses as r
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest
+    from rest_framework.request import Request
 
 
 class PasswordResetViewSet(APIView):
@@ -27,11 +32,39 @@ class PasswordResetViewSet(APIView):
         # Password reset token backend
         self.pwt_backend = PasswordResetTokenBackend()
 
-    def post(self, request: HttpRequest, format=None):
-        data = request.data
+    def get(self, request: Request, format=None):
+        username = request.query_params.get("username")
+        token = request.query_params.get("token")
 
-        username = data.get("username")
-        email_id = data.get("email_id")
+        if not username:
+            return r.HTTP400Response("Missing 'username' parameter")
+        if not token:
+            return r.HTTP400Response("Missing 'token' parameter")
+
+        validated = self.pwt_backend.validate(username, token)
+
+        if validated is None:
+            return r.HTTP400Response("Token expired or not found")
+        elif validated is False:
+            return r.HTTP400Response("Token does not match")
+        else:  # validation successful
+            self.pwt_backend.persist(username)
+            return Response(
+                {
+                    "status": "success",
+                    "status_code": status.HTTP_200_OK,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+    def post(self, request: Request, format=None):
+        username = request.data.get("username")
+        email_id = request.data.get("email_id")
+        redirect_link = request.data.get("redirect_link")
+        vars = request.data.get("vars", {})
+
+        if not redirect_link:
+            return r.HTTP400Response("Missing 'redirect_link'")
 
         try:
             if username:
@@ -48,31 +81,39 @@ class PasswordResetViewSet(APIView):
         if isinstance(token_data, bool):
             return r.HTTP403Response("An unexpired token is already associated with the user")
 
-        token, generation_time, lifetime = token_data
+        token, _, lifetime = token_data
+
+        html_message = render_to_string(
+            "resetpasswordemailtemplate.html",
+            {
+                "org_name": vars.get("org_name", ""),
+                "expire_time": int(lifetime.total_seconds()),
+                "copyright_year": datetime.datetime.now(),
+                "privacy_policy": vars.get("privacy_policy", ""),
+                "support_email": "support@example.com",
+                "site_url": vars.get("site_url", ""),
+                "redirect_link": f"{redirect_link}?username={user.username}&token={token}",
+            },
+        )
+        plain_message = strip_tags(html_message)
+        send_mail("Reset Password", plain_message, None, recipient_list=[user.email_id], html_message=html_message)
 
         return Response(
             {
                 "status": "success",
-                "status_code": 200,
+                "status_code": status.HTTP_200_OK,
                 "data": {
                     "username": user.username,
                     "email_id": user.email_id,
-                    "token": {
-                        "token": token,
-                        "lifetime": lifetime.seconds,
-                        "generated_at": generation_time.isoformat(),
-                    },
                 },
             },
             status=status.HTTP_200_OK,
         )
 
-    def patch(self, request: HttpRequest, format=None):
-        data = request.data
-
-        username = data.get("username")
-        token = data.get("token")
-        new_password = data.get("new_password")
+    def patch(self, request: Request, format=None):
+        username = request.data.get("username")
+        token = request.data.get("token")
+        new_password = request.data.get("new_password")
 
         if not username:
             return r.HTTP400Response("Missing username")
@@ -84,7 +125,7 @@ class PasswordResetViewSet(APIView):
         try:
             user: UserModel = UserModel.objects.get(username=username)
         except UserModel.DoesNotExist:
-            return r.HTTP400Response("No user found with the given username")
+            return r.HTTP404Response("No user found with the given username")
 
         validated = self.pwt_backend.validate(username=user.username, token=token)
 
@@ -106,7 +147,7 @@ class PasswordResetViewSet(APIView):
             return Response(
                 {
                     "status": "success",
-                    "status_code": 200,
+                    "status_code": status.HTTP_200_OK,
                 },
                 status=status.HTTP_200_OK,
             )
