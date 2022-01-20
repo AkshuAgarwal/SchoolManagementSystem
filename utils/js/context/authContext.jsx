@@ -108,7 +108,8 @@ export const AuthProvider = ({ children }) => {
                     <Backdrop open sx={{ color : '#fff' }}>
                         <CircularProgress disableShrink variant="indeterminate" color="inherit" thickness={5.0} />
                     </Backdrop>
-                ) : children}
+                ) : children
+            }
         </AuthContext.Provider>
     );
 };

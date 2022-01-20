@@ -16,18 +16,9 @@ import { getCookie as clientCookieGetter, setCookie as clientCookieSetter } from
 
 function MyApp({ Component, pageProps }) {
     const router = useRouter();
+
     const [ loading, setLoading ] = useState(false);
-    const [ mode, setMode ] = useState(pageProps.__darkModeEnabled ? 'dark' : 'light');
-
-    const colorMode = useMemo(() => ({
-        toggleColorMode: () => {
-            setMode(prevMode => (prevMode === 'light' ? 'dark' : 'light'));
-        }
-    }), []);
-
-    const _theme = useMemo(() => {
-        return mode === 'light' ? lightTheme : darkTheme;
-    }, [ mode ]);
+    const [ mode, setMode ] = useState(typeof pageProps.__darkModeEnabled === 'undefined' ? null : (pageProps.__darkModeEnabled ? 'dark' : 'light'));
 
     useEffect(() => {
         router.events.on('routeChangeStart', () => setLoading(true));
@@ -35,21 +26,26 @@ function MyApp({ Component, pageProps }) {
         router.events.on('routeChangeError', () => setLoading(false));
     }, []); // eslint-disable-line
 
+    const colorMode = useMemo(() => ({ toggleColorMode : () => { setMode(prevMode => (prevMode === 'light' ? 'dark' : 'light')); } }), []);
+    const _theme = useMemo(() => { return mode === 'dark' ? darkTheme : lightTheme; }, [ mode ]);
+
     useEffect(() => {
-        if (pageProps.__darkModeEnabled === undefined) {
+        if (typeof pageProps.__darkModeEnabled === 'undefined') {
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                clientCookieSetter('__darkMode', 't', { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
                 pageProps.__darkModeEnabled = true;
+                setMode('dark');
             } else {
-                clientCookieSetter('__darkMode', 'f', { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
                 pageProps.__darkModeEnabled = false;
+                setMode('light');
             }
             router.reload();
         }
     }, []); // eslint-disable-line
 
     useEffect(() => {
-        clientCookieSetter('__darkMode', (mode === 'dark' ? 't' : 'f'), { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
+        if (mode) {
+            clientCookieSetter('__darkMode', (mode === 'dark' ? 't' : 'f'), { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
+        }
     }, [ mode ]); // eslint-disable-line
 
     return (

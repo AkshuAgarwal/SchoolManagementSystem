@@ -36,8 +36,20 @@ class UnAuthViewSet(APIView):
 
         response = Response(status=status.HTTP_205_RESET_CONTENT)
 
-        response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
-        response.delete_cookie(settings.SIMPLE_JWT["REFRESH_COOKIE"])
-        response.delete_cookie(settings.CSRF_COOKIE_NAME)
+        response.delete_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
+            samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+        )
+        response.delete_cookie(
+            key=settings.SIMPLE_JWT["REFRESH_COOKIE"],
+            path=settings.SIMPLE_JWT["REFRESH_COOKIE_PATH"],
+            samesite=settings.SIMPLE_JWT["REFRESH_COOKIE_SAMESITE"],
+        )
+        response.delete_cookie(
+            key=settings.CSRF_COOKIE_NAME,
+            path=settings.CSRF_COOKIE_PATH,
+            samesite=settings.CSRF_COOKIE_SAMESITE,
+        )
 
         return response
