@@ -1,21 +1,22 @@
 import '../styles/globals.scss';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-import Head from 'next/head';
-import App from 'next/app';
-import { useRouter } from 'next/router';
-import { Backdrop, CircularProgress, CssBaseline, LinearProgress, ThemeProvider } from '@mui/material';
 
-import { lightTheme, darkTheme } from '../utils/js/theme';
-import { getCookie as clientCookieGetter, setCookie as clientCookieSetter } from '../utils/js/utils';
-import { AuthProvider, ColorModeContext } from '../utils/js/context';
+import App from 'next/app';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+
+import { Backdrop, CircularProgress, CssBaseline, LinearProgress } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+
 import { Navbar, Footer } from '../components';
+import { lightTheme, darkTheme } from '../utils/js/theme';
+import { AuthProvider, ColorModeContext } from '../utils/js/context';
+import { getCookie as clientCookieGetter, setCookie as clientCookieSetter } from '../utils/js/utils';
 
 function MyApp({ Component, pageProps }) {
     const router = useRouter();
     const [ loading, setLoading ] = useState(false);
-    const [ , setCookie ] = useCookies([]);
     const [ mode, setMode ] = useState(pageProps.__darkModeEnabled ? 'dark' : 'light');
 
     const colorMode = useMemo(() => ({
@@ -37,10 +38,10 @@ function MyApp({ Component, pageProps }) {
     useEffect(() => {
         if (pageProps.__darkModeEnabled === undefined) {
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                setCookie('__darkMode', 't', { expires : new Date(Date.now() + (365*24*60*60*1000)) });
+                clientCookieSetter('__darkMode', 't', { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
                 pageProps.__darkModeEnabled = true;
             } else {
-                setCookie('__darkMode', 'f', { expires : new Date(Date.now() + (365*24*60*60*1000)) });
+                clientCookieSetter('__darkMode', 'f', { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
                 pageProps.__darkModeEnabled = false;
             }
             router.reload();
@@ -48,7 +49,7 @@ function MyApp({ Component, pageProps }) {
     }, []); // eslint-disable-line
 
     useEffect(() => {
-        setCookie('__darkMode', (mode === 'dark' ? 't' : 'f'), { expires : new Date(Date.now() + (365*24*60*60*1000)) });
+        clientCookieSetter('__darkMode', (mode === 'dark' ? 't' : 'f'), { path : '/', expires : new Date(Date.now() + (365*24*60*60*1000)), samesite : 'lax' });
     }, [ mode ]); // eslint-disable-line
 
     return (

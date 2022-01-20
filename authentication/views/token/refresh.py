@@ -13,14 +13,14 @@ from rest_framework_simplejwt.views import token_refresh
 from utils.py import http_responses as r
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest
+    from rest_framework.request import Request
 
 
 class TokenRefreshViewSet(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
 
-    def post(self, request: HttpRequest, format=None) -> Response:
+    def post(self, request: Request, format=None) -> Response:
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT["REFRESH_COOKIE"])
         if not refresh_token:
             refresh_token = request.data.get("refresh_token")
@@ -37,7 +37,7 @@ class TokenRefreshViewSet(APIView):
             response = Response(
                 {
                     "status": "success",
-                    "status_code": 201,
+                    "status_code": status.HTTP_201_CREATED,
                     "data": {
                         "access_token": _fakeresponse.data["access"],
                     },

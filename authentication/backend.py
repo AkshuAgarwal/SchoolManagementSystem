@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Optional, Tuple, Union, overload, TYPE_CHECKING
 
 import pytz
-import contextlib
 from uuid import uuid4
 from datetime import datetime, timedelta
 
@@ -140,7 +139,7 @@ class PasswordResetTokenBackend:
         """
 
         token, generation_time, lifetime = self.encode(user)
-        key = f"passwordresettokenbackend_{user.username}"
+        key = f"django_passwordresettokenbackend_{user.username}"
 
         response = redis_client.set(key, token, ex=lifetime, nx=True)
 
@@ -157,7 +156,7 @@ class PasswordResetTokenBackend:
             (NoneType) None: Token not found
         """
 
-        key = f"passwordresettokenbackend_{username}"
+        key = f"django_passwordresettokenbackend_{username}"
 
         response = redis_client.get(key)
 
@@ -174,7 +173,7 @@ class PasswordResetTokenBackend:
             (bool) False: No token associated with the given username
         """
 
-        key = f"passwordresettokenbackend_{username}"
+        key = f"django_passwordresettokenbackend_{username}"
 
         response = redis_client.delete(key)
 
@@ -187,7 +186,6 @@ class PasswordResetTokenBackend:
         """Validates a token by searching any token associated with the user in cache and if
         found, matching with the given token.
 
-
         Returns:
             (bool) True: Validation successful
             (bool) False: Given token does not match the token associated with the user
@@ -198,13 +196,25 @@ class PasswordResetTokenBackend:
             either token was never created or it is expired.
         """
 
-        key = f"passwordresettokenbackend_{username}"
+        key = f"django_passwordresettokenbackend_{username}"
 
-        with contextlib.suppress(AttributeError):  # try to convert bytes to string, or just continue if None
-            response = self.get(username)
+        response = self.get(username)
 
         if response is None:
             return None
         elif response != token:
             return False
         return True
+
+    def persist(self, username: str) -> None:
+        """Persists a token associated with a username.
+
+        Returns:
+            (bool) True: Key has been persisted
+            (bool) False: Key does not exist or does not have an associated timeout
+        """
+
+        key = f"django_passwordresettokenbackend_{username}"
+
+        response = redis_client.persist(key)
+        return response

@@ -6,7 +6,7 @@ def HTTP400Response(message: str = None) -> Response:
     return Response(
         {
             "status": "error",
-            "status_code": 400,
+            "status_code": s.HTTP_400_BAD_REQUEST,
             "error": {
                 "error_type": "Bad Request",
                 "error_message": message or "Invalid data passed",
@@ -20,7 +20,7 @@ def HTTP401Response(message: str = None) -> Response:
     return Response(
         {
             "status": "error",
-            "status_code": 401,
+            "status_code": s.HTTP_401_UNAUTHORIZED,
             "error": {
                 "error_type": "Unauthorized",
                 "error_message": message or "Unauthorized",
@@ -34,7 +34,7 @@ def HTTP403Response(message: str = None) -> Response:
     return Response(
         {
             "status": "error",
-            "status_code": 403,
+            "status_code": s.HTTP_403_FORBIDDEN,
             "error": {
                 "error_type": "Forbidden",
                 "error_message": message or "No Access",
@@ -48,7 +48,7 @@ def HTTP404Response(message: str = None) -> Response:
     return Response(
         {
             "status": "error",
-            "status_code": 404,
+            "status_code": s.HTTP_404_NOT_FOUND,
             "error": {
                 "error_type": "NotFound",
                 "error_message": message or "Requested data not found",
@@ -62,7 +62,7 @@ def HTTP500Response(message: str = None) -> Response:
     return Response(
         {
             "status": "error",
-            "status_code": 404,
+            "status_code": s.HTTP_500_INTERNAL_SERVER_ERROR,
             "error": {
                 "error_type": "InternalServerError",
                 "error_message": message or "Some Error Occured. Please try again later",
@@ -76,7 +76,7 @@ def HTTP502Response(message: str = None) -> Response:
     return Response(
         {
             "status": "error",
-            "status_code": 404,
+            "status_code": s.HTTP_502_BAD_GATEWAY,
             "error": {
                 "error_type": "BadGateway",
                 "error_message": message or "Some error occured while preparing response. Please try again later",

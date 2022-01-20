@@ -18,9 +18,11 @@ export function setCookie(name, value, opts) {
     if (opts.path) header += '; path=' + opts.path;
     if (opts.domain) header += '; domain=' + opts.domain;
     if (opts.maxAge) header += '; max-age=' + opts.maxAge;
-    if (opts.expires) header += '; expires=' + opts.expire.toUTCString();
+    if (opts.expires) header += '; expires=' + opts.expires.toUTCString();
     if (opts.secure) header += '; secure';
     if (opts.samesite) header += '; samesite=' + (opts.samesite === true ? 'strict' : opts.samesite.toLowerCase());
 
     document.cookie = header;
 }
+
+export const sleep = sec => { return new Promise(resolve => { setTimeout(resolve, (sec * 1000)); }); };

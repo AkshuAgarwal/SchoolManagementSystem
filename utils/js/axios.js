@@ -12,6 +12,4 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 const axiosInstance = axios.create();
 
-// axiosInstance.interceptors.request.use();
-
 export default axiosInstance;

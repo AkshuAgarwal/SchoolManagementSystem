@@ -16,7 +16,7 @@ from ..authentication import CSRFExemptAuthentication
 from utils.py import http_responses as r
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest
+    from rest_framework.request import Request
     from root.models import User as UserModel
 
 
@@ -34,7 +34,7 @@ class AuthViewSet(APIView):
     authentication_classes = [CSRFExemptAuthentication]
     permission_classes = [AllowAny]
 
-    def get(self, request: HttpRequest, format=None) -> Response:
+    def get(self, request: Request, format=None) -> Response:
         if request.user.is_authenticated:
             outstanding_token = OutstandingToken.objects.filter(user=request.user).order_by("-created_at")[0]
             refresh = RefreshToken(outstanding_token.token)
@@ -57,7 +57,7 @@ class AuthViewSet(APIView):
             return Response(
                 {
                     "status": "success",
-                    "status_code": 200,
+                    "status_code": status.HTTP_200_OK,
                     "data": {
                         "id": request.user.id,
                         "username": request.user.username,
@@ -77,15 +77,13 @@ class AuthViewSet(APIView):
         else:
             return r.HTTP401Response()
 
-    def post(self, request: HttpRequest, format=None) -> Response:
+    def post(self, request: Request, format=None) -> Response:
         if TYPE_CHECKING:
             user: UserModel
 
-        data = request.data
-
-        username = data.get("username")
-        email_id = data.get("email_id")
-        password = data.get("password")
+        username = request.data.get("username")
+        email_id = request.data.get("email_id")
+        password = request.data.get("password")
 
         if not password:
             return r.HTTP400Response("Missing 'password'")
@@ -127,7 +125,7 @@ class AuthViewSet(APIView):
 
         _response.data = {
             "status": "success",
-            "status_code": 200,
+            "status_code": status.HTTP_200_OK,
             "data": {
                 "id": user.id,
                 "username": user.username,

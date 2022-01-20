@@ -17,19 +17,18 @@ from authentication.authentication import Authentication
 from utils.py import http_responses as r
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest
+    from rest_framework.request import Request
 
 
 class PasswordChangeViewSet(APIView):
     authentication_classes = [Authentication]
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request: HttpRequest, format=None):
+    def patch(self, request: Request, format=None):
         user: UserModel = request.user
-        data = request.data
 
-        current_password = data.get("current_password")
-        new_password = data.get("new_password")
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
 
         missing = ""
         if not current_password:
@@ -54,7 +53,7 @@ class PasswordChangeViewSet(APIView):
 
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT["REFRESH_COOKIE"])
         if not refresh_token:
-            refresh_token = data.get("refresh_token")
+            refresh_token = request.data.get("refresh_token")
 
         if not refresh_token:
             return r.HTTP400Response("Missing 'refresh_token'")
@@ -71,7 +70,7 @@ class PasswordChangeViewSet(APIView):
         response = Response(
             {
                 "status": "success",
-                "status_code": 205,
+                "status_code": status.HTTP_205_RESET_CONTENT,
                 "data": {
                     "username": user.username,
                     "email": user.email_id,

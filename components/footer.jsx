@@ -1,10 +1,17 @@
-import getConfig from 'next/config';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import getConfig from 'next/config';
 import { AppBar, Container, Stack, Typography } from '@mui/material';
 
 const { publicRuntimeConfig } = getConfig();
 
 export default function Footer() {
+    const [ host, setHost ] = useState('');
+
+    useEffect(() => {
+        setHost(window.location.host);
+    }, []);
+
     return (
         <AppBar component="footer" position="relative" sx={{ backgroundImage : 'initial', marginTop : 'auto' }}>
             <Container sx={{ display : 'flex', flexDirection : 'column', alignItems : 'center', padding : '20px' }}>
@@ -32,7 +39,7 @@ export default function Footer() {
                 </Container>
                 <Typography variant="body1">
                     &copy; {new Date().getFullYear()}{' '}
-                    <Link href="/"><a>{typeof window !== 'undefined' ? window.location.host : ''}</a></Link>
+                    <Link href="/"><a>{host}</a></Link>
                 </Typography>
             </Container>
         </AppBar>
