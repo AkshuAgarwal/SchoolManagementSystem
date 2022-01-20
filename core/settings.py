@@ -11,22 +11,28 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
 
 
 load_dotenv("./.env")
+with open("./constants.json") as f:
+    _CONSTANTS = json.load(f)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 _TEMP_DIR = BASE_DIR / "tmp"
+_TEMPLATES_DIR = BASE_DIR / "templates"
 _LOGS_DIR = _TEMP_DIR / "logs"
 _TEMP_FILES_DIR = _TEMP_DIR / "files"
 _MEDIA_FILES_DIR = BASE_DIR / "uploads"
 
 _TEMP_DIR.mkdir(exist_ok=True)
+_TEMPLATES_DIR.mkdir(exist_ok=True)
 _LOGS_DIR.mkdir(exist_ok=True)
 _TEMP_FILES_DIR.mkdir(exist_ok=True)
 _MEDIA_FILES_DIR.mkdir(exist_ok=True)
@@ -75,6 +81,28 @@ ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 
 
+# Templates
+# https://docs.djangoproject.com/en/4.0/topics/templates/
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            _TEMPLATES_DIR,
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -86,7 +114,7 @@ DATABASES = {
         "HOST": os.environ["DB_HOST"],
         "PORT": int(os.environ["DB_PORT"]),
         "NAME": os.environ["DB_NAME"],
-        "TIME_ZONE": os.environ["TIME_ZONE"],
+        "TIME_ZONE": _CONSTANTS["TIME_ZONE"],
         "TEST": {
             "NAME": os.environ["TEST_DB_NAME"],
         },
@@ -136,7 +164,24 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
 
-PASSWORD_RESET_TIMEOUT = 300
+PASSWORD_RESET_TIMEOUT = _CONSTANTS["PASSWORD_RESET_TIMEOUT"]
+
+
+# Email
+# https://docs.djangoproject.com/en/4.0/topics/email/
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = os.environ["EMAIL_CONNECTION"].lower() == "tls"
+EMAIL_USE_SSL = os.environ["EMAIL_CONNECTION"].lower() == "ssl"
+
+DEFAULT_FROM_EMAIL = os.environ["FROM_EMAIL"]
+
+EMAIL_HOST = os.environ["EMAIL_HOST"]
+EMAIL_PORT = int(os.environ["EMAIL_PORT"])
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+EMAIL_SUBJECT_PREFIX = os.environ["EMAIL_SUBJECT_PREFIX"]
+EMAIL_USE_LOCALTIME = True
 
 
 # Internationalization
@@ -149,7 +194,7 @@ USE_I18N = False
 USE_L10N = False
 
 USE_TZ = True
-TIME_ZONE = os.environ["TIME_ZONE"]
+TIME_ZONE = _CONSTANTS["TIME_ZONE"]
 
 # fmt: off
 DATE_INPUT_FORMATS = [
@@ -205,7 +250,8 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF Configuration
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_NAME = "X-CSRF-Token"
-CSRF_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
 
 
 # RestFramework Configuration
@@ -264,14 +310,14 @@ SIMPLE_JWT = {
     # custom
     "AUTH_COOKIE": "X-Authorization-Token",  # Cookie name. Enables cookies if value is set.
     "AUTH_COOKIE_DOMAIN": None,  # A string like "example.com", or None for standard domain cookie.
-    "AUTH_COOKIE_SECURE": False,  # Whether the auth cookies should be secure (https:// only).
+    "AUTH_COOKIE_SECURE": True,  # Whether the auth cookies should be secure (https:// only).
     "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag. It's not fetch by javascript.
     "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
-    "AUTH_COOKIE_SAMESITE": "Strict",  # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or None to disable the flag.
+    "AUTH_COOKIE_SAMESITE": "None",  # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or 'None' to disable the flag; or None (python) to use the default (Lax)
     "REFRESH_COOKIE": "X-Refresh-Token",
     "REFRESH_COOKIE_DOMAIN": None,
-    "REFRESH_COOKIE_SECURE": False,
+    "REFRESH_COOKIE_SECURE": True,
     "REFRESH_COOKIE_HTTP_ONLY": True,
     "REFRESH_COOKIE_PATH": "/",
-    "REFRESH_COOKIE_SAMESITE": "Strict",
+    "REFRESH_COOKIE_SAMESITE": "None",
 }
