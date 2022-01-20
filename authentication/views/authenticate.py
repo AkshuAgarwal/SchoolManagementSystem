@@ -4,6 +4,7 @@ from typing import TypedDict, TYPE_CHECKING
 from django.conf import settings
 from django.middleware import csrf
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
 
 from rest_framework import status, HTTP_HEADER_ENCODING
 from rest_framework.views import APIView
@@ -140,4 +141,7 @@ class AuthViewSet(APIView):
         }
 
         _response.status_code = status.HTTP_200_OK
+
+        update_last_login(None, user)
+
         return _response
