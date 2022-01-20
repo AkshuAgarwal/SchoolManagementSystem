@@ -4,12 +4,30 @@ import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = publicRuntimeConfig.BACKEND_BASE_URL;
 axios.defaults.headers.common['Accept'] = 'application/json';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
-axios.defaults.xsrfCookieName = 'X-CSRF-Token';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
-const axiosInstance = axios.create();
+const axiosInstance = axios.create({
+    baseURL        : publicRuntimeConfig.BACKEND_BASE_URL,
+    xsrfCookieName : 'X-CSRF-Token',
+    xsrfHeaderName : 'X-CSRFToken'
+});
+
+axiosInstance.interceptors.response.use(response => response, error => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest.__isRetryRequest) {
+        originalRequest.__isRetryRequest = true;
+
+        return new Promise((resolve, reject) => {
+            axiosInstance.post('auth/token/refresh/').then(() => {
+                resolve(axiosInstance(originalRequest));
+            }).catch(() => {
+                reject(originalRequest);
+            });
+        });
+    }
+    return new Promise.reject(error);
+});
 
 export default axiosInstance;
