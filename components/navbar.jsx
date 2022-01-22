@@ -1,13 +1,16 @@
 import { useContext, useState } from 'react';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
-import { AppBar, Avatar, Button, IconButton, Menu, MenuList, Stack, Switch,  Toolbar, Typography } from '@mui/material';
-import { ColorModeContext, AuthContext } from '../utils/js/context';
+
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { useTheme, styled } from '@mui/material/styles';
+import { AppBar, Avatar, Button, Collapse, IconButton, Menu, MenuList, Stack, Switch,  Toolbar, Typography } from '@mui/material';
+
+import { ColorModeContext, AuthContext } from '../utils/js/context';
 
 const { publicRuntimeConfig } = getConfig();
 
-const MaterialUISwitch = styled(Switch)(({ theme }) => ({
+const ThemeToggleSwitch = styled(Switch)(({ theme }) => ({
     width                     : 62,
     height                    : 34,
     padding                   : 7,
@@ -60,73 +63,103 @@ export default function Navbar() {
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);
     const authContext = useContext(AuthContext);
-    const [ anchorElUser, setAnchorElUser ] = useState(null);
 
+    const [ anchorElUser, setAnchorElUser ] = useState(null);
     const handleOpenUserMenu = event => setAnchorElUser(event.currentTarget);
     const handleCloseUserMenu = () => setAnchorElUser(null);
 
+    const [ navMenuOpened, setNavMenuOpened ] = useState(false);
+    const handleNavMenu = () => setNavMenuOpened(!navMenuOpened);
+
+
+    const NavButtons = () => {
+        return (
+            <>
+                {
+                    authContext.loggedIn ? (
+                        <>
+                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/'); }}>Home</Button> : null}
+                            {!router.pathname.startsWith('/dashboard') ? <Button variant="contained" color="secondary" onClick={() => { router.push('/dashboard'); }}>Dashboard</Button> : null}
+                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/about'); }}>About</Button> : null}
+                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/contact'); }}>Contact Us</Button> : null}
+                        </>
+                    ) : (
+                        <>
+                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/'); }}>Home</Button> : null}
+                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/about'); }}>About</Button> : null}
+                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/contact'); }}>Contact Us</Button> : null}
+                            {router.pathname !== '/login' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/login'); }}>Login</Button> : null}
+                        </>
+                    )
+                }
+            </>
+        );
+    };
+
     return (
         <AppBar position="sticky" sx={{ backgroundImage : 'initial' }}>
-            <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow : 1 }}>
-                    {publicRuntimeConfig.SCHOOL_NAME}
-                </Typography>
-                <Stack spacing={1.5} direction="row" >
-                    <MaterialUISwitch onClick={colorMode.toggleColorMode} checked={theme.palette.mode === 'dark' ? true : false} />
-                    {
-                        authContext.loggedIn ? (
-                            <>
-                                {
-                                    router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/'); }}>Home</Button> : null
-                                }
-                                <Button variant="contained" color="secondary" onClick={() => { router.push('/dashboard'); }}>Dashboard</Button>
-                                <Button variant="contained" color="secondary" onClick={() => { router.push('/about'); }}>About</Button>
-                                <Button variant="contained" color="secondary" onClick={() => { router.push('/contact'); }}>Contact Us</Button>
-                                <IconButton onClick={handleOpenUserMenu} sx={{ p : 0 }}>
-                                    {
-                                        authContext.userData.avatar ? (
-                                            <Avatar
-                                                alt={`${authContext.userData.first_name}${authContext.userData.last_name ? ` ${authContext.userData.last_name}` : ''}'s Avatar`}
-                                                src={authContext.userData.avatar}
-                                            />
-                                        ) : (
-                                            <Avatar alt={`${authContext.userData.first_name}${authContext.userData.last_name ? ` ${authContext.userData.last_name}` : ''}'s Avatar`}>
-                                                {`${authContext.userData.first_name.charAt(0)}${authContext.userData.last_name ? `${authContext.userData.last_name.charAt(0)}` : ''}`}
-                                            </Avatar>
-                                        )
-                                    }
-                                </IconButton>
-                                <Menu
-                                    sx={{ mt : '45px' }}
-                                    anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
-                                    transformOrigin={{ vertical : 'top', horizontal : 'right' }}
-                                    anchorEl={anchorElUser}
-                                    open={Boolean(anchorElUser)}
-                                    onClose={handleCloseUserMenu}
-                                >
-                                    <MenuList sx={{ 'padding' : '0 10px' }}>
-                                        <Stack spacing={1} direction="column">
-                                            <Typography variant="subtitle1" component="p">Hi, {authContext.userData.username}</Typography>
-                                            <Button onClick={() => { router.push('/profile'); handleCloseUserMenu(); }} variant="contained" color="secondary">
+            <Toolbar sx={{ display : 'flex', flexDirection : 'column' }}>
+                <Toolbar sx={{ flexDirection : 'row', width : '100%' }} disableGutters>
+                    <IconButton onClick={handleNavMenu} sx={{ p : 0, display : { xs : 'flex', sm : 'none' } }}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" component="div" sx={{ display : 'flex', flexGrow : 1, margin : '5px 10px' }}>
+                        {publicRuntimeConfig.SCHOOL_NAME}
+                    </Typography>
+                    <Stack spacing={1.5} direction="row" sx={{ alignItems : 'center' }}>
+                        <ThemeToggleSwitch onClick={colorMode.toggleColorMode} checked={theme.palette.mode === 'dark' ? true : false} />
+                        <Stack spacing={1.5} direction="row" sx={{ display : { xs : 'none', sm : 'flex' } }}>
+                            <NavButtons />
+                        </Stack>
+                        {
+                            authContext.loggedIn ? (
+                                <>
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p : 0 }}>
+                                        {
+                                            authContext.userData.avatar ? (
+                                                <Avatar
+                                                    alt={`${authContext.userData.first_name}${authContext.userData.last_name ? ` ${authContext.userData.last_name}` : ''}'s Avatar`}
+                                                    src={authContext.userData.avatar}
+                                                />
+                                            ) : (
+                                                <Avatar alt={`${authContext.userData.first_name}${authContext.userData.last_name ? ` ${authContext.userData.last_name}` : ''}'s Avatar`}>
+                                                    {`${authContext.userData.first_name.charAt(0)}${authContext.userData.last_name ? `${authContext.userData.last_name.charAt(0)}` : ''}`}
+                                                </Avatar>
+                                            )
+                                        }
+                                    </IconButton>
+                                    <Menu
+                                        sx={{ mt : '45px' }}
+                                        anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
+                                        transformOrigin={{ vertical : 'top', horizontal : 'right' }}
+                                        anchorEl={anchorElUser}
+                                        open={Boolean(anchorElUser)}
+                                        onClose={handleCloseUserMenu}
+                                    >
+                                        <MenuList sx={{ 'padding' : '0 10px' }}>
+                                            <Stack spacing={1} direction="column">
+                                                <Typography variant="subtitle1" component="p">Hi, {authContext.userData.username}</Typography>
+                                                <Button onClick={() => { router.push('/profile'); handleCloseUserMenu(); }} variant="contained" color="secondary">
                                                 Profile
-                                            </Button>
-                                            <Button onClick={() => { router.push('/logout'); handleCloseUserMenu(); }} variant="contained" color="secondary">
+                                                </Button>
+                                                <Button onClick={() => { router.push('/logout'); handleCloseUserMenu(); }} variant="contained" color="secondary">
                                                 Logout
-                                            </Button>
-                                        </Stack>
-                                    </MenuList>
-                                </Menu>
-                            </>
-                        ) : (
-                            <>
-                                {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/'); }}>Home</Button> : null}
-                                {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/about'); }}>About</Button> : null}
-                                {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/contact'); }}>Contact Us</Button> : null}
-                                {router.pathname !== '/login' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/login'); }}>Login</Button> : null}
-                            </>
-                        )
-                    }
-                </Stack>
+                                                </Button>
+                                            </Stack>
+                                        </MenuList>
+                                    </Menu>
+                                </>
+                            ) : null
+                        }
+                    </Stack>
+                </Toolbar>
+                <Toolbar sx={{ display : { xs : 'flex', sm : 'none' }, minHeight : 0, width : '100%', justifyContent : 'center' }} disableGutters>
+                    <Collapse in={Boolean(navMenuOpened)}>
+                        <Stack direction="row" sx={{ padding : '15px', flexWrap : 'wrap', justifyContent : 'center', gap : '10px' }}>
+                            <NavButtons />
+                        </Stack>
+                    </Collapse>
+                </Toolbar>
             </Toolbar>
         </AppBar>
     );
