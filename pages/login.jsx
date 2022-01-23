@@ -26,7 +26,7 @@ export default function Login() {
     const [ loading, setLoading ] = useState(false);
 
     if (authContext.loggedIn) {
-        router.push('/dashboard');
+        router.replace('/dashboard');
     }
 
     const handleSubmit = e => {
@@ -53,9 +53,9 @@ export default function Login() {
 
         axios.post('auth/authenticate/', data).then(response => {
             if (response.status === 200) {
-                setLoading(false);
                 authContext.setLoggedIn(true);
                 authContext.setUserData(response.data.data);
+                setLoading(false);
                 router.push('/dashboard');
             }
         }).catch(e => {
