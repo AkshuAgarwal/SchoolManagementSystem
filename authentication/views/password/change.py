@@ -24,7 +24,7 @@ class PasswordChangeViewSet(APIView):
     authentication_classes = [Authentication]
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request: Request, format=None):
+    def patch(self, request: Request, format=None) -> Response:
         user: UserModel = request.user
 
         current_password = request.data.get("current_password")

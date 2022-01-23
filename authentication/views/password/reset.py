@@ -32,7 +32,7 @@ class PasswordResetViewSet(APIView):
         # Password reset token backend
         self.pwt_backend = PasswordResetTokenBackend()
 
-    def get(self, request: Request, format=None):
+    def get(self, request: Request, format=None) -> Response:
         username = request.query_params.get("username")
         token = request.query_params.get("token")
 
@@ -57,7 +57,7 @@ class PasswordResetViewSet(APIView):
                 status=status.HTTP_200_OK,
             )
 
-    def post(self, request: Request, format=None):
+    def post(self, request: Request, format=None) -> Response:
         username = request.data.get("username")
         email_id = request.data.get("email_id")
         redirect_link = request.data.get("redirect_link")
@@ -110,7 +110,7 @@ class PasswordResetViewSet(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def patch(self, request: Request, format=None):
+    def patch(self, request: Request, format=None) -> Response:
         username = request.data.get("username")
         token = request.data.get("token")
         new_password = request.data.get("new_password")

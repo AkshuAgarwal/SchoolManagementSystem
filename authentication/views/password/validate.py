@@ -20,7 +20,7 @@ class PasswordValidationViewSet(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
 
-    def post(self, request: Request, format=None):
+    def post(self, request: Request, format=None) -> Response:
         password = request.data.get("password")
         username = request.data.get("username", None)
 
