@@ -86,7 +86,7 @@ export default function Login() {
                     backgroundColor : 'background.paper'
                 }}>
                     <Typography variant="h5">Login</Typography>
-                    <div style={{ marginTop : '30px' }}>
+                    <Container sx={{ marginTop : '30px', maxWidth : { xs : '100%', sm : '80%', md : '60%', lg : '40%' } }}>
                         <Collapse in={showAlert}>
                             <Alert severity="error" onClose={() => { setShowAlert(false); }} sx={{ width : '100%', marginBottom : '8px' }}>
                                 Invalid Username/Email ID or Password
@@ -121,7 +121,7 @@ export default function Login() {
                             <Typography variant="body1" sx={{ marginTop : '8px', marginBottom : '4px' }}><Link href="/reset-password"><a>Forgot Password?</a></Link></Typography>
                             <LoadingButton type="submit" variant="contained" loading={loading} sx={{ marginTop : '16px' }}>Submit</LoadingButton>
                         </form>
-                    </div>
+                    </Container>
                 </Box>
             </Container>
         </>
