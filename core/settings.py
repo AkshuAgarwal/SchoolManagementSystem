@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "root.apps.RootConfig",
     "authentication.apps.AuthenticationConfig",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [

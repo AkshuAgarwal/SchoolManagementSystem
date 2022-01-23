@@ -1,9 +1,8 @@
 from django.urls import path
 
-from .routes import contact, timetable
+from .views import contact
 
 
 urlpatterns = [
-    path("contact/", contact.ContactMessagesView.as_view()),
-    path("timetable/", timetable.TimeTableView.as_view()),
+    path('contact/', contact.ContactViewSet.as_view(), name="contact"),
 ]
