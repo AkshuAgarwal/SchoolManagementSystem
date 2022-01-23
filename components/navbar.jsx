@@ -73,22 +73,24 @@ export default function Navbar() {
 
 
     const NavButtons = () => {
+        const closeNavMenu = () => { navMenuOpened ? handleNavMenu() : null; };
+
         return (
             <>
                 {
                     authContext.loggedIn ? (
                         <>
-                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/'); }}>Home</Button> : null}
-                            {!router.pathname.startsWith('/dashboard') ? <Button variant="contained" color="secondary" onClick={() => { router.push('/dashboard'); }}>Dashboard</Button> : null}
-                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/about'); }}>About</Button> : null}
-                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/contact'); }}>Contact Us</Button> : null}
+                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
+                            {!router.pathname.startsWith('/dashboard') ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/dashboard'); }}>Dashboard</Button> : null}
+                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
+                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
                         </>
                     ) : (
                         <>
-                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/'); }}>Home</Button> : null}
-                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/about'); }}>About</Button> : null}
-                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/contact'); }}>Contact Us</Button> : null}
-                            {router.pathname !== '/login' ? <Button variant="contained" color="secondary" onClick={() => { router.push('/login'); }}>Login</Button> : null}
+                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
+                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
+                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
+                            {router.pathname !== '/login' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/login'); }}>Login</Button> : null}
                         </>
                     )
                 }
@@ -139,10 +141,10 @@ export default function Navbar() {
                                         <MenuList sx={{ 'padding' : '0 10px' }}>
                                             <Stack spacing={1} direction="column">
                                                 <Typography variant="subtitle1" component="p">Hi, {authContext.userData.username}</Typography>
-                                                <Button onClick={() => { router.push('/profile'); handleCloseUserMenu(); }} variant="contained" color="secondary">
+                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/profile'); }} variant="contained" color="secondary">
                                                 Profile
                                                 </Button>
-                                                <Button onClick={() => { router.push('/logout'); handleCloseUserMenu(); }} variant="contained" color="secondary">
+                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/logout'); }} variant="contained" color="secondary">
                                                 Logout
                                                 </Button>
                                             </Stack>
