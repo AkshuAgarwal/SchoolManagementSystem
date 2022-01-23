@@ -80,17 +80,17 @@ export default function Navbar() {
                 {
                     authContext.loggedIn ? (
                         <>
-                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
-                            {!router.pathname.startsWith('/dashboard') ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/dashboard'); }}>Dashboard</Button> : null}
-                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
-                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
+                            {router.pathname !== '/' ? <Button onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
+                            {!router.pathname.startsWith('/dashboard') ? <Button onClick={() => { closeNavMenu(); router.push('/dashboard'); }}>Dashboard</Button> : null}
+                            {router.pathname !== '/about' ? <Button onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
+                            {router.pathname !== '/contact' ? <Button onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
                         </>
                     ) : (
                         <>
-                            {router.pathname !== '/' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
-                            {router.pathname !== '/about' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
-                            {router.pathname !== '/contact' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
-                            {router.pathname !== '/login' ? <Button variant="contained" color="secondary" onClick={() => { closeNavMenu(); router.push('/login'); }}>Login</Button> : null}
+                            {router.pathname !== '/' ? <Button onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
+                            {router.pathname !== '/about' ? <Button onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
+                            {router.pathname !== '/contact' ? <Button onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
+                            {router.pathname !== '/login' ? <Button onClick={() => { closeNavMenu(); router.push('/login'); }}>Login</Button> : null}
                         </>
                     )
                 }
@@ -141,10 +141,10 @@ export default function Navbar() {
                                         <MenuList sx={{ 'padding' : '0 10px' }}>
                                             <Stack spacing={1} direction="column">
                                                 <Typography variant="subtitle1" component="p">Hi, {authContext.userData.username}</Typography>
-                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/profile'); }} variant="contained" color="secondary">
+                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/profile'); }}>
                                                 Profile
                                                 </Button>
-                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/logout'); }} variant="contained" color="secondary">
+                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/logout'); }}>
                                                 Logout
                                                 </Button>
                                             </Stack>

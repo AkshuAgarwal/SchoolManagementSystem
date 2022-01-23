@@ -6,7 +6,7 @@ import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 
 import { LoadingButton } from '@mui/lab';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { VisibilityOutlined, VisibilityOffOutlined } from '@mui/icons-material';
 import { Alert, Box, Collapse, Container, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Typography } from '@mui/material';
 
 import axios from '../utils/js/axios';
@@ -73,27 +73,27 @@ export default function Login() {
             <Head>
                 <title>Login | {publicRuntimeConfig.SCHOOL_NAME}</title>
             </Head>
-            <Container sx={{ display : 'flex', flexDirection : 'column', justifyContent : 'center', alignItems : 'center', padding : '8vh' }}>
+            <Container sx={{ display : 'flex', flexDirection : 'column', justifyContent : 'center', alignItems : 'center', padding : '8vh 0' }}>
                 <Box sx={{
                     display         : 'flex',
                     flexDirection   : 'column',
                     alignItems      : 'center',
                     justifyContent  : 'center',
                     flexWrap        : 'wrap',
-                    width           : '90%',
+                    width           : { xs : '100%', sm : '90%' },
                     borderRadius    : '7.5px',
-                    padding         : '50px',
+                    padding         : '50px 30px',
                     backgroundColor : 'background.paper'
                 }}>
                     <Typography variant="h5">Login</Typography>
                     <div style={{ marginTop : '30px' }}>
                         <Collapse in={showAlert}>
-                            <Alert severity="error" variant="filled" onClose={() => { setShowAlert(false); }} sx={{ width : '100%', marginBottom : '8px' }}>
+                            <Alert severity="error" onClose={() => { setShowAlert(false); }} sx={{ width : '100%', marginBottom : '8px' }}>
                                 Invalid Username/Email ID or Password
                             </Alert>
                         </Collapse>
                         <form onSubmit={handleSubmit}>
-                            <FormControl variant="outlined" margin="normal" sx={{ width : '100%' }} required>
+                            <FormControl margin="normal" sx={{ width : '100%' }} required>
                                 <InputLabel htmlFor="__login_form__inp_useroremail">Username or Email ID</InputLabel>
                                 <OutlinedInput
                                     id="__login_form__inp_useroremail"
@@ -102,7 +102,7 @@ export default function Login() {
                                     label="Username or Email ID"
                                 />
                             </FormControl>
-                            <FormControl variant="outlined" margin="normal" sx={{ width : '100%' }} required>
+                            <FormControl margin="normal" sx={{ width : '100%' }} required>
                                 <InputLabel htmlFor="__login_form__inp_pass">Password</InputLabel>
                                 <OutlinedInput
                                     id="__login_form__inp_pass"
@@ -112,14 +112,14 @@ export default function Login() {
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <IconButton onClick={() => { setShowPassword(!showPassword); }} edge="end">
-                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                {showPassword ? <VisibilityOutlined /> : <VisibilityOffOutlined />}
                                             </IconButton>
                                         </InputAdornment>
                                     }
                                 />
                             </FormControl>
                             <Typography variant="body1" sx={{ marginTop : '8px', marginBottom : '4px' }}><Link href="/reset-password"><a>Forgot Password?</a></Link></Typography>
-                            <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} sx={{ marginTop : '16px' }}>Submit</LoadingButton>
+                            <LoadingButton type="submit" variant="contained" loading={loading} sx={{ marginTop : '16px' }}>Submit</LoadingButton>
                         </form>
                     </div>
                 </Box>

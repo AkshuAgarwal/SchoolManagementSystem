@@ -5,13 +5,48 @@ const lightThemeOptions = {
         mode    : 'light',
         type    : 'light',
         primary : {
-            main: '#105190',
+            main         : '#3f51b5',
+            light        : '#757de8',
+            dark         : '#002984',
+            contrastText : '#ffffff',
         },
         secondary: {
-            main: '#3a3b3f',
+            main         : '#e0e0e0',
+            light        : '#ffffff',
+            dark         : '#aeaeae',
+            contrastText : '#000000',
         },
-        success: {
-            main: '#4caf50',
+        background: {
+            default : '#ffffff',
+            paper   : '#3f51b5',
+        },
+        text: {
+            primary   : '#ffffff',
+            secondary : '#ffffff',
+        },
+    },
+    components: {
+        MuiFormControl: {
+            defaultProps: {
+                color   : 'secondary',
+                variant : 'outlined',
+            },
+        },
+        MuiSvgIcon: {
+            defaultProps: {
+                color: 'secondary',
+            },
+        },
+        MuiButton: {
+            defaultProps: {
+                color   : 'secondary',
+                variant : 'contained',
+            },
+        },
+        MuiAlert: {
+            defaultProps: {
+                variant: 'filled',
+            },
         },
     },
 };
@@ -67,6 +102,24 @@ const darkThemeOptions = {
             contrastText : 'rgba(0, 0, 0, 0.87)',
         },
         divider: 'rgba(255, 255, 255, 0.12)',
+    },
+    components: {
+        MuiFormControl: {
+            defaultProps: {
+                color: 'text',
+            },
+        },
+        MuiButton: {
+            defaultProps: {
+                color   : 'secondary',
+                variant : 'contained',
+            },
+        },
+        MuiAlert: {
+            defaultProps: {
+                variant: 'filled',
+            },
+        },
     },
 };
 
