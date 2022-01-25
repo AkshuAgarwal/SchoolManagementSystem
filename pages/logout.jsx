@@ -13,11 +13,13 @@ export default function Logout() {
     const authContext = useContext(AuthContext);
 
     useEffect(() => {
-        if (authContext.loggedIn) {
-            authContext.logoutUser();
+        if (authContext.documentLoaded) {
+            if (authContext.loggedIn) {
+                authContext.logoutUser();
+            }
+            router.push('/');
         }
-        router.push('/');
-    }, []); // eslint-disable-line
+    }, [ authContext.documentLoaded ]); // eslint-disable-line
 
     return (
         <Head>
