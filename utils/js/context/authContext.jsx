@@ -15,13 +15,15 @@ const _blankData = {
         'access_token'  : '',
         'refresh_token' : '',
     },
-    isLoading       : false,
-    setUserData     : () => {},
-    setLoggedIn     : () => {},
-    setLoading      : () => {},
-    checkIfLoggedIn : () => {},
-    loginUser       : () => {},
-    logoutUser      : () => {},
+    isLoading         : false,
+    documentLoaded    : false,
+    setLoggedIn       : () => {},
+    setUserData       : () => {},
+    setLoading        : () => {},
+    setDocumentLoaded : () => {},
+    checkIfLoggedIn   : () => {},
+    loginUser         : () => {},
+    logoutUser        : () => {},
 };
 
 const AuthContext = createContext(_blankData);
@@ -32,6 +34,7 @@ export const AuthProvider = ({ children }) => {
     const [ loggedIn, setLoggedIn ] = useState(_blankData.loggedIn);
     const [ userData, setUserData ] = useState(_blankData.userData);
     const [ loading, setLoading ] = useState(false);
+    const [ documentLoaded, setDocumentLoaded ] = useState(false);
 
     const checkIfLoggedIn = () => {
         setLoading(true);
@@ -42,11 +45,13 @@ export const AuthProvider = ({ children }) => {
                 setUserData(response.data.data);
             }
             setLoading(false);
+            setDocumentLoaded(true);
             return response.status;
         }).catch(e => {
             setLoggedIn(_blankData.loggedIn);
             setUserData(_blankData.userData);
             setLoading(false);
+            setDocumentLoaded(true);
             return e.response ? e.response.status : null;
         });
     };
@@ -90,15 +95,17 @@ export const AuthProvider = ({ children }) => {
     };
 
     const contextData = {
-        loggedIn        : loggedIn,
-        userData        : userData,
-        isLoading       : loading,
-        setUserData     : setUserData,
-        setLoggedIn     : setLoggedIn,
-        setLoading      : setLoading,
-        checkIfLoggedIn : checkIfLoggedIn,
-        loginUser       : loginUser,
-        logoutUser      : logoutUser,
+        loggedIn          : loggedIn,
+        userData          : userData,
+        isLoading         : loading,
+        documentLoaded    : documentLoaded,
+        setLoggedIn       : setLoggedIn,
+        setUserData       : setUserData,
+        setLoading        : setLoading,
+        setDocumentLoaded : setDocumentLoaded,
+        checkIfLoggedIn   : checkIfLoggedIn,
+        loginUser         : loginUser,
+        logoutUser        : logoutUser,
     };
 
     return (
