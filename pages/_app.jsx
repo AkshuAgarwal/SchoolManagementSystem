@@ -11,7 +11,7 @@ import { ThemeProvider } from '@mui/material/styles';
 
 import { Navbar, Footer } from '../components';
 import { lightTheme, darkTheme } from '../utils/js/theme';
-import { AuthProvider, ColorModeContext } from '../utils/js/context';
+import { AuthProvider, ColorModeContext, SidebarProvider } from '../utils/js/context';
 import { getCookie as clientCookieGetter, setCookie as clientCookieSetter } from '../utils/js/utils';
 
 function MyApp({ Component, pageProps }) {
@@ -70,15 +70,15 @@ function MyApp({ Component, pageProps }) {
                     <ColorModeContext.Provider value={colorMode}>
                         <ThemeProvider theme={_theme}>
                             <AuthProvider>
-                                <CssBaseline />
-                                <div style={{ display : 'flex', flexDirection : 'column', minHeight : '100vh', justifyContent : 'space-between' }}>
-                                    {loading ? <LinearProgress color="secondary" /> : null}
-                                    <Navbar />
-                                    <div style={{ display : 'flex', flexDirection : 'row', flexGrow : 1, minWidth : '100vw' }}>
+                                <SidebarProvider>
+                                    <CssBaseline />
+                                    <div style={{ display : 'flex', flexDirection : 'column', minHeight : '100vh', justifyContent : 'space-between' }}>
+                                        {loading ? <LinearProgress color="secondary" /> : null}
+                                        <Navbar />
                                         <Component {...pageProps} />
+                                        <Footer />
                                     </div>
-                                    <Footer />
-                                </div>
+                                </SidebarProvider>
                             </AuthProvider>
                         </ThemeProvider>
                     </ColorModeContext.Provider>

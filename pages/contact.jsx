@@ -76,7 +76,7 @@ export default function Contact() {
                                         type="text"
                                         inputRef={firstNameRef}
                                         label="First Name"
-                                        inputProps={{ maxlength : 255 }}
+                                        inputProps={{ maxLength : 255 }}
                                     />
                                 </FormControl>
                                 <FormControl margin="normal" sx={{ width : '100%' }}>
@@ -86,7 +86,7 @@ export default function Contact() {
                                         type="text"
                                         inputRef={lastNameRef}
                                         label="Last Name"
-                                        inputProps={{ maxlength : 255 }}
+                                        inputProps={{ maxLength : 255 }}
                                     />
                                 </FormControl>
                             </Container>
@@ -97,7 +97,7 @@ export default function Contact() {
                                     type="email"
                                     inputRef={emailRef}
                                     label="Email ID"
-                                    inputProps={{ maxlength : 1023 }}
+                                    inputProps={{ maxLength : 1023 }}
                                 />
                             </FormControl>
                             <FormControl margin="normal" sx={{ width : '100%' }} required>
@@ -109,7 +109,7 @@ export default function Contact() {
                                     label="Message"
                                     multiline
                                     rows={5}
-                                    inputProps={{ maxlength : 10000 }}
+                                    inputProps={{ maxLength : 10000 }}
                                 />
                             </FormControl>
                             <LoadingButton type="submit" variant="contained" loading={loading} sx={{ marginTop : '16px' }}>Submit</LoadingButton>
