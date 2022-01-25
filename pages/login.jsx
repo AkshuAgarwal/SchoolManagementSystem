@@ -1,4 +1,4 @@
-import { useContext, useState, useRef } from 'react';
+import { useContext, useState, useRef, useEffect } from 'react';
 
 import Link from 'next/link';
 import Head from 'next/head';
@@ -25,9 +25,13 @@ export default function Login() {
     const [ showAlert, setShowAlert ] = useState(false);
     const [ loading, setLoading ] = useState(false);
 
-    if (authContext.loggedIn) {
-        router.replace('/dashboard');
-    }
+    useEffect(() => {
+        if (authContext.documentLoaded) {
+            if (authContext.loggedIn) {
+                router.replace('/dashboard');
+            }
+        }
+    }, [ authContext.documentLoaded ]); // eslint-disable-line
 
     const handleSubmit = e => {
         e.preventDefault();

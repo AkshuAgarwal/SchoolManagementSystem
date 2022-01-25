@@ -13,30 +13,32 @@ export default function Dashboard() {
     const authContext = useContext(AuthContext);
 
     useEffect(() => {
-        authContext.setLoading(true);
-        if (!authContext.loggedIn) {
-            router.replace('/login');
-        } else {
-            switch (authContext.userData.user_type) {
-                case 's':
-                    router.replace('/dashboard/student');
-                    break;
-                case 't':
-                    router.replace('/dashboard/teacher');
-                    break;
-                case 'p':
-                    router.replace('/dashboard/parent');
-                    break;
-                case 'm':
-                    router.replace('/dashboard/management');
-                    break;
-                case 'a':
-                    router.replace('/dashboard/admin');
-                    break;
+        if (authContext.documentLoaded) {
+            authContext.setLoading(true);
+            if (!authContext.loggedIn) {
+                router.replace('/login');
+            } else {
+                switch (authContext.userData.user_type) {
+                    case 's':
+                        router.replace('/dashboard/student');
+                        break;
+                    case 't':
+                        router.replace('/dashboard/teacher');
+                        break;
+                    case 'p':
+                        router.replace('/dashboard/parent');
+                        break;
+                    case 'm':
+                        router.replace('/dashboard/management');
+                        break;
+                    case 'a':
+                        router.replace('/dashboard/admin');
+                        break;
+                }
             }
+            authContext.setLoading(false);
         }
-        authContext.setLoading(false);
-    }, []); // eslint-disable-line
+    }, [ authContext.documentLoaded ]); // eslint-disable-line
 
     return (
         <Head>

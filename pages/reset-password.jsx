@@ -39,7 +39,7 @@ const EmailRequesterForm = () => {
         };
 
         let data = {
-            redirect_link : `${publicRuntimeConfig.SITE_URL}/reset-password`,
+            redirect_link : `${publicRuntimeConfig.FRONTEND_URL}/reset-password`,
             vars          : {
                 org_name       : publicRuntimeConfig.SCHOOL_NAME,
                 privacy_policy : `${publicRuntimeConfig.SITE_URL}/privacy-policy`,
@@ -77,7 +77,7 @@ const EmailRequesterForm = () => {
     };
 
     return (
-        <div style={{ marginTop : '30px', width : '50%' }}>
+        <>
             <Collapse in={showAlert}>
                 <Alert severity={alertSeverity} variant="filled" onClose={() => { setShowAlert(false); }} sx={{ width : '100%', marginBottom : '8px' }}>
                     {alertMessage}
@@ -97,7 +97,7 @@ const EmailRequesterForm = () => {
                 </FormControl>
                 <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} sx={{ marginTop : '16px' }}>Submit</LoadingButton>
             </form>
-        </div>
+        </>
     );
 };
 
@@ -186,7 +186,7 @@ const PasswordChangerForm = ({ props }) => {
     };
 
     return (
-        <div style={{ marginTop : '30px', width : '50%' }}>
+        <>
             <Collapse in={showErrorAlert}>
                 <Alert severity="error" variant="filled" onClose={() => { setShowErrorAlert(false); }} sx={{ width : '100%', marginBottom : '8px' }}>
                     {errorAlertMessage}
@@ -236,29 +236,25 @@ const PasswordChangerForm = ({ props }) => {
                 </FormControl>
                 <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} sx={{ marginTop : '16px' }} disabled={passwordError || confirmPasswordError}>Submit</LoadingButton>
             </form>
-        </div>
+        </>
     );
 };
 
 const ErrorForm = ({ message }) => {
     return (
-        <div style={{ marginTop : '30px', width : '50%' }}>
-            <Alert severity="error" variant="filled" sx={{ width : '100%', marginBottom : '8px' }}>
-                {message}
-            </Alert>
-        </div>
+        <Alert severity="error" variant="filled" sx={{ width : '100%', marginBottom : '8px' }}>
+            {message}
+        </Alert>
     );
 };
 
 const SkeletonForm = () => {
     return (
-        <div style={{ marginTop : '30px', width : '50%' }}>
-            <Stack spacing={2}>
-                <Skeleton animation="wave" variant="rectangular" width="100%" height="40px" />
-                <Skeleton animation="wave" variant="rectangular" width="100%" height="40px" />
-                <Skeleton animation="wave" variant="rectangular" width="100%" height="200px" />
-            </Stack>
-        </div>
+        <Stack spacing={2}>
+            <Skeleton animation="wave" variant="rectangular" width="100%" height="40px" />
+            <Skeleton animation="wave" variant="rectangular" width="100%" height="40px" />
+            <Skeleton animation="wave" variant="rectangular" width="100%" height="200px" />
+        </Stack>
     );
 };
 
@@ -301,30 +297,32 @@ export default function ResetPassword() {
             <Head>
                 <title>Reset Password | {publicRuntimeConfig.SCHOOL_NAME}</title>
             </Head>
-            <Container sx={{ display : 'flex', flexDirection : 'column', justifyContent : 'center', alignItems : 'center', padding : '8vh' }}>
+            <Container sx={{ display : 'flex', flexDirection : 'column', justifyContent : 'center', alignItems : 'center', padding : '8vh 0' }}>
                 <Box sx={{
                     display         : 'flex',
                     flexDirection   : 'column',
                     alignItems      : 'center',
                     justifyContent  : 'center',
                     flexWrap        : 'wrap',
-                    width           : '90%',
+                    width           : { xs : '100%', sm : '90%' },
                     borderRadius    : '7.5px',
-                    padding         : '50px',
+                    padding         : '50px 30px',
                     backgroundColor : 'background.paper'
                 }}>
                     <Typography variant="h5">Reset Password</Typography>
-                    {
-                        !curState ? <SkeletonForm /> : (
-                            curState === 'new' ? <EmailRequesterForm /> : (
-                                curState === 'verified_token' ? <PasswordChangerForm props={{ username : router.query.username, token : router.query.token }} /> : (
-                                    curState === 'expired_or_notfound_token' ? <ErrorForm message="The token is either expired or not found. Please try again" /> : (
-                                        curState === 'invalid_token' ? <ErrorForm message="The token is invalid. Please try again" /> : null
+                    <Container sx={{ marginTop : '30px', maxWidth : { xs : '100%', sm : '80%', md : '60%', lg : '40%' } }}>
+                        {
+                            !curState ? <SkeletonForm /> : (
+                                curState === 'new' ? <EmailRequesterForm /> : (
+                                    curState === 'verified_token' ? <PasswordChangerForm props={{ username : router.query.username, token : router.query.token }} /> : (
+                                        curState === 'expired_or_notfound_token' ? <ErrorForm message="The token is either expired or not found. Please try again" /> : (
+                                            curState === 'invalid_token' ? <ErrorForm message="The token is invalid. Please try again" /> : null
+                                        )
                                     )
                                 )
                             )
-                        )
-                    }
+                        }
+                    </Container>
                 </Box>
             </Container>
         </>
