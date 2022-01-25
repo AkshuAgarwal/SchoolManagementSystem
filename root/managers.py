@@ -98,9 +98,9 @@ class UserManager(_BUM):
 
         # Unique constraint checking
         colliding_fields: set = set()
-        __existing_user = self.filter(OR(username=FIELDS["username"]) | OR(email_id=FIELDS["email_id"]))
-        if __existing_user:
-            for __user in __existing_user:
+        _existing_users = self.filter(OR(username=FIELDS["username"]) | OR(email_id=FIELDS["email_id"]))
+        if _existing_users:
+            for __user in _existing_users:
                 if __user.username == FIELDS["username"]:
                     colliding_fields.add("username")
                 if __user.email_id == FIELDS["email_id"]:
@@ -209,9 +209,9 @@ class UserManager(_BUM):
 
         # Unique constraint checking
         colliding_fields: set = set()
-        __existing_user = self.filter(OR(username=FIELDS["username"]) | OR(email_id=FIELDS["email_id"]))
-        if __existing_user:
-            for __user in __existing_user:
+        _existing_users = self.filter(OR(username=FIELDS["username"]) | OR(email_id=FIELDS["email_id"]))
+        if _existing_users:
+            for __user in _existing_users:
                 if __user.username == FIELDS["username"]:
                     colliding_fields.add("username")
                 if __user.email_id == FIELDS["email_id"]:

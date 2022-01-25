@@ -68,26 +68,28 @@ export default function Contact() {
                             </Alert>
                         </Collapse>
                         <form onSubmit={handleSubmit}>
-                            <FormControl margin="normal" sx={{ width : '100%' }} required>
-                                <InputLabel htmlFor="__contact_form__inp_firstname">First Name</InputLabel>
-                                <OutlinedInput
-                                    id="__contact_form__inp_firstname"
-                                    type="text"
-                                    inputRef={firstNameRef}
-                                    label="First Name"
-                                    inputProps={{ maxlength : 255 }}
-                                />
-                            </FormControl>
-                            <FormControl margin="normal" sx={{ width : '100%' }}>
-                                <InputLabel htmlFor="__contact_form__inp_lastname">Last Name</InputLabel>
-                                <OutlinedInput
-                                    id="__contact_form__inp_lastname"
-                                    type="text"
-                                    inputRef={lastNameRef}
-                                    label="Last Name"
-                                    inputProps={{ maxlength : 255 }}
-                                />
-                            </FormControl>
+                            <Container sx={{ display : 'flex', flexDirection : 'row', gap : '20px' }} disableGutters>
+                                <FormControl margin="normal" sx={{ width : '100%' }} required>
+                                    <InputLabel htmlFor="__contact_form__inp_firstname">First Name</InputLabel>
+                                    <OutlinedInput
+                                        id="__contact_form__inp_firstname"
+                                        type="text"
+                                        inputRef={firstNameRef}
+                                        label="First Name"
+                                        inputProps={{ maxlength : 255 }}
+                                    />
+                                </FormControl>
+                                <FormControl margin="normal" sx={{ width : '100%' }}>
+                                    <InputLabel htmlFor="__contact_form__inp_lastname">Last Name</InputLabel>
+                                    <OutlinedInput
+                                        id="__contact_form__inp_lastname"
+                                        type="text"
+                                        inputRef={lastNameRef}
+                                        label="Last Name"
+                                        inputProps={{ maxlength : 255 }}
+                                    />
+                                </FormControl>
+                            </Container>
                             <FormControl margin="normal" sx={{ width : '100%' }} required>
                                 <InputLabel htmlFor="__contact_form__inp_emailid">Email ID</InputLabel>
                                 <OutlinedInput

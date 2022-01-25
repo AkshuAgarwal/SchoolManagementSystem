@@ -74,7 +74,9 @@ function MyApp({ Component, pageProps }) {
                                 <div style={{ display : 'flex', flexDirection : 'column', minHeight : '100vh', justifyContent : 'space-between' }}>
                                     {loading ? <LinearProgress color="secondary" /> : null}
                                     <Navbar />
-                                    <Component {...pageProps} />
+                                    <div style={{ display : 'flex', flexDirection : 'row', flexGrow : 1, minWidth : '100vw' }}>
+                                        <Component {...pageProps} />
+                                    </div>
                                     <Footer />
                                 </div>
                             </AuthProvider>
