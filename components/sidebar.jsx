@@ -80,6 +80,7 @@ export default function Sidebar({ subheader, items=[] }) {
                                 onClick={() => {
                                     value.onClick();
                                     sidebarContext.setSelected(index);
+                                    sidebarContext.setOpen(false);
                                 }}
                             >
                                 { value.icon ? <ListItemIcon key={index}>{value.icon}</ListItemIcon> : null }
