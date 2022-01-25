@@ -1,8 +1,12 @@
 import { useEffect, useContext } from 'react';
 
+import Head from 'next/head';
+import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 
 import { AuthContext } from '../utils/js/context';
+
+const { publicRuntimeConfig } = getConfig();
 
 export default function Logout() {
     const router = useRouter();
@@ -15,5 +19,9 @@ export default function Logout() {
         router.push('/');
     }, []); // eslint-disable-line
 
-    return null;
+    return (
+        <Head>
+            <title>Logout | {publicRuntimeConfig.SCHOOL_NAME}</title>
+        </Head>
+    );
 }

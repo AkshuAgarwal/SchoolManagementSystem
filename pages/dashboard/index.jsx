@@ -1,10 +1,14 @@
 import { useEffect, useContext } from 'react';
 
+import Head from 'next/head';
+import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 
 import { AuthContext } from '../../utils/js/context';
 
-export default function Dashboars() {
+const { publicRuntimeConfig } = getConfig();
+
+export default function Dashboard() {
     const router = useRouter();
     const authContext = useContext(AuthContext);
 
@@ -34,5 +38,9 @@ export default function Dashboars() {
         authContext.setLoading(false);
     }, []); // eslint-disable-line
 
-    return null;
+    return (
+        <Head>
+            <title>Dashboard | {publicRuntimeConfig.SCHOOL_NAME}</title>
+        </Head>
+    );
 }
