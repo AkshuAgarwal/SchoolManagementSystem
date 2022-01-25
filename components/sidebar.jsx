@@ -1,6 +1,7 @@
 import { useContext, useEffect } from 'react';
 
-import { SwipeableDrawer, List, ListItemButton, ListSubheader, Toolbar, useMediaQuery, ListItem, ListItemIcon, ListItemAvatar, ListItemText, ListItemSecondaryAction } from '@mui/material';
+import { DoubleArrow as DoubleArrowIcon } from '@mui/icons-material';
+import { IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, ListSubheader, SwipeableDrawer, useMediaQuery } from '@mui/material';
 
 import { SidebarContext } from '../utils/js/context';
 
@@ -19,7 +20,6 @@ export default function Sidebar({ subheader, items=[] }) {
         }
     }, []); // eslint-disable-line
 
-
     return (
         <SwipeableDrawer
             variant={upSm ? 'permanent' : 'temporary'}
@@ -29,18 +29,17 @@ export default function Sidebar({ subheader, items=[] }) {
             sx={{
                 position               : upSm ? 'relative' : 'fixed',
                 left                   : 0,
-                width                  : upSm ? '14vw' : '35vw',
-                zIndex                 : 1000,
+                width                  : { xs : '43vw', sm : '28vw', md : '20vw', lg : '15vw', xl : '10vw' },
+                zIndex                 : upSm ? 1000 : 1200,
                 [`& .MuiDrawer-paper`] : {
                     position        : upSm ? 'relative' : 'fixed',
                     left            : 0,
-                    width           : upSm ? '14vw' : '35vw',
+                    width           : { xs : '43vw', sm : '28vw', md : '20vw', lg : '15vw', xl : '10vw' },
                     backgroundColor : 'primary.main',
                     boxShadow       : '1px 2px 6px -1px rgb(0 0 0 / 20%)'
                 }
             }}
         >
-            {!upSm ? <Toolbar /> : null}
             <List
                 aria-labelledby="sidebar-list-subheader-text"
                 subheader={
@@ -61,16 +60,18 @@ export default function Sidebar({ subheader, items=[] }) {
                 }}
             >
                 {
+                    !upSm ? (
+                        <ListItem dense divider sx={{ marginBottom : '10px' }}>
+                            <IconButton onClick={() => { sidebarContext.setOpen(false); }}>
+                                <DoubleArrowIcon sx={{ transform : 'scale(-1, 1)' }} />
+                            </IconButton>
+                        </ListItem>
+                    ) : null
+                }
+                {
                     items.map((value, index) => (
                         <ListItem
                             key={index}
-                            secondaryAction={
-                                value.secondaryAction ? (
-                                    <ListItemSecondaryAction key={index}>
-                                        {value.secondaryAction}
-                                    </ListItemSecondaryAction>
-                                ) : null
-                            }
                             dense
                         >
                             <ListItemButton

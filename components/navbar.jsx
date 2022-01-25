@@ -2,11 +2,11 @@ import { useContext, useState } from 'react';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, DoubleArrow as DoubleArrowIcon } from '@mui/icons-material';
 import { useTheme, styled } from '@mui/material/styles';
 import { AppBar, Avatar, Button, Collapse, IconButton, Menu, MenuList, Stack, Switch,  Toolbar, Typography } from '@mui/material';
 
-import { ColorModeContext, AuthContext } from '../utils/js/context';
+import { ColorModeContext, AuthContext, SidebarContext } from '../utils/js/context';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -63,6 +63,7 @@ export default function Navbar() {
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);
     const authContext = useContext(AuthContext);
+    const sidebarContext = useContext(SidebarContext);
 
     const [ anchorElUser, setAnchorElUser ] = useState(null);
     const handleOpenUserMenu = event => setAnchorElUser(event.currentTarget);
@@ -163,6 +164,18 @@ export default function Navbar() {
                     </Collapse>
                 </Toolbar>
             </Toolbar>
+            {
+                router.pathname.startsWith('/dashboard/') ? (
+                    <Toolbar sx={{ display : { xs : 'flex', sm : 'none' } }}>
+                        <IconButton onClick={() => { sidebarContext.setOpen(true); }} sx={{ p : 0, display : { xs : 'flex', sm : 'none' } }}>
+                            <DoubleArrowIcon />
+                        </IconButton>
+                        <Typography component="div" sx={{ display : 'flex', margin : '5px 10px' }}>
+                    Menu
+                        </Typography>
+                    </Toolbar>
+                ) : null
+            }
         </AppBar>
     );
 }
