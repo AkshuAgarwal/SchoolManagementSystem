@@ -16,7 +16,7 @@ export default function Footer() {
     }, []); // eslint-disable-line
 
     return (
-        <AppBar component="footer" position="relative" sx={{ backgroundImage : 'initial', marginTop : 'auto' }}>
+        <AppBar component="footer" position="relative" sx={{ backgroundImage : 'initial', marginTop : 'auto', zIndex : 1050, boxShadow : '0px -2px 4px 2px rgb(0 0 0 / 20%);' }}>
             <Toolbar>
                 <Container sx={{ display : 'flex', flexDirection : 'column', alignItems : 'center', padding : '20px' }}>
                     <Container sx={{ display : 'flex', flexDirection : { xs : 'column', sm : 'row' }, paddingBottom : '10px' }}>
