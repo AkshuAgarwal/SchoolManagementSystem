@@ -9,7 +9,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const axiosInstance = axios.create({
     baseURL        : publicRuntimeConfig.BACKEND_BASE_URL,
-    xsrfCookieName : 'X-CSRF-Token',
+    xsrfCookieName : 'csrftoken',
     xsrfHeaderName : 'X-CSRFToken'
 });
 

@@ -18,7 +18,10 @@ if TYPE_CHECKING:
 
 
 def enforce_csrf(request: HttpRequest) -> None:
-    check = CSRFCheck()
+    def dummy_get_response(request) -> None:
+        return None
+
+    check = CSRFCheck(dummy_get_response)
     check.process_request(request)
 
     reason = check.process_view(request, None, (), {})

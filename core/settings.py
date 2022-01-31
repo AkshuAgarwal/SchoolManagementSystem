@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "root.apps.RootConfig",
     "authentication.apps.AuthenticationConfig",
     "api.apps.ApiConfig",
+    "admin.apps.AdminConfig",
 ]
 
 MIDDLEWARE = [
@@ -241,15 +242,13 @@ AUTH_USER_MODEL = "root.User"
 
 
 # Cors Configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-
+CORS_ALLOWED_ORIGINS = os.environ["CORS_ALLOWED_ORIGINS"].split(",")
 CORS_ALLOW_CREDENTIALS = True
 
 
 # CSRF Configuration
-CSRF_COOKIE_NAME = "X-CSRF-Token"
+CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(",")
+CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_PATH = "/"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "None"
