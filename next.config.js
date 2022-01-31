@@ -12,5 +12,8 @@ module.exports = withBundleAnalyzer({
         FRONTEND_URL     : process.env.SITE_URL,
         SCHOOL_NAME      : constants['SCHOOL_NAME'],
         FOOTER_TEXT      : constants['FOOTER_TEXT'],
-    }
+    },
+    images: {
+        domains: [ 'flagcdn.com' ],
+    },
 });
