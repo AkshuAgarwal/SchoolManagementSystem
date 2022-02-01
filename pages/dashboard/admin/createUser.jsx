@@ -36,7 +36,7 @@ const AccountInfoStep = ({ state, display, handleStepperNext }) => {
         setUniqueUsernameError(false);
         if (usernameRef.current.value !== '') {
             axios.get(
-                'admin/user/', { params : { username : usernameRef.current.value } }
+                'api/user/', { params : { username : usernameRef.current.value } }
             ).then(response => {
                 if (response.status === 200) {
                     setUniqueUsernameError(true);
@@ -70,7 +70,7 @@ const AccountInfoStep = ({ state, display, handleStepperNext }) => {
         setUniqueEmailError(false);
         if (emailRef.current.value !== '') {
             axios.get(
-                'admin/user/', { params : { email_id : emailRef.current.value } }
+                'api/user/', { params : { email_id : emailRef.current.value } }
             ).then(response => {
                 if (response.status === 200) {
                     setUniqueEmailError(true);
