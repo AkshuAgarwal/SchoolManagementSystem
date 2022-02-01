@@ -1,24 +1,21 @@
 import { useContext, useEffect } from 'react';
 
+import { useRouter } from 'next/router';
+
 import { DoubleArrow as DoubleArrowIcon } from '@mui/icons-material';
 import { IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, ListSubheader, SwipeableDrawer, useMediaQuery } from '@mui/material';
 
 import { SidebarContext } from '../utils/js/context';
 
-export default function Sidebar({ subheader, items=[] }) {
+export default function Sidebar({ subheader, pages }) {
+    const router = useRouter();
     const sidebarContext = useContext(SidebarContext);
 
     const upSm = useMediaQuery(theme => theme.breakpoints.up('sm'), { noSsr : true });
 
     useEffect(() => {
-        if (!sidebarContext.selected) {
-            items.map((value, index) => {
-                if (value.defaultSelected) {
-                    sidebarContext.setSelected(index);
-                }
-            });
-        }
-    }, []); // eslint-disable-line
+        sidebarContext.setSelected(router.query.page);
+    }, [router.query.page]); // eslint-disable-line
 
     return (
         <SwipeableDrawer
@@ -68,18 +65,31 @@ export default function Sidebar({ subheader, items=[] }) {
                         </ListItem>
                     ) : null
                 }
+                <ListItem dense>
+                    <ListItemButton
+                        selected={sidebarContext.selected === pages.defaultItem.id}
+                        onClick={() => {
+                            pages.defaultItem.onClick?.();
+                            router.push({ pathname : router.pathname, query : { page : pages.defaultItem.id } }, undefined, { shallow : true });
+                            // sidebarContext.setSelected(value.id);
+                            sidebarContext.setOpen(false);
+                        }}
+                    >
+                        { pages.defaultItem.icon ? <ListItemIcon>{pages.defaultItem.icon}</ListItemIcon> : null }
+                        { pages.defaultItem.avatar ? <ListItemAvatar>{pages.defaultItem.avatar}</ListItemAvatar> : null }
+                        <ListItemText>{pages.defaultItem.text}</ListItemText>
+                    </ListItemButton>
+                </ListItem>
                 {
-                    items.map((value, index) => (
-                        <ListItem
-                            key={index}
-                            dense
-                        >
+                    pages.items.map((value, index) => (
+                        <ListItem key={index} dense>
                             <ListItemButton
                                 key={index}
-                                selected={sidebarContext.selected === index}
+                                selected={sidebarContext.selected === value.id}
                                 onClick={() => {
-                                    value.onClick();
-                                    sidebarContext.setSelected(index);
+                                    value.onClick?.();
+                                    router.push({ pathname : router.pathname, query : { page : value.id } }, undefined, { shallow : true });
+                                    // sidebarContext.setSelected(value.id);
                                     sidebarContext.setOpen(false);
                                 }}
                             >

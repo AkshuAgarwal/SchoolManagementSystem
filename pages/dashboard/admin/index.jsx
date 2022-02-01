@@ -4,7 +4,7 @@ import Head from 'next/head';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 
-import { Container } from '@mui/material';
+import { Backdrop, CircularProgress, Container, NoSsr } from '@mui/material';
 
 import { Sidebar } from '../../../components';
 import { AuthContext } from '../../../utils/js/context';
@@ -17,9 +17,22 @@ export default function Admin() {
     const router = useRouter();
     const authContext = useContext(AuthContext);
 
-    const [ currentBody, setCurrentBody ] = useState(<CreateUser />);
-
     const [ rendering, setRendering ] = useState(true);
+
+    const [ currentComponent, setCurrentComponent ] = useState(null);
+
+    const shallowRedirectToPage = to => {
+        return router.push({ pathname : router.pathname, query : { page : to } }, undefined, { shallow : true });
+    };
+
+    const pages = {
+        // Format of an item element:
+        // { id: '', icon : null, avatar : null, text : '', onClick : () => {}, pageComponent : null }
+        items: [
+            { id : 'create-user', text : 'Create User', pageComponent : <CreateUser /> },
+        ],
+        defaultItem: { id : 'dashboard', text : 'Dashboard' }
+    };
 
     useEffect(() => {
         if (authContext.documentLoaded) {
@@ -36,22 +49,45 @@ export default function Admin() {
         }
     }, [ authContext.documentLoaded ]); // eslint-disable-line
 
+    useEffect(() => {
+        if (!router.query.page) { // No page query exists
+            shallowRedirectToPage(pages.defaultItem.id);
+            setCurrentComponent(pages.defaultItem.pageComponent);
+        } else {
+            if (router.query.page === pages.defaultItem.id) { // Page query exists and is equal to default page
+                setCurrentComponent(pages.defaultItem.pageComponent);
+                return;
+            } else {
+                for (let i = 0; i <= pages.items.length; i++) { // Page query exists and is equal to one of the pages other than default page
+                    if (i < pages.items.length) {
+                        if (router.query.page === pages.items[i].id) {
+                            setCurrentComponent(pages.items[i].pageComponent);
+                            return;
+                        }
+                    } else { // Page query exists but is invalid
+                        shallowRedirectToPage(pages.defaultItem.id);
+                        setCurrentComponent(pages.defaultItem.pageComponent);
+                        return;
+                    }
+                }
+            }
+        }
+    }, [ router.query.page ]); // eslint-disable-line
+
     return (
         <>
             <Head>
                 <title>Admin Dashboard | {publicRuntimeConfig.SCHOOL_NAME}</title>
             </Head>
             <Container style={{ display : 'flex', flexDirection : 'row', flexGrow : 1, width : '100vw', maxWidth : '100%' }} disableGutters>
-                {
-                    !rendering ? (
-                        <Sidebar items={[
-                        // Format of an item element:
-                        // { icon : null, avatar : null, text : '', onClick : () => {}, defaultSelected : true }
-                            { text : 'Create User', onClick : () => { setCurrentBody(<CreateUser />); }, defaultSelected : true },
-                        ]} />
-                    ) : null
-                }
-                {currentBody}
+                <NoSsr fallback={(
+                    <Backdrop open sx={{ color : '#fff' }}>
+                        <CircularProgress disableShrink variant="indeterminate" color="inherit" thickness={5.0} />
+                    </Backdrop>
+                )}>
+                    { !rendering ? <Sidebar pages={pages} /> : null }
+                    { !rendering ? currentComponent : null }
+                </NoSsr>
             </Container>
         </>
     );
