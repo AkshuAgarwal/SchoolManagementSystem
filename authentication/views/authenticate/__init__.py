@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
-from ..authentication import CSRFExemptAuthentication
+from authentication.authentication import CSRFExemptAuthentication
 from utils.py import http_responses as r
 
 if TYPE_CHECKING:

@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from ..permissions import IsAdmin
+from admin.permissions import IsAdmin
 from utils.py import http_responses as r
 from root.models import User as UserModel
 from utils.py.exceptions import AlreadyExists, MissingRequiredFields
