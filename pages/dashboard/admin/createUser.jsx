@@ -4,6 +4,7 @@ import Image from 'next/image';
 
 import moment from 'moment';
 
+import { createFilterOptions } from '@mui/material/Autocomplete';
 import { AdapterMoment, DatePicker, LoadingButton, LocalizationProvider } from '@mui/lab';
 import { AccountCircleOutlined, CheckCircleOutlined, InfoOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Alert, Autocomplete, Avatar, Box, Button, Container, FormControl, FormHelperText, IconButton, Input, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Snackbar, Step, StepLabel, Stepper, TextField, Typography } from '@mui/material';
@@ -248,7 +249,7 @@ const PersonalInfoStep = ({ state, display, handleStepperBack, handleStepperNext
     const genderState = useState('');
     const addressRef = useRef('');
 
-    const [ countryCode, setCountryCode ] = useState('1');
+    const [ countryCode, setCountryCode ] = useState();
     const [ contactNoWithoutCountryCode, setContactNoWithoutCountryCode ] = useState(null);
 
     const [ avatarImage, setAvatarImage ] = useState(null);
@@ -271,7 +272,7 @@ const PersonalInfoStep = ({ state, display, handleStepperBack, handleStepperNext
             userType    : userTypeState[0],
             dateOfBirth : moment(dateOfBirthState[0]).format('YYYY-MM-DD'),
             gender      : genderState[0],
-            contactNo   : `+${countryCode}${contactNoWithoutCountryCode}`,
+            contactNo   : `+${countryCode.code}${contactNoWithoutCountryCode}`,
             address     : addressRef.current.value,
             avatar      : avatarImage ? await getURLFromFile(avatarImage) : null,
         });
@@ -371,10 +372,11 @@ const PersonalInfoStep = ({ state, display, handleStepperBack, handleStepperNext
                         <Autocomplete
                             autoHighlight
                             options={countries}
-                            getOptionLabel={option => option ? `+${option}` : ''}
-                            isOptionEqualToValue={(option, value) => option.code === value?.toString()}
+                            getOptionLabel={option => `+${option.code}` }
+                            filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `+${option.code}`, trim : true })}
+                            isOptionEqualToValue={(option, value) => option.code === value.code}
                             value={countryCode}
-                            onChange={(event, newValue) => setCountryCode(newValue ? newValue.code : null)}
+                            onChange={(event, newValue) => setCountryCode(newValue)}
                             renderOption={(props, option) => (
                                 <Box {...props} component="div" key={option.abbr}>
                                     <Image
