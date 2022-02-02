@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from api.permissions import IsStaff
+from admin.permissions import IsStaff
 from utils.py import http_responses as r
 from root.serializers import TeacherSerializer
 from root.models import User as UserModel, Teacher as TeacherModel
