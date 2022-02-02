@@ -9,8 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-from root.models import User as UserModel
 from utils.py import http_responses as r
+from root.models import User as UserModel
 
 if TYPE_CHECKING:
     from rest_framework.request import Request

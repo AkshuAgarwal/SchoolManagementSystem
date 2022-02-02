@@ -280,6 +280,8 @@ REST_FRAMEWORK = {
     # Encodings
     "UNICODE_JSON": False,
     "COERCE_DECIMAL_TO_STRING": False,
+    # Other
+    "UPLOADED_FILES_USE_URL": True,
 }
 
 

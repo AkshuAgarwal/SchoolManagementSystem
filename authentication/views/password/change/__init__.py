@@ -12,9 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
-from root.models import User as UserModel
-from authentication.authentication import Authentication
 from utils.py import http_responses as r
+from root.models import User as UserModel
+from root.serializers import UserSerializer
+from authentication.authentication import Authentication
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -71,10 +72,7 @@ class PasswordChangeViewSet(APIView):
             {
                 "status": "success",
                 "status_code": status.HTTP_205_RESET_CONTENT,
-                "data": {
-                    "username": user.username,
-                    "email": user.email_id,
-                },
+                "data": UserSerializer(user, context={"request": request}, fields={"username", "email"}),
             },
             status=status.HTTP_205_RESET_CONTENT,
         )

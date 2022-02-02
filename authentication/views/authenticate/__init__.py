@@ -13,8 +13,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
-from authentication.authentication import CSRFExemptAuthentication
 from utils.py import http_responses as r
+from root.serializers import UserSerializer
+from authentication.authentication import CSRFExemptAuthentication
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -60,15 +61,13 @@ class AuthViewSet(APIView):
                     "status": "success",
                     "status_code": status.HTTP_200_OK,
                     "data": {
-                        "id": request.user.id,
-                        "username": request.user.username,
-                        "first_name": request.user.first_name,
-                        "last_name": request.user.last_name,
-                        "email_id": request.user.email_id,
-                        "avatar": request.build_absolute_uri(request.user.avatar.image.url)
-                        if request.user.avatar
-                        else None,
-                        "user_type": request.user.user_type,
+                        **(
+                            UserSerializer(
+                                request.user,
+                                context={"request": request},
+                                fields={"id", "username", "first_name", "last_name", "email_id", "avatar", "user_type"},
+                            ).data
+                        ),
                         "access_token": str(access),
                         "refresh_token": str(refresh),
                     },
@@ -128,13 +127,13 @@ class AuthViewSet(APIView):
             "status": "success",
             "status_code": status.HTTP_200_OK,
             "data": {
-                "id": user.id,
-                "username": user.username,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "email_id": user.email_id,
-                "avatar": request.build_absolute_uri(user.avatar.image.url) if user.avatar else None,
-                "user_type": user.user_type,
+                **(
+                    UserSerializer(
+                        request.user,
+                        context={"request": request},
+                        fields={"id", "username", "first_name", "last_name", "email_id", "avatar", "user_type"},
+                    ).data
+                ),
                 "access_token": data["access"],
                 "refresh_token": data["refresh"],
             },

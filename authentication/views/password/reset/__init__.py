@@ -14,9 +14,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-from root.models import User as UserModel
-from authentication.backend import PasswordResetTokenBackend
 from utils.py import http_responses as r
+from root.models import User as UserModel
+from root.serializers import UserSerializer
+from authentication.backend import PasswordResetTokenBackend
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -102,10 +103,7 @@ class PasswordResetViewSet(APIView):
             {
                 "status": "success",
                 "status_code": status.HTTP_200_OK,
-                "data": {
-                    "username": user.username,
-                    "email_id": user.email_id,
-                },
+                "data": UserSerializer(user, context={"request": request}, fields={"username", "email"}),
             },
             status=status.HTTP_200_OK,
         )

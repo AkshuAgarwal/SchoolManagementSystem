@@ -1,7 +1,11 @@
+from __future__ import annotations
+from typing import Any, List, Literal, Optional, Union, TYPE_CHECKING
+
 from datetime import datetime
 from dateutil import parser as dateparser
 
 from django.apps import apps
+from django.db import models
 from django.db.models import Q as OR
 from django.core.files.images import ImageFile
 from django.core.exceptions import ValidationError
@@ -12,6 +16,17 @@ from django.contrib.auth.password_validation import validate_password
 
 from utils.py.exceptions import AlreadyExists, MissingRequiredFields
 from utils.py.files import parse_data_scheme
+
+if TYPE_CHECKING:
+    from .models import (
+        User as UserModel,
+        Student as StudentModel,
+        Teacher as TeacherModel,
+        Parent as ParentModel,
+        Management as ManagementModel,
+        Class as ClassModel,
+        Subject as SubjectModel,
+    )
 
 
 class UserManager(_BUM):
@@ -28,19 +43,20 @@ class UserManager(_BUM):
 
     def create_user(
         self,
-        username,
-        first_name,
-        last_name,
-        email_id,
-        avatar,
-        user_type,
-        date_of_birth,
-        gender,
-        contact_no,
-        address,
-        password,
-        **extra_fields,
-    ):
+        *,
+        username: str,
+        first_name: str,
+        last_name: Optional[str] = None,
+        email_id: str,
+        avatar: Optional[str] = None,
+        user_type: Literal["s", "p", "t", "m"],
+        date_of_birth: str,
+        gender: Literal["m", "f", "o"],
+        contact_no: str,
+        address: Optional[str] = None,
+        password: str,
+        **extra_fields: Any,
+    ) -> UserModel:
         FIELDS = {
             "username": username,
             "first_name": first_name,
@@ -134,7 +150,7 @@ class UserManager(_BUM):
         FIELDS["is_active"] = True
 
         password = FIELDS.pop("password")
-        user = self.model(**FIELDS, **extra_fields)
+        user: UserModel = self.model(**FIELDS, **extra_fields)
         validate_password(password, user)
         user.set_password(password)
         user.save()
@@ -143,18 +159,19 @@ class UserManager(_BUM):
 
     def create_superuser(
         self,
-        username,
-        first_name,
-        last_name,
-        email_id,
-        avatar,
-        date_of_birth,
-        gender,
-        contact_no,
-        address,
-        password,
-        **extra_fields,
-    ):
+        *,
+        username: str,
+        first_name: str,
+        last_name: Optional[str] = None,
+        email_id: str,
+        avatar: Optional[str] = None,
+        date_of_birth: str,
+        gender: Literal["m", "f", "o"],
+        contact_no: str,
+        address: Optional[str] = None,
+        password: str,
+        **extra_fields: Any,
+    ) -> UserModel:
         FIELDS = {
             "username": username,
             "first_name": first_name,
@@ -245,9 +262,258 @@ class UserManager(_BUM):
         FIELDS["is_active"] = True
 
         password = FIELDS.pop("password")
-        user = self.model(**FIELDS, **extra_fields)
+        user: UserModel = self.model(**FIELDS, **extra_fields)
         validate_password(password, user)
         user.set_password(password)
         user.save()
 
         return user
+
+
+class StudentManager(models.Manager):
+    REQUIRED_FIELDS = ["student", "roll_no", "year_of_enroll", "fee"]
+
+    def create(
+        self,
+        *,
+        student: Union[int, UserModel],
+        parent: Optional[Union[int, UserModel]] = None,
+        grade: Optional[Union[int, ClassModel]] = None,
+        roll_no: int,
+        year_of_enroll: int,
+        fee: int,
+        extra_fields: Any,
+    ) -> StudentModel:
+        FIELDS = {
+            "student": student,
+            "parent": parent,
+            "grade": grade,
+            "roll_no": roll_no,
+            "year_of_enroll": year_of_enroll,
+            "fee": fee,
+        }
+
+        missing_fields = []
+        for required_field in self.REQUIRED_FIELDS:
+            if not FIELDS.get(required_field):
+                missing_fields.append(required_field)
+        if missing_fields:
+            raise MissingRequiredFields(missing_fields=missing_fields)
+
+        if isinstance(FIELDS["student"], int):
+            FIELDS["student_id"] = FIELDS.pop("student")
+        if isinstance(FIELDS["parent"], int):
+            FIELDS["parent_id"] = FIELDS.pop("parent")
+        if isinstance(FIELDS["grade"], int):
+            FIELDS["grade_id"] = FIELDS.pop("grade")
+
+        if user := FIELDS.get("student"):
+            _existing_users = self.filter(student=user)
+        elif user_id := FIELDS.get("student_id"):
+            _existing_users = self.filter(student__id=user_id)
+        if _existing_users:
+            raise AlreadyExists(colliding_fields=["student"])
+
+        if not 1000 < len(FIELDS["year_of_enroll"]) <= datetime.now().year:
+            raise ValidationError("Invalid year_of_enroll")
+
+        student: StudentModel = self.model(**FIELDS, **extra_fields)
+        student.save()
+
+        return student
+
+
+class TeacherManager(models.Manager):
+    REQUIRED_FIELDS = ["teacher", "year_of_joining", "salary"]
+
+    def create(
+        self,
+        *,
+        teacher: Union[int, UserModel],
+        subject: Optional[Union[int, SubjectModel]] = None,
+        year_of_joining: int,
+        salary: int,
+        classes: Optional[List[Union[int, ClassModel]]] = None,
+        owns_class: Optional[Union[int, ClassModel]] = None,
+        extra_fields: Any,
+    ) -> TeacherModel:
+        FIELDS = {
+            "teacher": teacher,
+            "subject": subject,
+            "year_of_joining": year_of_joining,
+            "salary": salary,
+            "owns_class": owns_class,
+        }
+
+        missing_fields = []
+        for required_field in self.REQUIRED_FIELDS:
+            if not FIELDS.get(required_field):
+                missing_fields.append(required_field)
+        if missing_fields:
+            raise MissingRequiredFields(missing_fields=missing_fields)
+
+        if isinstance(FIELDS["teacher"], int):
+            FIELDS["teacher_id"] = FIELDS.pop("teacher")
+        if isinstance(FIELDS["owns_class"], int):
+            FIELDS["owns_class_id"] = FIELDS.pop("owns_class")
+
+        if user := FIELDS.get("teacher"):
+            _existing_users = self.filter(teacher=user)
+        elif user_id := FIELDS.get("student_id"):
+            _existing_users = self.filter(teacher__id=user_id)
+        if _existing_users:
+            raise AlreadyExists(colliding_fields=["teacher"])
+
+        if not 1000 < len(FIELDS["year_of_joining"]) <= datetime.now().year:
+            raise ValidationError("Invalid year_of_joining")
+
+        teacher: TeacherModel = self.model(**FIELDS, **extra_fields)
+        teacher.save()
+
+        if classes and isinstance(classes, list):
+            teacher.classes.add(*classes)
+
+        return teacher
+
+
+class ParentManager(models.Manager):
+    REQUIRED_FIELDS = ["parent"]
+
+    def create(
+        self,
+        *,
+        parent: Union[int, UserModel],
+        extra_fields: Any,
+    ) -> ParentModel:
+        FIELDS = {
+            "parent": parent,
+        }
+
+        missing_fields = []
+        for required_field in self.REQUIRED_FIELDS:
+            if not FIELDS.get(required_field):
+                missing_fields.append(required_field)
+        if missing_fields:
+            raise MissingRequiredFields(missing_fields=missing_fields)
+
+        if isinstance(FIELDS["parent"], int):
+            FIELDS["parent_id"] = FIELDS.pop("parent")
+
+        if user := FIELDS.get("parent"):
+            _existing_users = self.filter(parent=user)
+        elif user_id := FIELDS.get("parent_id"):
+            _existing_users = self.filter(parent__id=user_id)
+        if _existing_users:
+            raise AlreadyExists(colliding_fields=["parent"])
+
+        parent: ParentModel = self.model(**FIELDS, **extra_fields)
+        parent.save()
+
+        return parent
+
+
+class ManagementManager(models.Manager):
+    REQUIRED_FIELDS = ["management", "year_of_joining", "salary"]
+
+    def create(
+        self,
+        *,
+        management: Union[int, UserModel],
+        year_of_joining: int,
+        salary: int,
+        extra_fields: Any,
+    ) -> TeacherModel:
+        FIELDS = {
+            "management": management,
+            "year_of_joining": year_of_joining,
+            "salary": salary,
+        }
+
+        missing_fields = []
+        for required_field in self.REQUIRED_FIELDS:
+            if not FIELDS.get(required_field):
+                missing_fields.append(required_field)
+        if missing_fields:
+            raise MissingRequiredFields(missing_fields=missing_fields)
+
+        if isinstance(FIELDS["management"], int):
+            FIELDS["management_id"] = FIELDS.pop("management")
+
+        if user := FIELDS.get("management"):
+            _existing_users = self.filter(management=user)
+        elif user_id := FIELDS.get("management_id"):
+            _existing_users = self.filter(management__id=user_id)
+        if _existing_users:
+            raise AlreadyExists(colliding_fields=["management"])
+
+        if not 1000 < len(FIELDS["year_of_joining"]) <= datetime.now().year:
+            raise ValidationError("Invalid year_of_joining")
+
+        management: ManagementModel = self.model(**FIELDS, **extra_fields)
+        management.save()
+
+        return management
+
+
+class ClassManager(models.Manager):
+    REQUIRED_FIELDS = ["grade"]
+
+    def create(
+        self,
+        *,
+        grade: str,
+        section: Optional[str] = None,
+        extra_fields: Any,
+    ) -> ClassModel:
+        FIELDS = {
+            "grade": grade,
+            "section": section,
+        }
+
+        missing_fields = []
+        for required_field in self.REQUIRED_FIELDS:
+            if not FIELDS.get(required_field):
+                missing_fields.append(required_field)
+        if missing_fields:
+            raise MissingRequiredFields(missing_fields=missing_fields)
+
+        _existing_classes = self.filter(**FIELDS)
+        if _existing_classes:
+            raise AlreadyExists()
+
+        klass: ClassModel = self.model(**FIELDS, **extra_fields)
+        klass.save()
+
+        return klass
+
+
+class SubjectManager(models.Manager):
+    REQUIRED_FIELDS = ["name", "code"]
+
+    def create(
+        self,
+        *,
+        name: str,
+        code: int,
+        extra_fields: Any,
+    ) -> SubjectModel:
+        FIELDS = {
+            "name": name,
+            "code": code,
+        }
+
+        missing_fields = []
+        for required_field in self.REQUIRED_FIELDS:
+            if not FIELDS.get(required_field):
+                missing_fields.append(required_field)
+        if missing_fields:
+            raise MissingRequiredFields(missing_fields=missing_fields)
+
+        _existing_subjects = self.filter(**FIELDS)
+        if _existing_subjects:
+            raise AlreadyExists()
+
+        subject: SubjectModel = self.model(**FIELDS, **extra_fields)
+        subject.save()
+
+        return subject

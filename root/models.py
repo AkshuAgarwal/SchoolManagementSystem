@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 from dateutil import parser as dateparser
 
 from django.db import models
@@ -8,7 +9,15 @@ from django.core.validators import RegexValidator, EmailValidator
 from django.contrib.auth.models import AbstractBaseUser as _ABU, PermissionsMixin as _PM
 from django.utils.translation import gettext_lazy as _
 
-from .managers import UserManager
+from .managers import (
+    UserManager,
+    StudentManager,
+    TeacherManager,
+    ParentManager,
+    ManagementManager,
+    ClassManager,
+    SubjectManager,
+)
 from utils.py.files import get_asset_directory_path
 
 if TYPE_CHECKING:
@@ -142,11 +151,15 @@ class User(_ABU, _PM):
 
 class Student(models.Model):
     student = models.OneToOneField(to="User", on_delete=models.CASCADE, primary_key=True, related_name="student")
-    parent = models.ForeignKey(to="Parent", on_delete=models.SET_NULL, null=True, related_name="student_set")
-    grade = models.ForeignKey(to="Class", on_delete=models.SET_NULL, null=True, related_name="student_set")
+    parent = models.ForeignKey(
+        to="Parent", on_delete=models.SET_NULL, null=True, blank=True, related_name="student_set"
+    )
+    grade = models.ForeignKey(to="Class", on_delete=models.SET_NULL, null=True, blank=True, related_name="student_set")
     roll_no = models.IntegerField(verbose_name=_("Roll Number"))
     year_of_enroll = models.SmallIntegerField(verbose_name=_("Year of Enroll"))
     fee = models.IntegerField(verbose_name=_("Fee"))
+
+    objects: StudentManager = StudentManager()
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Student) and self.student == __o.student
@@ -171,11 +184,15 @@ class Student(models.Model):
 
 class Teacher(models.Model):
     teacher = models.OneToOneField(to="User", on_delete=models.CASCADE, primary_key=True, related_name="teacher")
-    subject = models.ForeignKey(to="Subject", on_delete=models.SET_NULL, null=True, related_name="teacher_set")
+    subject = models.ForeignKey(
+        to="Subject", on_delete=models.SET_NULL, null=True, blank=True, related_name="teacher_set"
+    )
     year_of_joining = models.IntegerField(verbose_name=_("Year of Joining"))
     salary = models.IntegerField(verbose_name=_("Salary"))
     classes = models.ManyToManyField(to="Class", related_name="teacher_set")
     owns_class = models.OneToOneField("Class", on_delete=models.SET_NULL, null=True, blank=True, related_name="teacher")
+
+    objects: TeacherManager = TeacherManager()
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Teacher) and self.teacher == __o.teacher
@@ -213,6 +230,8 @@ class Teacher(models.Model):
 class Parent(models.Model):
     parent = models.OneToOneField(to="User", on_delete=models.CASCADE, primary_key=True, related_name="parent")
 
+    objects: ParentManager = ParentManager()
+
     def get_students(self) -> QuerySet:
         return self.student_set.all()
 
@@ -240,6 +259,8 @@ class Management(models.Model):
     year_of_joining = models.IntegerField(verbose_name=_("Year of Joining"))
     salary = models.IntegerField(verbose_name=_("Salary"))
 
+    objects: ManagementManager = ManagementManager()
+
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Management) and self.management == __o.management
 
@@ -262,6 +283,11 @@ class Class(models.Model):
     id = models.AutoField(verbose_name=_("ID"), auto_created=True, primary_key=True)
     grade = models.CharField(verbose_name=_("Grade"), max_length=10)
     section = models.CharField(verbose_name=_("Section"), max_length=10, null=True, blank=True)
+
+    objects: ClassManager = ClassManager()
+
+    class Meta:
+        unique_together = ["grade", "section"]
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Class) and self.id == __o.id
@@ -326,6 +352,12 @@ class Subject(models.Model):
     id = models.AutoField(verbose_name=_("ID"), auto_created=True, primary_key=True)
     name = models.CharField(verbose_name=_("Name"), max_length=64)
     code = models.PositiveSmallIntegerField(verbose_name=_("Subject code"))
+
+    objects: SubjectManager = SubjectManager()
+
+
+    class Meta:
+        unique_together = ["name", "code"]
 
     def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Subject) and self.id == __o.id
