@@ -22,18 +22,24 @@ class ParentViewSet(APIView):
 
     def post(self, request: Request, format=None) -> Response:
         FIELDS = [
-            "parent",
+            "username",
+            "first_name",
+            "last_name",
+            "email_id",
+            "avatar",
+            "date_of_birth",
+            "gender",
+            "contact_no",
+            "address",
+            "password",
         ]
-        data = {}
+        data = {"user_type": "p"}
 
         for key in FIELDS:
             data[key] = request.data.get(key)
 
-        if isinstance(data["parent"], str):
-            data["parent"] = UserModel.objects.get(username=data["parent"])
-
         try:
-            parent: ParentModel = ParentModel.objects.create(**data)
+            parent: ParentModel = UserModel.objects.create(**data)
             return Response(
                 {
                     "status": "success",
@@ -47,4 +53,4 @@ class ParentViewSet(APIView):
         except ValidationError as e:
             return r.HTTP400Response(e.message)
         except AlreadyExists as e:
-            return r.HTTP400Response(f"Parent already exists with given data")
+            return r.HTTP400Response(f"User already exists with given {','.join(f for f in e.colliding_fields)}")

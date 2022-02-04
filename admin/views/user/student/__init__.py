@@ -22,25 +22,33 @@ class StudentViewSet(APIView):
 
     def post(self, request: Request, format=None) -> Response:
         FIELDS = [
-            "student",
+            "username",
+            "first_name",
+            "last_name",
+            "email_id",
+            "avatar",
+            "date_of_birth",
+            "gender",
+            "contact_no",
+            "address",
+            "password",
+            # Student-only fields
             "parent",
             "grade",
             "roll_no",
             "year_of_enroll",
             "fee",
         ]
-        data = {}
+        data = {"user_type": "s"}
 
         for key in FIELDS:
             data[key] = request.data.get(key)
 
-        if isinstance(data["student"], str):
-            data["student"] = UserModel.objects.get(username=data["student"])
         if isinstance(data["parent"], str):
             data["parent"] = UserModel.objects.get(username=data["parent"])
 
         try:
-            student: StudentModel = StudentModel.objects.create(**data)
+            student: StudentModel = UserModel.objects.create(**data)
             return Response(
                 {
                     "status": "success",
@@ -54,4 +62,4 @@ class StudentViewSet(APIView):
         except ValidationError as e:
             return r.HTTP400Response(e.message)
         except AlreadyExists as e:
-            return r.HTTP400Response(f"Student already exists with given data")
+            return r.HTTP400Response(f"User already exists with given {','.join(f for f in e.colliding_fields)}")

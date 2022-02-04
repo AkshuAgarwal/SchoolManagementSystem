@@ -22,7 +22,17 @@ class TeacherViewSet(APIView):
 
     def post(self, request: Request, format=None) -> Response:
         FIELDS = [
-            "teacher",
+            "username",
+            "first_name",
+            "last_name",
+            "email_id",
+            "avatar",
+            "date_of_birth",
+            "gender",
+            "contact_no",
+            "address",
+            "password",
+            # Teacher-only fields
             "subject",
             "year_of_joining",
             "salary",
@@ -34,11 +44,8 @@ class TeacherViewSet(APIView):
         for key in FIELDS:
             data[key] = request.data.get(key)
 
-        if isinstance(data["teacher"], str):
-            data["teacher"] = UserModel.objects.get(username=data["teacher"])
-
         try:
-            teacher: TeacherModel = TeacherModel.objects.create(**data)
+            teacher: TeacherModel = UserModel.objects.create(**data)
             return Response(
                 {
                     "status": "success",
@@ -52,4 +59,4 @@ class TeacherViewSet(APIView):
         except ValidationError as e:
             return r.HTTP400Response(e.message)
         except AlreadyExists as e:
-            return r.HTTP400Response(f"Teacher already exists with given data")
+            return r.HTTP400Response(f"User already exists with given {','.join(f for f in e.colliding_fields)}")

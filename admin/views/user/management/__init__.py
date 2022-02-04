@@ -22,20 +22,27 @@ class ManagementViewSet(APIView):
 
     def post(self, request: Request, format=None) -> Response:
         FIELDS = [
-            "management",
+            "username",
+            "first_name",
+            "last_name",
+            "email_id",
+            "avatar",
+            "date_of_birth",
+            "gender",
+            "contact_no",
+            "address",
+            "password",
+            # Management-only fields
             "year_of_joining",
             "salary",
         ]
-        data = {}
+        data = {"user_type": "m"}
 
         for key in FIELDS:
             data[key] = request.data.get(key)
 
-        if isinstance(data["management"], str):
-            data["management"] = UserModel.objects.get(username=data["management"])
-
         try:
-            management: ManagementModel = ManagementModel.objects.create(**data)
+            management: ManagementModel = UserModel.objects.create(**data)
             return Response(
                 {
                     "status": "success",
@@ -49,4 +56,4 @@ class ManagementViewSet(APIView):
         except ValidationError as e:
             return r.HTTP400Response(e.message)
         except AlreadyExists as e:
-            return r.HTTP400Response(f"Management already exists with given data")
+            return r.HTTP400Response(f"User already exists with given {','.join(f for f in e.colliding_fields)}")
