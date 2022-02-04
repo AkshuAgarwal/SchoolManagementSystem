@@ -39,7 +39,7 @@ class TeacherViewSet(APIView):
             "classes",
             "owns_class",
         ]
-        data = {}
+        data = {"user_type": "t"}
 
         for key in FIELDS:
             data[key] = request.data.get(key)

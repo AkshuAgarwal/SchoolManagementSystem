@@ -74,7 +74,7 @@ class StudentManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["student"])
 
-        if not 1000 < len(FIELDS["year_of_enroll"]) <= datetime.now().year:
+        if not 1000 < FIELDS["year_of_enroll"] <= datetime.now().year:
             raise ValidationError("Invalid year_of_enroll")
 
         student: StudentModel = self.model(**FIELDS, **extra_fields)
@@ -155,7 +155,7 @@ class TeacherManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["teacher"])
 
-        if not 1000 < len(FIELDS["year_of_joining"]) <= datetime.now().year:
+        if not 1000 < FIELDS["year_of_joining"] <= datetime.now().year:
             raise ValidationError("Invalid year_of_joining")
 
         teacher: TeacherModel = self.model(**FIELDS, **extra_fields)
@@ -242,7 +242,7 @@ class ManagementManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["management"])
 
-        if not 1000 < len(FIELDS["year_of_joining"]) <= datetime.now().year:
+        if not 1000 < FIELDS["year_of_joining"] <= datetime.now().year:
             raise ValidationError("Invalid year_of_joining")
 
         management: ManagementModel = self.model(**FIELDS, **extra_fields)
@@ -404,11 +404,16 @@ class UserManager(_BUM):
                 "salary": salary,
                 "owns_class": owns_class,
             }
-            user = apps.get_model("root.Teacher").objects.create(teacher=raw_user, *USERTYPE_FIELDS, nosave=True)
+            user = apps.get_model("root.Teacher").objects.create(teacher=raw_user, **USERTYPE_FIELDS, nosave=True)
         elif user_type == "p":
-            user = apps.get_model("root.Parent").objects.create(parent=raw_user, nosave=True)
+            USERTYPE_FIELDS = {}
+            user = apps.get_model("root.Parent").objects.create(parent=raw_user, **USERTYPE_FIELDS, nosave=True)
         elif user_type == "m":
-            user = apps.get_model("root.Management").objects.create(management=raw_user, nosave=True)
+            USERTYPE_FIELDS = {
+                "salary": salary,
+                "year_of_joining": year_of_joining,
+            }
+            user = apps.get_model("root.Management").objects.create(management=raw_user, **USERTYPE_FIELDS, nosave=True)
 
         # If we reached here, it means all validations are passed and we can safely save the user
         raw_user.save()

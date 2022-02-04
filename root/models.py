@@ -355,7 +355,6 @@ class Subject(models.Model):
 
     objects: SubjectManager = SubjectManager()
 
-
     class Meta:
         unique_together = ["name", "code"]
 

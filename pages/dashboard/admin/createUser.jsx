@@ -845,7 +845,7 @@ const FinalStep = ({ handleStart }) => {
                     userData = {
                         ...userData,
                         parent         : context.student.parentUsername[0],
-                        grade          : context.student.grade[0].id,
+                        grade          : context.student.grade[0]?.id,
                         roll_no        : context.student.rollNo[0],
                         year_of_enroll : new Date().getFullYear(),
                         fee            : context.student.fee[0],
@@ -855,11 +855,11 @@ const FinalStep = ({ handleStart }) => {
                     URL = 'teacher';
                     userData = {
                         ...userData,
-                        subject        : context.teacher.subject[0].id,
-                        year_of_enroll : new Date().getFullYear(),
-                        salary         : context.teacher.salary[0],
-                        classes        : context.teacher.classes[0].map(val => val.id),
-                        owns_class     : context.teacher.ownsClass[0].id,
+                        subject         : context.teacher.subject[0]?.id,
+                        year_of_joining : new Date().getFullYear(),
+                        salary          : context.teacher.salary[0],
+                        classes         : context.teacher.classes[0]?.map(val => val.id),
+                        owns_class      : context.teacher.ownsClass[0]?.id,
                     };
                     break;
                 case 'p':
@@ -872,8 +872,8 @@ const FinalStep = ({ handleStart }) => {
                     URL = 'management';
                     userData = {
                         ...userData,
-                        year_of_enroll : new Date().getFullYear(),
-                        salary         : context.management.salary[0],
+                        year_of_joining : new Date().getFullYear(),
+                        salary          : context.management.salary[0],
                     };
                     break;
             }
@@ -881,7 +881,7 @@ const FinalStep = ({ handleStart }) => {
             axios.post(`admin/user/${URL}/`, userData).then(response => {
                 if (response.status === 201) {
                     context.temp.success[1](true);
-                    alertData[1]({ show : true, severity : 'success', title : 'Success.', message : 'Created User' });
+                    alertData[1]({ show : true, severity : 'success', title : 'Success', message : 'Created User Successfully' });
                 }
             }).catch(e => {
                 if (e.response.status === 400) {
