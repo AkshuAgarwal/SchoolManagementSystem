@@ -129,7 +129,7 @@ class AuthViewSet(APIView):
             "data": {
                 **(
                     UserSerializer(
-                        request.user,
+                        user,
                         context={"request": request},
                         fields={"id", "username", "first_name", "last_name", "email_id", "avatar", "user_type"},
                     ).data
