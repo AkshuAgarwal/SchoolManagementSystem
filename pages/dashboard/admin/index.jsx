@@ -10,6 +10,7 @@ import { Sidebar } from '../../../components';
 import { AuthContext } from '../../../utils/js/context';
 
 import CreateUser from './createUser';
+import SearchUser from './searchUser';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -30,6 +31,7 @@ export default function Admin() {
         // { id: '', icon : null, avatar : null, text : '', onClick : () => {}, pageComponent : null }
         items: [
             { id : 'create-user', text : 'Create User', pageComponent : <CreateUser /> },
+            { id : 'search-user', text : 'Search User', pageComponent : <SearchUser /> },
         ],
         defaultItem: { id : 'dashboard', text : 'Dashboard' }
     };
