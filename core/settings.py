@@ -117,9 +117,6 @@ DATABASES = {
         "PORT": int(os.environ["DB_PORT"]),
         "NAME": os.environ["DB_NAME"],
         "TIME_ZONE": _CONSTANTS["TIME_ZONE"],
-        "TEST": {
-            "NAME": os.environ["TEST_DB_NAME"],
-        },
     },
 }
 
