@@ -494,7 +494,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                         type="tel"
                         value={contactNoWithoutCountryCode[0]}
                         onChange={event => contactNoWithoutCountryCode[1](event.target.value)}
-                        inputProps={{ minLength : 10, maxLength : 10, pattern : '[0-9]+', title : 'Contact No. can only contain numbers' }}
+                        inputProps={{ minLength : 10, maxLength : 10, inputMode : 'numeric', pattern : '[0-9]+', title : 'Contact No. can only contain numbers' }}
                         sx={{ paddingLeft : 0 }}
                     />
                 </FormControl>
@@ -505,6 +505,9 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     id="__dashboard_admin__form_createuser_step2__address"
                     label="Address"
                     inputRef={address}
+                    // defaultValue={address.current}
+                    // Not sure why it is re-rendering while focusing on poppers, for now just gonna *hack* it
+                    defaultValue={typeof address.current !== 'object' ? address.current : address.current?.value}
                     multiline
                     rows={3}
                     inputProps={{ maxLength : 1000 }}
@@ -939,7 +942,7 @@ const FinalStep = ({ handleStart }) => {
 };
 
 export default function CreateUser() {
-    const [ activeStep, setActiveStep ] = useState(2);
+    const [ activeStep, setActiveStep ] = useState(1);
 
     const handleStart = () => { setActiveStep(1); };
     const handleStepperBack = () => { setActiveStep(val => val - 1); };
