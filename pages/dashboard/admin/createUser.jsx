@@ -211,7 +211,11 @@ const AccountInfoStep = ({ handleStepperNext }) => {
     const checkPasswordValidation = () => {
         if (password.current.value === '') { passwordErrorMessages[1]([]); passwordError[1](false); }
         else {
-            axios.post('auth/password/validate/', { password : password.current.value })
+            axios.post('auth/password/validate/', {
+                username : typeof username.current !== 'object' ? username.current : username.current?.value,
+                email_id : typeof email.current !== 'object' ? email.current : email.current?.value,
+                password : password.current.value,
+            })
                 .then(response => { if (response.status === 200) { passwordErrorMessages[1]([]); passwordError[1](false); } })
                 .catch(e => { if (e.response.status === 400) { passwordErrorMessages[1](e.response.data.error.errors); passwordError[1](true); } });
         }

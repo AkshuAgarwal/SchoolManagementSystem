@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-from utils.py import http_responses as r
+from utils.py import http_responses as r, fake
 from root.models import User as UserModel
 
 if TYPE_CHECKING:
@@ -22,18 +22,30 @@ class PasswordValidationViewSet(APIView):
 
     def post(self, request: Request, format=None) -> Response:
         password = request.data.get("password")
-        username = request.data.get("username", None)
-
         if not password:
             return r.HTTP400Response("Missing 'password' parameter")
 
-        if not username:
-            user = None
-        else:
+        user = None
+
+        username = request.data.get("username")
+        if username:
             try:
                 user = UserModel.objects.get(username=username)
             except UserModel.DoesNotExist:
-                return r.HTTP404Response("No user found with the given username")
+                pass
+
+        if not user:
+            FIELDS = {
+                k: v
+                for k, v in {
+                    "username": username,
+                    "email_id": request.data.get("email_id"),
+                    "first_name": request.data.get("first_name"),
+                    "last_name": request.data.get("last_name"),
+                }.items()
+                if v is not None
+            }
+            user = fake.FakeUserForValidation(**FIELDS)
 
         try:
             validate_password(password, user)

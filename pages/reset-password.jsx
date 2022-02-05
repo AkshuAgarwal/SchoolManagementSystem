@@ -125,7 +125,7 @@ const PasswordChangerForm = ({ props }) => {
             setPasswordError(false);
         } else {
             axios.post(
-                'auth/password/validate/', { password : passwordRef.current.value }
+                'auth/password/validate/', { username : props.username, password : passwordRef.current.value }
             ).then(response => {
                 if (response.status === 200) {
                     setPasswordErrorMessages([]);
