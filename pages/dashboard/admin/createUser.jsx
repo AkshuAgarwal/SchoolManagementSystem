@@ -1,4 +1,4 @@
-import { createContext, useState, useRef, useContext, useEffect } from 'react';
+import { cloneElement, createContext, forwardRef, useState, useRef, useContext, useEffect } from 'react';
 
 import Image from 'next/image';
 
@@ -13,6 +13,8 @@ import {
     Step, StepLabel, Stepper, TextField, Typography
 } from '@mui/material';
 
+import { List as VirtualizedList, AutoSizer } from 'react-virtualized';
+
 import axios from '../../../utils/js/axios';
 import { countries } from '../../../utils/js/countries.js';
 
@@ -22,9 +24,9 @@ const _blankData = {
     password    : null,
     firstName   : null,
     lastName    : null,
-    userType    : null,
+    userType    : '',
     dateOfBirth : null,
-    gender      : null,
+    gender      : '',
     contactNo   : null,
     address     : null,
     avatar      : null,
@@ -192,7 +194,7 @@ const AccountInfoStep = ({ handleStepperNext }) => {
 
     const checkUniqueEmailValidation = () => {
         if (email.current.value !== '') {
-            axios.get('api/user/', { params : { email_id : email.current.value } })
+            axios.get('api/user/', { params : { email_id : String(email.current.value).toLowerCase() } })
                 .then(response => { response.status === 200 ? uniqueEmailError[1](true) : undefined; })
                 .catch(e => { e.response.status === 404 ? uniqueEmailError[1](false) : undefined; });
         } else uniqueEmailError[1](false);
@@ -228,7 +230,7 @@ const AccountInfoStep = ({ handleStepperNext }) => {
         e.preventDefault();
 
         context.username[1](username.current.value);
-        context.email[1](email.current.value);
+        context.email[1](String(email.current.value).toLowerCase());
         context.password[1](password.current.value);
 
         handleStepperNext();
@@ -318,6 +320,35 @@ const AccountInfoStep = ({ handleStepperNext }) => {
     );
 };
 
+// eslint-disable-next-line react/display-name
+const VirtualizedListboxComponent = forwardRef((props, ref) => {
+    const { children, ...other } = props;
+    const itemCount = Array.isArray(children) ? children.length : 0;
+
+    return (
+        <div ref={ref}>
+            <div {...other} style={{ flex : '1 1 auto', height : '100vh' }}>
+                <AutoSizer>
+                    {({ height, width }) => (
+                        <VirtualizedList
+                            height={height}
+                            width={width}
+                            rowCount={itemCount}
+                            rowHeight={40}
+                            overscancount={5}
+                            rowRenderer={props => {
+                                return cloneElement(children[props.index], {
+                                    style: props.style
+                                });
+                            }}
+                        />
+                    )}
+                </AutoSizer>
+            </div>
+        </div>
+    );
+});
+
 const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
     const context = useContext(CreateUserContext);
 
@@ -325,7 +356,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
     const lastName = useRef(context.lastName[0]);
     const userType = useState(context.userType[0]);
     const gender = useState(context.gender[0]);
-    const address = useState(context.address[0]);
+    const address = useRef(context.address[0]);
     const dateOfBirth = useState(context.dateOfBirth[0]);
 
     const countryCode = useState(context.temp.step2.countryCode[0]);
@@ -344,12 +375,12 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
 
         context.firstName[1](firstName.current.value);
         context.lastName[1](lastName.current.value);
-        context.userType[1](userType.current.value);
-        context.gender[1](gender.current.value);
+        context.userType[1](userType[0]);
+        context.gender[1](gender[0]);
         context.address[1](address.current.value);
         context.dateOfBirth[1](dateOfBirth[0]);
         context.contactNo[1](`+${countryCode[0].code}${contactNoWithoutCountryCode[0]}`);
-        context.avatar[1](context.temp.step2.avatarImage[0] ? await getURLFromFile(context.temp.step2.avatarImage[0]) : null);
+        context.avatar[1](avatarImage[0] ? await getURLFromFile(avatarImage[0]) : null);
 
         context.temp.step2.countryCode[1](countryCode[0]);
         context.temp.step2.contactNoWithoutCountryCode[1](contactNoWithoutCountryCode[0]);
@@ -396,8 +427,8 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <Select
                         labelId="__dashboard_admin__form_createuser_step2__usertype"
                         label="User Type"
-                        inputRef={userType}
-                        defaultValue={userType.current ? userType.current : ''}
+                        value={userType[0]}
+                        onChange={event => userType[1](event.target.value)}
                     >
                         <MenuItem value="s">Student</MenuItem>
                         <MenuItem value="t">Teacher</MenuItem>
@@ -410,8 +441,8 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <Select
                         labelId="__dashboard_admin__form_createuser_step2__gender"
                         label="Gender"
-                        inputRef={gender}
-                        defaultValue={gender.current ? gender.current : ''}
+                        value={gender[0]}
+                        onChange={event => gender[1](event.target.value)}
                     >
                         <MenuItem value="m">Male</MenuItem>
                         <MenuItem value="f">Female</MenuItem>
@@ -420,9 +451,10 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                 </FormControl>
             </Container>
             <Container sx={{ display : 'flex', flexDirection : 'row', gap : '5px' }} disableGutters>
-                <FormControl margin="normal" sx={{ width : '45%' }} required>
+                <FormControl margin="normal" sx={{ width : { xs : '80%', md : '45%' } }} required>
                     <Autocomplete
                         autoHighlight
+                        ListboxComponent={VirtualizedListboxComponent}
                         options={countries}
                         getOptionLabel={option => `+${option.code}` }
                         filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `+${option.code}`, trim : true })}
@@ -460,6 +492,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                         id="__dashboard_admin__form_createuser_step2__contactno"
                         label="Contact No."
                         type="tel"
+                        value={contactNoWithoutCountryCode[0]}
                         onChange={event => contactNoWithoutCountryCode[1](event.target.value)}
                         inputProps={{ minLength : 10, maxLength : 10, pattern : '[0-9]+', title : 'Contact No. can only contain numbers' }}
                         sx={{ paddingLeft : 0 }}
@@ -845,7 +878,7 @@ const FinalStep = ({ handleStart }) => {
                     userData = {
                         ...userData,
                         parent         : context.student.parentUsername[0],
-                        grade          : context.student.grade[0]?.id,
+                        grade          : context.student.class[0]?.id,
                         roll_no        : context.student.rollNo[0],
                         year_of_enroll : new Date().getFullYear(),
                         fee            : context.student.fee[0],
@@ -906,7 +939,7 @@ const FinalStep = ({ handleStart }) => {
 };
 
 export default function CreateUser() {
-    const [ activeStep, setActiveStep ] = useState(1);
+    const [ activeStep, setActiveStep ] = useState(2);
 
     const handleStart = () => { setActiveStep(1); };
     const handleStepperBack = () => { setActiveStep(val => val - 1); };
