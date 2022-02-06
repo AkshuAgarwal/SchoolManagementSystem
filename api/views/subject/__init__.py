@@ -39,3 +39,29 @@ class SubjectViewSet(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+    def post(self, request: Request, format=None) -> Response:
+        name = request.data.get("name")
+        code = request.data.get("code")
+
+        if not name or not code:
+            return r.HTTP400Response("Missing 'name' or 'code' parameter")
+
+        try:
+            code = int(code)
+        except ValueError:
+            return r.HTTP400Response("'code' must be an integer")
+
+        try:
+            subject = SubjectModel.objects.create(name=name, code=code)
+        except AlreadyExists:
+            return r.HTTP400Response("Subject already exists with the given parameters")
+
+        return Response(
+            {
+                "status": "success",
+                "status_code": status.HTTP_201_CREATED,
+                "data": SubjectSerializer(subject).data,
+            },
+            status=status.HTTP_201_CREATED,
+        )

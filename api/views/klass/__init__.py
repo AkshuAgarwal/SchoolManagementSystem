@@ -40,3 +40,24 @@ class ClassViewSet(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+    def post(self, request: Request, format=None) -> Response:
+        grade = request.data.get("name")
+        section = request.data.get("code")
+
+        if not grade:
+            return r.HTTP400Response("Missing 'grade' parameter")
+
+        try:
+            klass = ClassModel.objects.create(grade=grade, section=section)
+        except AlreadyExists:
+            return r.HTTP400Response("Class already exists with the given parameters")
+
+        return Response(
+            {
+                "status": "success",
+                "status_code": status.HTTP_201_CREATED,
+                "data": ClassSerializer(klass).data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
