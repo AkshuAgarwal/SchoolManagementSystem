@@ -1,10 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from dateutil import parser as dateparser
-
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator, EmailValidator
 from django.contrib.auth.models import AbstractBaseUser as _ABU, PermissionsMixin as _PM
 from django.utils.translation import gettext_lazy as _
@@ -15,8 +12,6 @@ from .managers import (
     TeacherManager,
     ParentManager,
     ManagementManager,
-    ClassManager,
-    SubjectManager,
 )
 from utils.py.files import get_asset_directory_path
 
@@ -154,7 +149,9 @@ class Student(models.Model):
     parent = models.ForeignKey(
         to="Parent", on_delete=models.SET_NULL, null=True, blank=True, related_name="student_set"
     )
-    grade = models.ForeignKey(to="Class", on_delete=models.SET_NULL, null=True, blank=True, related_name="student_set")
+    grade = models.ForeignKey(
+        to="api.Class", on_delete=models.SET_NULL, null=True, blank=True, related_name="student_set"
+    )
     roll_no = models.IntegerField(verbose_name=_("Roll Number"))
     year_of_enroll = models.SmallIntegerField(verbose_name=_("Year of Enroll"))
     fee = models.IntegerField(verbose_name=_("Fee"))
@@ -178,19 +175,18 @@ class Student(models.Model):
     def __int__(self) -> int:
         return int(self.student.id)
 
-    def get_attendance(self):
-        return self.attandance_set.all()
-
 
 class Teacher(models.Model):
     teacher = models.OneToOneField(to="User", on_delete=models.CASCADE, primary_key=True, related_name="teacher")
     subject = models.ForeignKey(
-        to="Subject", on_delete=models.SET_NULL, null=True, blank=True, related_name="teacher_set"
+        to="api.Subject", on_delete=models.SET_NULL, null=True, blank=True, related_name="teacher_set"
     )
     year_of_joining = models.IntegerField(verbose_name=_("Year of Joining"))
     salary = models.IntegerField(verbose_name=_("Salary"))
-    classes = models.ManyToManyField(to="Class", related_name="teacher_set")
-    owns_class = models.OneToOneField("Class", on_delete=models.SET_NULL, null=True, blank=True, related_name="teacher")
+    classes = models.ManyToManyField(to="api.Class", related_name="teacher_set")
+    owns_class = models.OneToOneField(
+        "api.Class", on_delete=models.SET_NULL, null=True, blank=True, related_name="teacher"
+    )
 
     objects: TeacherManager = TeacherManager()
 
@@ -214,17 +210,6 @@ class Teacher(models.Model):
 
     def __int__(self) -> int:
         return int(self.teacher.id)
-
-    def get_assignments(self):
-        return self.assignment_set.all()
-
-    def get_assignments_by_date(self, date):
-        try:
-            _date = dateparser.parse(date).date()
-        except dateparser.ParserError:
-            return ValueError("Bad date format passed")
-
-        return self.assignment_set.filter(date=_date)
 
 
 class Parent(models.Model):
@@ -277,103 +262,3 @@ class Management(models.Model):
 
     def __int__(self) -> int:
         return int(self.management.id)
-
-
-class Class(models.Model):
-    id = models.AutoField(verbose_name=_("ID"), auto_created=True, primary_key=True)
-    grade = models.CharField(verbose_name=_("Grade"), max_length=10)
-    section = models.CharField(verbose_name=_("Section"), max_length=10, null=True, blank=True)
-
-    objects: ClassManager = ClassManager()
-
-    class Meta:
-        unique_together = ["grade", "section"]
-
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, Class) and self.id == __o.id
-
-    def __ne__(self, __o: object) -> bool:
-        if not isinstance(__o, Class):
-            return True
-        return self.id != __o.id
-
-    def __repr__(self) -> str:
-        string = f"<Class id={self.id} grade={self.grade}"
-        if self.section:
-            string += f" section={self.section}"
-        string += ">"
-        return string
-
-    def __str__(self) -> str:
-        _class = self.grade
-        if self.section:
-            _class += " " + self.section
-        return _class
-
-    def __int__(self) -> int:
-        return int(self.id)
-
-    def get_class_teacher(self):
-        try:
-            return self.teacher
-        except ObjectDoesNotExist:
-            return None
-
-    def get_teachers(self):
-        return self.teacher_set.all()
-
-    def get_students(self):
-        return self.student_set.all()
-
-    def get_assignments(self):
-        return self.assignment_set.all()
-
-    def get_assignments_by_date(self, date):
-        try:
-            _date = dateparser.parse(date).date()
-        except dateparser.ParserError:
-            return ValueError("Bad date format passed")
-
-        return self.assignment_set.filter(date=_date)
-
-    def get_timetable(self):
-        return self.timetable_set.all()
-
-    def get_timetable_by_date(self, date):
-        try:
-            _date = dateparser.parse(date).date()
-        except dateparser.ParserError:
-            return ValueError("Bad date format passed")
-
-        return self.timetable_set.filter(date=_date)
-
-
-class Subject(models.Model):
-    id = models.AutoField(verbose_name=_("ID"), auto_created=True, primary_key=True)
-    name = models.CharField(verbose_name=_("Name"), max_length=64)
-    code = models.PositiveSmallIntegerField(verbose_name=_("Subject code"))
-
-    objects: SubjectManager = SubjectManager()
-
-    class Meta:
-        unique_together = ["name", "code"]
-
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, Subject) and self.id == __o.id
-
-    def __ne__(self, __o: object) -> bool:
-        if not isinstance(__o, Subject):
-            return True
-        return self.id != __o.id
-
-    def __repr__(self) -> str:
-        return f"<Subject name={self.name} code={self.code}>"
-
-    def __str__(self) -> str:
-        return self.name
-
-    def __int__(self) -> int:
-        return int(self.code)
-
-    def get_teachers(self):
-        return self.teacher_set.all()

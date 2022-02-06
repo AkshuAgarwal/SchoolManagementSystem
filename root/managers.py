@@ -24,9 +24,10 @@ if TYPE_CHECKING:
         Teacher as TeacherModel,
         Parent as ParentModel,
         Management as ManagementModel,
-        Class as ClassModel,
-        Subject as SubjectModel,
     )
+
+    from api.views.subject.models import Subject as SubjectModel
+    from api.views.klass.models import Class as ClassModel
 
 
 class StudentManager(models.Manager):
@@ -655,67 +656,3 @@ class UserManager(_BUM):
         user.save()
 
         return user
-
-
-class ClassManager(models.Manager):
-    REQUIRED_FIELDS = ["grade"]
-
-    def create(
-        self,
-        *,
-        grade: str,
-        section: Optional[str] = None,
-        **extra_fields: Any,
-    ) -> ClassModel:
-        FIELDS = {
-            "grade": grade,
-            "section": section,
-        }
-
-        missing_fields = []
-        for required_field in self.REQUIRED_FIELDS:
-            if not FIELDS.get(required_field):
-                missing_fields.append(required_field)
-        if missing_fields:
-            raise MissingRequiredFields(missing_fields=missing_fields)
-
-        _existing_classes = self.filter(**FIELDS)
-        if _existing_classes:
-            raise AlreadyExists()
-
-        klass: ClassModel = self.model(**FIELDS, **extra_fields)
-        klass.save()
-
-        return klass
-
-
-class SubjectManager(models.Manager):
-    REQUIRED_FIELDS = ["name", "code"]
-
-    def create(
-        self,
-        *,
-        name: str,
-        code: int,
-        **extra_fields: Any,
-    ) -> SubjectModel:
-        FIELDS = {
-            "name": name,
-            "code": code,
-        }
-
-        missing_fields = []
-        for required_field in self.REQUIRED_FIELDS:
-            if not FIELDS.get(required_field):
-                missing_fields.append(required_field)
-        if missing_fields:
-            raise MissingRequiredFields(missing_fields=missing_fields)
-
-        _existing_subjects = self.filter(**FIELDS)
-        if _existing_subjects:
-            raise AlreadyExists()
-
-        subject: SubjectModel = self.model(**FIELDS, **extra_fields)
-        subject.save()
-
-        return subject

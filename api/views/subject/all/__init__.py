@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from root.models import Subject as SubjectModel
-from root.serializers import SubjectSerializer
+from ..serializers import SubjectSerializer
+from ..models import Subject as SubjectModel
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -22,10 +22,7 @@ class SubjectAllViewSet(APIView):
             {
                 "status": "success",
                 "status_code": status.HTTP_200_OK,
-                "data": [
-                    SubjectSerializer(subject, context={"request": request}, fields={"id", "name", "code"}).data
-                    for subject in subjects
-                ],
+                "data": [SubjectSerializer(subject).data for subject in subjects],
             },
             status=status.HTTP_200_OK,
         )

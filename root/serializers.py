@@ -3,7 +3,17 @@ from typing import TYPE_CHECKING
 
 from rest_framework import serializers
 
-from .models import FileAssets, ImageAssets, Management, Parent, Student, Subject, Teacher, User, Class
+from .models import (
+    FileAssets as FileAssetsModel,
+    ImageAssets as ImageAssetsModel,
+    Management as ManagementModel,
+    Parent as ParentModel,
+    Student as StudentModel,
+    Teacher as TeacherModel,
+    User as UserModel,
+)
+from api.views.subject.serializers import SubjectSerializer
+from api.views.klass.serializers import ClassSerializer
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -23,12 +33,12 @@ class FileAssetsSerializer(serializers.Serializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-    def get_file(self, obj: FileAssets) -> str:
+    def get_file(self, obj: FileAssetsModel) -> str:
         request: Request = self.context["request"]
         return request.build_absolute_uri(obj.file.url)
 
     class Meta:
-        model = FileAssets
+        model = FileAssetsModel
         fields = ["id", "file", "uploaded_at"]
 
 
@@ -46,12 +56,12 @@ class ImageAssetsSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-    def get_image(self, obj: ImageAssets) -> str:
+    def get_image(self, obj: ImageAssetsModel) -> str:
         request: Request = self.context["request"]
         return request.build_absolute_uri(obj.image.url)
 
     class Meta:
-        model = ImageAssets
+        model = ImageAssetsModel
         fields = ["id", "image", "uploaded_at"]
 
 
@@ -69,14 +79,14 @@ class UserSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-    def get_avatar(self, obj: User) -> str:
+    def get_avatar(self, obj: UserModel) -> str:
         data = ImageAssetsSerializer(
             instance=obj.avatar, fields={"image"}, context={"request": self.context["request"]}
         ).data
         return data.get("image")
 
     class Meta:
-        model = User
+        model = UserModel
         fields = [
             "id",
             "username",
@@ -90,48 +100,6 @@ class UserSerializer(serializers.ModelSerializer):
             "contact_no",
             "address",
             "date_joined",
-        ]
-
-
-class ClassSerializer(serializers.ModelSerializer):
-    def __init__(self, *args, **kwargs) -> None:
-        fields = kwargs.pop("fields", None)
-
-        super().__init__(*args, **kwargs)
-
-        if fields is not None:
-            allowed = set(fields)
-            existing = set(self.fields)
-            for field_name in existing - allowed:
-                self.fields.pop(field_name)
-
-    class Meta:
-        model = Class
-        fields = [
-            "id",
-            "grade",
-            "section",
-        ]
-
-
-class SubjectSerializer(serializers.ModelSerializer):
-    def __init__(self, *args, **kwargs) -> None:
-        fields = kwargs.pop("fields", None)
-
-        super().__init__(*args, **kwargs)
-
-        if fields is not None:
-            allowed = set(fields)
-            existing = set(self.fields)
-            for field_name in existing - allowed:
-                self.fields.pop(field_name)
-
-    class Meta:
-        model = Subject
-        fields = [
-            "id",
-            "name",
-            "code",
         ]
 
 
@@ -153,7 +121,7 @@ class ParentSerializer(serializers.ModelSerializer):
     parent = UserSerializer()
 
     class Meta:
-        model = Parent
+        model = ParentModel
         fields = [
             "parent",
         ]
@@ -179,7 +147,7 @@ class StudentSerializer(serializers.ModelSerializer):
     grade = ClassSerializer(allow_null=True)
 
     class Meta:
-        model = Student
+        model = StudentModel
         fields = [
             "id",
             "student",
@@ -212,7 +180,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     owns_class = ClassSerializer(allow_null=True)
 
     class Meta:
-        model = Teacher
+        model = TeacherModel
         fields = [
             "teacher",
             "subject",
@@ -241,7 +209,7 @@ class ManagementSerializer(serializers.ModelSerializer):
     management = UserSerializer()
 
     class Meta:
-        model = Management
+        model = ManagementModel
         fields = [
             "management",
             "role",

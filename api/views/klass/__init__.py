@@ -5,9 +5,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .models import Class as ClassModel
+from .serializers import ClassSerializer
 from utils.py import http_responses as r
-from root.models import Class as ClassModel
-from root.serializers import ClassSerializer
+from utils.py.exceptions import AlreadyExists
+
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -34,7 +36,7 @@ class ClassViewSet(APIView):
             {
                 "status": "success",
                 "status_code": status.HTTP_200_OK,
-                "data": ClassSerializer(klass, context={"request": request}, fields={"id", "grade", "section"}).data,
+                "data": ClassSerializer(klass).data,
             },
             status=status.HTTP_200_OK,
         )

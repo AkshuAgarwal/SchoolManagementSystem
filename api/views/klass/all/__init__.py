@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from root.models import Class as ClassModel
-from root.serializers import ClassSerializer
+from ..models import Class as ClassModel
+from ..serializers import ClassSerializer
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -22,10 +22,7 @@ class ClassAllViewSet(APIView):
             {
                 "status": "success",
                 "status_code": status.HTTP_200_OK,
-                "data": [
-                    ClassSerializer(klass, context={"request": request}, fields={"id", "grade", "section"}).data
-                    for klass in classes
-                ],
+                "data": [ClassSerializer(klass).data for klass in classes],
             },
             status=status.HTTP_200_OK,
         )

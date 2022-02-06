@@ -6,8 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from utils.py import http_responses as r
-from root.models import Subject as SubjectModel
-from root.serializers import SubjectSerializer
+from .serializers import SubjectSerializer
+from .models import Subject as SubjectModel
+from utils.py.exceptions import AlreadyExists
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -34,7 +35,7 @@ class SubjectViewSet(APIView):
             {
                 "status": "success",
                 "status_code": status.HTTP_200_OK,
-                "data": SubjectSerializer(subject, context={"request": request}, fields={"id", "name", "code"}).data,
+                "data": SubjectSerializer(subject).data,
             },
             status=status.HTTP_200_OK,
         )
