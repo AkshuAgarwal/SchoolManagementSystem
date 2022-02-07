@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Union, TYPE_CHECKING
 
 from django.db import models
 from django.core.validators import RegexValidator, EmailValidator
@@ -13,10 +13,12 @@ from .managers import (
     ParentManager,
     ManagementManager,
 )
-from utils.py.files import get_asset_directory_path
+from utils.py.utils import get_asset_directory_path
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
+
+    from api.views.klass.models import Class as ClassModel
 
 
 class FileAssets(models.Model):
@@ -210,6 +212,12 @@ class Teacher(models.Model):
 
     def __int__(self) -> int:
         return int(self.teacher.id)
+
+    def get_assignments(self) -> QuerySet:
+        return self.assignment_set.all()
+
+    def get_assignments_for_class(self, klass: Union[int, ClassModel]) -> QuerySet:
+        return self.assignment_set.filter(assigned_to=klass)
 
 
 class Parent(models.Model):

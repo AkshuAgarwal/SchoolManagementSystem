@@ -31,13 +31,12 @@ class ContactViewSet(APIView):
             email_id=data.get("email_id"),
             message=data.get("message"),
         )
-        serializer = ContactSerializer(contact_message)
 
         return Response(
             {
                 "status": "success",
                 "status_code": status.HTTP_201_CREATED,
-                "data": serializer.data,
+                "data": ContactSerializer(contact_message).data,
             },
             status=status.HTTP_201_CREATED,
         )

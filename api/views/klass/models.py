@@ -1,10 +1,18 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Optional
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from .managers import ClassManager
+
+if TYPE_CHECKING:
+    from datetime import date
+
+    from django.db.models.query import QuerySet
+
+    from root.models import Teacher as TeacherModel
 
 
 class Class(models.Model):
@@ -41,14 +49,20 @@ class Class(models.Model):
     def __int__(self) -> int:
         return int(self.id)
 
-    def get_class_teacher(self):
+    def get_class_teacher(self) -> Optional[TeacherModel]:
         try:
             return self.teacher
         except ObjectDoesNotExist:
             return None
 
-    def get_teachers(self):
+    def get_teachers(self) -> QuerySet:
         return self.teacher_set.all()
 
-    def get_students(self):
+    def get_students(self) -> QuerySet:
         return self.student_set.all()
+
+    def get_assignments(self) -> QuerySet:
+        return self.assignment_set.all()
+
+    def get_assignments_by_date(self, date: date) -> QuerySet:
+        return self.assignment_set.filter(assigned_at=date)
