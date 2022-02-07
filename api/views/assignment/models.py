@@ -10,10 +10,10 @@ class Assignment(models.Model):
     id = models.AutoField(verbose_name=_("ID"), auto_created=True, primary_key=True)
     title = models.CharField(verbose_name=_("Title"), max_length=1000)
     assigned_at = models.DateTimeField(verbose_name=_("Assigned at"), auto_created=True, auto_now_add=True)
-    assigned_by = models.ForeignKey(to="root.Teacher", on_delete=models.SET_NULL, related_name="assignment_set")
-    assigned_to = models.ManyToManyField(to="Class", on_delete=models.SET_NULL, related_name="assignment_set")
+    assigned_by = models.ForeignKey(to="root.Teacher", on_delete=models.CASCADE, related_name="assignment_set")
+    assigned_to = models.ManyToManyField(to="Class", related_name="assignment_set")
     submission_date = models.DateField(verbose_name=_("Submission Date"), blank=True, null=True)
-    file = models.ForeignKey(to="root.FileAssets", on_delete=models.SET_NULL)
+    file = models.ForeignKey(to="root.FileAssets", on_delete=models.CASCADE)
     message = models.CharField(verbose_name=_("Message"), max_length=1000, blank=True, null=True)
 
     objects: AssignmentManager = AssignmentManager()
