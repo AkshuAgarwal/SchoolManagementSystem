@@ -15,7 +15,7 @@ from django.contrib.auth.base_user import BaseUserManager as _BUM
 from django.contrib.auth.password_validation import validate_password
 
 from utils.py.exceptions import AlreadyExists, MissingRequiredFields
-from utils.py.files import parse_data_scheme
+from utils.py.utils import DataURI
 
 if TYPE_CHECKING:
     from .models import (
@@ -146,6 +146,8 @@ class TeacherManager(models.Manager):
 
         if isinstance(FIELDS["teacher"], int):
             FIELDS["teacher_id"] = FIELDS.pop("teacher")
+        if isinstance(FIELDS["subject"], int):
+            FIELDS["subject_id"] = FIELDS.pop("subject")
         if isinstance(FIELDS["owns_class"], int):
             FIELDS["owns_class_id"] = FIELDS.pop("owns_class")
 
@@ -514,18 +516,20 @@ class UserManager(_BUM):
             raise AlreadyExists(colliding_fields=list(colliding_fields))
 
         # Creating Avatar
-        if pfp_scheme := FIELDS.get("avatar"):
-            __parsed = parse_data_scheme(pfp_scheme)
+        if avatar_uri := FIELDS.get("avatar"):
+            uri = DataURI(avatar_uri)
 
-            if __parsed["type"] != "image":
-                raise ValidationError("Invalid avatar data URI")
+            if uri.mimetype.split("/")[0] != "image":
+                raise ValidationError("Invalid Avatar Data URI")
 
-            if x := __parsed["format"] not in {"jpg", "jpeg", "png", "gif"}:
-                raise ValidationError(f"Image format {x!r} is invalid or not supported")
+            extension = uri.extension
+
+            if extension not in {"jpg", "jpeg", "png", "gif"}:
+                raise ValidationError(f"Image format {format!r} is invalid or not supported")
 
             _image = ImageFile(
-                file=__parsed["file_like"],
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{__parsed['format']}",
+                file=uri.stream,
+                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}",
             )
 
             asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
@@ -628,18 +632,20 @@ class UserManager(_BUM):
             raise AlreadyExists(colliding_fields=list(colliding_fields))
 
         # Creating Avatar
-        if pfp_scheme := FIELDS.get("avatar"):
-            __parsed = parse_data_scheme(pfp_scheme)
+        if avatar_uri := FIELDS.get("avatar"):
+            uri = DataURI(avatar_uri)
 
-            if __parsed["type"] != "image":
-                raise ValidationError("Invalid avatar data URI")
+            if uri.mimetype.split("/")[0] != "image":
+                raise ValidationError("Invalid Avatar Data URI")
 
-            if x := __parsed["format"] not in {"jpg", "jpeg", "png", "gif"}:
-                raise ValidationError(f"Image format {x!r} is invalid or not supported")
+            extension = uri.extension
+
+            if extension not in {"jpg", "jpeg", "png", "gif"}:
+                raise ValidationError(f"Image extension {format!r} is invalid or not supported")
 
             _image = ImageFile(
-                file=__parsed["file_like"],
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{__parsed['format']}",
+                file=uri.stream,
+                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}",
             )
 
             asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
