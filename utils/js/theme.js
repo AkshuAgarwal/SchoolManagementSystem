@@ -16,7 +16,7 @@ const lightThemeOptions = {
         },
         background: {
             default : '#efe2e2',
-            paper   : '#3159cb',
+            paper   : '#384692',
         },
         text: {
             primary   : '#ffffff',
@@ -44,6 +44,13 @@ const lightThemeOptions = {
         MuiAlert: {
             defaultProps: {
                 variant: 'filled',
+            },
+        },
+        MuiOutlinedInput: {
+            styleOverrides: {
+                notchedOutline: {
+                    borderColor: '#ffffff',
+                },
             },
         },
     },
