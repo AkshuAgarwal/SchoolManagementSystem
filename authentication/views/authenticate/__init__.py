@@ -6,11 +6,12 @@ from django.middleware import csrf
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 
-from rest_framework import status, HTTP_HEADER_ENCODING
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import AUTH_HEADER_TYPES
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
 from utils.py import http_responses as r
@@ -42,16 +43,16 @@ class AuthViewSet(APIView):
             refresh = RefreshToken(outstanding_token.token)
 
             # `RefreshToken.access_token` generates a new token instead of getting the old one
-            # For returning original token, we need to fetch it from Cookies or Headers
+            # For returning original token, we need to fetch it from Header or Cookie
             def get_access_token():
                 header = request.META.get(settings.SIMPLE_JWT["AUTH_HEADER_NAME"])
-                if isinstance(header, str):
-                    header = header.encode(HTTP_HEADER_ENCODING)
 
-                if header is None:
-                    access = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"])
-                else:
+                if header:
                     access = header.split()[1]
+                else:
+                    cookie = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"])
+                    access = cookie.split()[1]
+
                 return access
 
             access = get_access_token()
@@ -68,7 +69,7 @@ class AuthViewSet(APIView):
                                 fields={"id", "username", "first_name", "last_name", "email_id", "avatar", "user_type"},
                             ).data
                         ),
-                        "access_token": str(access),
+                        "access_token": f"{AUTH_HEADER_TYPES[0]} {str(access)}",
                         "refresh_token": str(refresh),
                     },
                 },
@@ -106,7 +107,7 @@ class AuthViewSet(APIView):
 
         _response.set_cookie(
             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
-            value=data["access"],
+            value=f"{AUTH_HEADER_TYPES[0]} {data['access']}",
             max_age=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds(),
             path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
             secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
@@ -134,11 +135,10 @@ class AuthViewSet(APIView):
                         fields={"id", "username", "first_name", "last_name", "email_id", "avatar", "user_type"},
                     ).data
                 ),
-                "access_token": data["access"],
+                "access_token": f"{AUTH_HEADER_TYPES[0]} {data['access']}",
                 "refresh_token": data["refresh"],
             },
         }
-
         _response.status_code = status.HTTP_200_OK
 
         update_last_login(None, user)

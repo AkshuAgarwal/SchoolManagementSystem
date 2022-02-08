@@ -10,9 +10,9 @@ from django.contrib.auth.backends import ModelBackend
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework_simplejwt.backends import TokenBackend
-from rest_framework_simplejwt.settings import api_settings as simplejwt_api_settings
 from rest_framework_simplejwt.utils import datetime_to_epoch
 from rest_framework_simplejwt.exceptions import TokenBackendError
+from rest_framework_simplejwt.settings import api_settings as simplejwt_api_settings
 
 from core.redis import redis_client
 from root.models import User as UserModel

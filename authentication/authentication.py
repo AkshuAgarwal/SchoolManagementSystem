@@ -6,9 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework.authentication import CSRFCheck
 from rest_framework.exceptions import PermissionDenied
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.settings import api_settings as simplejwt_settings
+from rest_framework_simplejwt.authentication import JWTAuthentication, HTTP_HEADER_ENCODING
 
 if TYPE_CHECKING:
     from django.http.request import HttpRequest
@@ -30,13 +30,19 @@ def enforce_csrf(request: HttpRequest) -> None:
 
 
 class CSRFExemptAuthentication(JWTAuthentication):
-    def authenticate(self, request: HttpRequest) -> Tuple[Optional[UserModel], AccessToken]:
+    def authenticate(self, request: HttpRequest) -> Optional[Tuple[UserModel, AccessToken]]:
         header = self.get_header(request)
 
-        if header is None:
-            raw_token = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"]) or None
-        else:
+        if header:
             raw_token = self.get_raw_token(header)
+        else:
+            cookie = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"]) or None
+            if not cookie:
+                return None
+
+            # Process the cookie to use it in get_raw_token in place of header
+            cookie = cookie.encode(HTTP_HEADER_ENCODING)
+            raw_token = self.get_raw_token(cookie)
 
         if raw_token is None:
             return None
