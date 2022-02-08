@@ -28,7 +28,7 @@ class AssignmentManager(models.Manager):
         file: Union[int, FileAssetsModel],
         message: Optional[str] = None,
         nosave: Optional[bool] = False,
-        extra_fields: Any,
+        **extra_fields: Any,
     ) -> AssignmentModel:
         FIELDS = {
             "title": title,
@@ -66,6 +66,6 @@ class AssignmentManager(models.Manager):
         assignment: AssignmentModel = self.model(**FIELDS, **extra_fields)
         if not nosave:
             assignment.save()
-            assignment.assigned_to.add(assigned_to)
+            assignment.assigned_to.add(*assigned_to)
 
         return assignment
