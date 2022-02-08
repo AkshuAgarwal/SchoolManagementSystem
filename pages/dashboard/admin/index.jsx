@@ -11,6 +11,7 @@ import { AuthContext } from '../../../utils/js/context';
 
 import CreateUser from './createUser';
 import SearchUser from './searchUser';
+import CreateClass from './createClass';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -32,6 +33,7 @@ export default function Admin() {
         items: [
             { id : 'create-user', text : 'Create User', pageComponent : <CreateUser /> },
             { id : 'search-user', text : 'Search User', pageComponent : <SearchUser /> },
+            { id : 'create-class', text : 'Create Class', pageComponent : <CreateClass /> },
         ],
         defaultItem: { id : 'dashboard', text : 'Dashboard' }
     };

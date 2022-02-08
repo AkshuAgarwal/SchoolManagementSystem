@@ -10,6 +10,7 @@ import { Sidebar } from '../../../components';
 import { AuthContext } from '../../../utils/js/context';
 
 import SearchUser from './searchUser';
+import CreateClass from './createClass';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -30,6 +31,7 @@ export default function Management() {
         // { id: '', icon : null, avatar : null, text : '', onClick : () => {}, pageComponent : null }
         items: [
             { id : 'search-user', text : 'Search User', pageComponent : <SearchUser /> },
+            { id : 'create-class', text : 'Create Class', pageComponent : <CreateClass /> },
         ],
         defaultItem: { id : 'dashboard', text : 'Dashboard' }
     };
