@@ -367,7 +367,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
     const contactNoWithoutCountryCode = useState(context.temp.step2.contactNoWithoutCountryCode[0]);
     const avatarImage = useState(context.temp.step2.avatarImage[0]);
 
-    const getURLFromFile = file => new Promise((resolve, reject) => {
+    const getURIFromFile = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
@@ -384,7 +384,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
         context.address[1](address.current.value);
         context.dateOfBirth[1](dateOfBirth[0]);
         context.contactNo[1](`+${countryCode[0].code}${contactNoWithoutCountryCode[0]}`);
-        context.avatar[1](avatarImage[0] ? await getURLFromFile(avatarImage[0]) : null);
+        context.avatar[1](avatarImage[0] ? await getURIFromFile(avatarImage[0]) : null);
 
         context.temp.step2.countryCode[1](countryCode[0]);
         context.temp.step2.contactNoWithoutCountryCode[1](contactNoWithoutCountryCode[0]);
@@ -418,10 +418,10 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
             <FormControl margin="normal" sx={{ width : '100%' }} required>
                 <LocalizationProvider dateAdapter={AdapterMoment}>
                     <DatePicker
-                        label="Date of Birth *"
+                        label="Date of Birth"
                         value={dateOfBirth[0] ? moment(dateOfBirth[0]) : null}
                         onChange={newValue => { dateOfBirth[1](moment(newValue).toISOString()); }}
-                        renderInput={params => <TextField {...params} helperText={`Format: ${params?.inputProps?.placeholder}`} />}
+                        renderInput={params => <TextField required {...params} helperText={`Format: ${params?.inputProps?.placeholder}`} />}
                     />
                 </LocalizationProvider>
             </FormControl>
