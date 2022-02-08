@@ -524,12 +524,12 @@ class UserManager(_BUM):
 
             extension = uri.extension
 
-            if extension not in {"jpg", "jpeg", "png", "gif"}:
-                raise ValidationError(f"Image format {format!r} is invalid or not supported")
+            if extension not in {".jpg", ".jpeg", ".png", ".gif"}:
+                raise ValidationError(f"Image extension {extension!r} is invalid or not supported")
 
             _image = ImageFile(
                 file=uri.stream,
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}",
+                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
             )
 
             asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
@@ -640,12 +640,12 @@ class UserManager(_BUM):
 
             extension = uri.extension
 
-            if extension not in {"jpg", "jpeg", "png", "gif"}:
-                raise ValidationError(f"Image extension {format!r} is invalid or not supported")
+            if extension not in {".jpg", ".jpeg", ".png", ".gif"}:
+                raise ValidationError(f"Image extension {extension!r} is invalid or not supported")
 
             _image = ImageFile(
                 file=uri.stream,
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}",
+                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
             )
 
             asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
