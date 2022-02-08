@@ -31,7 +31,7 @@ class ClassViewSet(APIView):
                 if grade and section:
                     klass: ClassModel = ClassModel.objects.get(grade=grade, section=section)
                 else:
-                    raise r.HTTP400Response("Missing 'id', or 'grade' and 'section' parameters")
+                    return r.HTTP400Response("Missing 'id', or 'grade' and 'section' parameters")
         except ClassModel.DoesNotExist:
             return r.HTTP404Response("No class found with the given data")
 

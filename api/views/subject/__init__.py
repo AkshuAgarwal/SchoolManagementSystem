@@ -30,7 +30,7 @@ class SubjectViewSet(APIView):
                 if name and code:
                     subject: SubjectModel = SubjectModel.objects.get(name=name, code=code)
                 else:
-                    raise r.HTTP400Response("Missing 'id', or 'name' and 'code' parameters")
+                    return r.HTTP400Response("Missing 'id', or 'name' and 'code' parameters")
         except SubjectModel.DoesNotExist:
             return r.HTTP404Response("No subject found with the given data")
 
