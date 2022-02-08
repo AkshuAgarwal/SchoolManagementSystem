@@ -19,6 +19,7 @@ from utils.py.utils import DataURI
 
 if TYPE_CHECKING:
     from .models import (
+        ImageAssets as ImageAssetsModel,
         User as UserModel,
         Student as StudentModel,
         Teacher as TeacherModel,
@@ -98,7 +99,7 @@ class TeacherManager(models.Manager):
         salary: int,
         classes: Optional[List[Union[int, ClassModel]]] = ...,
         owns_class: Optional[Union[int, ClassModel]] = ...,
-        nosave: Optional[bool] = False,
+        nosave: bool = False,
         **extra_fields: Any,
     ) -> TeacherModel:
         ...
@@ -112,7 +113,7 @@ class TeacherManager(models.Manager):
         year_of_joining: int,
         salary: int,
         owns_class: Optional[Union[int, ClassModel]] = ...,
-        nosave: Optional[bool] = True,
+        nosave: bool = True,
         **extra_fields: Any,
     ) -> TeacherModel:
         ...
@@ -435,7 +436,7 @@ class UserManager(_BUM):
         first_name: str,
         last_name: Optional[str] = None,
         email_id: str,
-        avatar: Optional[str] = None,
+        avatar: Optional[Union[str, int, ImageAssetsModel]] = None,
         user_type: Literal["s", "p", "t", "m"],
         date_of_birth: str,
         gender: Literal["m", "f", "o"],
@@ -516,24 +517,31 @@ class UserManager(_BUM):
             raise AlreadyExists(colliding_fields=list(colliding_fields))
 
         # Creating Avatar
-        if avatar_uri := FIELDS.get("avatar"):
-            uri = DataURI(avatar_uri)
+        if avatar := FIELDS.get("avatar"):
+            ImageAssets: ImageAssetsModel = apps.get_model("root.ImageAssets")
 
-            if uri.mimetype.split("/")[0] != "image":
-                raise ValidationError("Invalid Avatar Data URI")
+            if isinstance(avatar, int):
+                FIELDS["avatar_id"] = FIELDS.pop("avatar")
+            elif isinstance(avatar, ImageAssets):
+                pass
+            else:
+                uri = DataURI(avatar)
 
-            extension = uri.extension
+                if uri.mimetype.split("/")[0] != "image":
+                    raise ValidationError("Invalid Avatar Data URI")
 
-            if extension not in {".jpg", ".jpeg", ".png", ".gif"}:
-                raise ValidationError(f"Image extension {extension!r} is invalid or not supported")
+                extension = uri.extension
 
-            _image = ImageFile(
-                file=uri.stream,
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
-            )
+                if extension not in {".jpg", ".jpeg", ".png", ".gif"}:
+                    raise ValidationError(f"Image extension {extension!r} is invalid or not supported")
 
-            asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
-            FIELDS["avatar"] = asset
+                _image = ImageFile(
+                    file=uri.stream,
+                    name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
+                )
+
+                asset = ImageAssets.objects.create(image=_image)
+                FIELDS["avatar"] = asset
 
         FIELDS["is_staff"] = FIELDS["user_type"] == "m"
         FIELDS["is_superuser"] = False
@@ -556,7 +564,7 @@ class UserManager(_BUM):
         first_name: str,
         last_name: Optional[str] = None,
         email_id: str,
-        avatar: Optional[str] = None,
+        avatar: Optional[Union[str, int, ImageAssetsModel]] = None,
         date_of_birth: str,
         gender: Literal["m", "f", "o"],
         contact_no: str,
@@ -632,24 +640,31 @@ class UserManager(_BUM):
             raise AlreadyExists(colliding_fields=list(colliding_fields))
 
         # Creating Avatar
-        if avatar_uri := FIELDS.get("avatar"):
-            uri = DataURI(avatar_uri)
+        if avatar := FIELDS.get("avatar"):
+            ImageAssets: ImageAssetsModel = apps.get_model("root.ImageAssets")
 
-            if uri.mimetype.split("/")[0] != "image":
-                raise ValidationError("Invalid Avatar Data URI")
+            if isinstance(avatar, int):
+                FIELDS["avatar_id"] = FIELDS.pop("avatar")
+            elif isinstance(avatar, ImageAssets):
+                pass
+            else:
+                uri = DataURI(avatar)
 
-            extension = uri.extension
+                if uri.mimetype.split("/")[0] != "image":
+                    raise ValidationError("Invalid Avatar Data URI")
 
-            if extension not in {".jpg", ".jpeg", ".png", ".gif"}:
-                raise ValidationError(f"Image extension {extension!r} is invalid or not supported")
+                extension = uri.extension
 
-            _image = ImageFile(
-                file=uri.stream,
-                name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
-            )
+                if extension not in {".jpg", ".jpeg", ".png", ".gif"}:
+                    raise ValidationError(f"Image extension {extension!r} is invalid or not supported")
 
-            asset = apps.get_model("root.ImageAssets").objects.create(image=_image)
-            FIELDS["avatar"] = asset
+                _image = ImageFile(
+                    file=uri.stream,
+                    name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
+                )
+
+                asset = ImageAssets.objects.create(image=_image)
+                FIELDS["avatar"] = asset
 
         FIELDS["is_staff"] = True
         FIELDS["is_superuser"] = True

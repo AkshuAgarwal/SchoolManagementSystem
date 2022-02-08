@@ -560,8 +560,8 @@ const UserInfoStep = ({ handleStepperBack, handleStepperNext }) => {
     const subjects = useState(context.temp.step3.subjects[0]);
 
     useEffect(() => {
-        !subjects[0] ? axios.get('api/subject/all/').then(response => { subjects[1](response.data.data); context.temp.step3.classes[1](response.data.data); }) : undefined;
         !classes[0] ? axios.get('api/class/all/').then(response => { classes[1](response.data.data); context.temp.step3.subjects[1](response.data.data); }) : undefined;
+        !subjects[0] ? axios.get('api/subject/all/').then(response => { subjects[1](response.data.data); context.temp.step3.classes[1](response.data.data); }) : undefined;
     }, []); // eslint-disable-line
 
     const getComponentFromUserType = () => {
@@ -638,15 +638,15 @@ const UserInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <Autocomplete
                         autoHighlight
                         options={classes[0] ? classes[0] : []}
-                        getOptionLabel={option => `${option.grade}${option.section ? ` ${option.section}` : ''}`}
-                        filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` ${option.section}` : ''}`, trim : true })}
+                        getOptionLabel={option => `${option.grade}${option.section ? ` - ${option.section}` : ''}`}
+                        filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` - ${option.section}` : ''}`, trim : true })}
                         isOptionEqualToValue={(option, value) => option.grade === value.grade && option.section === value.section}
                         value={student_Class[0]}
                         onChange={(e, newValue) => student_Class[1](newValue)}
                         renderOption={(props, option) => {
                             <Box {...props} component="div" key={option.id}>
                                 <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
-                                    {option.grade}{option.section ? ` ${option.section}` : ''}
+                                    {option.grade}{option.section ? ` - ${option.section}` : ''}
                                 </Typography>
                             </Box>;
                         }}
