@@ -38,7 +38,6 @@ export default function Admin() {
 
     useEffect(() => {
         if (authContext.documentLoaded) {
-            console.log(8);
             if (rendering) {
                 if (!authContext.loggedIn) {
                     router.replace('/login');
