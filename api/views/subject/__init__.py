@@ -9,12 +9,15 @@ from utils.py import http_responses as r
 from .serializers import SubjectSerializer
 from .models import Subject as SubjectModel
 from utils.py.exceptions import AlreadyExists
+from api.permissions import IsStaffForPOSTElseIsAuthenticated
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
 
 
 class SubjectViewSet(APIView):
+    permission_classes = [IsStaffForPOSTElseIsAuthenticated]
+
     def get(self, request: Request, format=None) -> Response:
         id = request.query_params.get("id")
         name = request.query_params.get("name")

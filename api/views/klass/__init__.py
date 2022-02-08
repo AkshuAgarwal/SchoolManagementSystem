@@ -9,6 +9,7 @@ from .models import Class as ClassModel
 from .serializers import ClassSerializer
 from utils.py import http_responses as r
 from utils.py.exceptions import AlreadyExists
+from api.permissions import IsStaffForPOSTElseIsAuthenticated
 
 
 if TYPE_CHECKING:
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ClassViewSet(APIView):
+    permission_classes = [IsStaffForPOSTElseIsAuthenticated]
+
     def get(self, request: Request, format=None) -> Response:
         id = request.query_params.get("id")
         grade = request.query_params.get("grade")
