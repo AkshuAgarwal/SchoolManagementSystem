@@ -45,8 +45,8 @@ class ClassViewSet(APIView):
         )
 
     def post(self, request: Request, format=None) -> Response:
-        grade = request.data.get("name")
-        section = request.data.get("code")
+        grade = request.data.get("grade")
+        section = request.data.get("section")
 
         if not grade:
             return r.HTTP400Response("Missing 'grade' parameter")
