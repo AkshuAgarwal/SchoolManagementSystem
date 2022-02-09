@@ -248,6 +248,7 @@ const AccountInfoStep = ({ handleStepperNext }) => {
                     id="__dashboard_admin__form_createuser_step1__username"
                     aria-describedby="__dashboard_admin__form_createuser_step1__username_helper"
                     label="Username"
+                    autoComplete="username"
                     inputRef={username}
                     defaultValue={username.current}
                     error={invalidUsernameError[0] || uniqueUsernameError[0]}
@@ -282,6 +283,7 @@ const AccountInfoStep = ({ handleStepperNext }) => {
                     id="__dashboard_admin__form_createuser_step1__password"
                     aria-describedby="__dashboard_admin__form_createuser_step1__password_helper"
                     label="Password"
+                    autoComplete="new-password"
                     type={showPassword[0] ? 'text' : 'password'}
                     inputRef={password}
                     defaultValue={password.current}
@@ -303,6 +305,7 @@ const AccountInfoStep = ({ handleStepperNext }) => {
                     id="__dashboard_admin__form_createuser_step1__reenterpassword"
                     aria-describedby="__dashboard_admin__form_createuser_step1__reenterpassword_helper"
                     label="Re-Enter Password"
+                    autoComplete="new-password"
                     type={showPassword[0] ? 'text' : 'password'}
                     inputRef={reEnterPassword}
                     defaultValue={reEnterPassword.current}
@@ -401,6 +404,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <OutlinedInput
                         id="__dashboard_admin__form_createuser_step2__firstname"
                         label="First Name"
+                        autoComplete="given-name"
                         inputRef={firstName}
                         defaultValue={firstName.current}
                     />
@@ -410,6 +414,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <OutlinedInput
                         id="__dashboard_admin__form_createuser_step2__lastname"
                         label="Last Name"
+                        autoComplete="family-name"
                         inputRef={lastName}
                         defaultValue={lastName.current}
                     />
@@ -419,6 +424,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                 <LocalizationProvider dateAdapter={AdapterMoment}>
                     <DatePicker
                         label="Date of Birth"
+                        autoComplete="bday"
                         value={dateOfBirth[0] ? moment(dateOfBirth[0]) : null}
                         onChange={newValue => { dateOfBirth[1](moment(newValue).toISOString()); }}
                         renderInput={params => <TextField required {...params} helperText={`Format: ${params?.inputProps?.placeholder}`} />}
@@ -431,6 +437,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <Select
                         labelId="__dashboard_admin__form_createuser_step2__usertype"
                         label="User Type"
+                        autoComplete="off"
                         value={userType[0]}
                         onChange={event => userType[1](event.target.value)}
                     >
@@ -445,6 +452,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <Select
                         labelId="__dashboard_admin__form_createuser_step2__gender"
                         label="Gender"
+                        autoComplete="off"
                         value={gender[0]}
                         onChange={event => gender[1](event.target.value)}
                     >
@@ -484,7 +492,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                                 label="Code"
                                 inputProps={{
                                     ...params.inputProps,
-                                    autoComplete: 'new-password',
+                                    autoComplete: 'tel-country-code',
                                 }}
                             />
                         )}
@@ -494,8 +502,9 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                     <InputLabel htmlFor="__dashboard_admin__form_createuser_step2__contactno">Contact No.</InputLabel>
                     <OutlinedInput
                         id="__dashboard_admin__form_createuser_step2__contactno"
-                        label="Contact No."
                         type="tel"
+                        label="Contact No."
+                        autoComplete="tel-national"
                         value={contactNoWithoutCountryCode[0]}
                         onChange={event => contactNoWithoutCountryCode[1](event.target.value)}
                         inputProps={{ minLength : 10, maxLength : 10, inputMode : 'numeric', pattern : '[0-9]+', title : 'Contact No. can only contain numbers' }}
@@ -508,6 +517,7 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                 <OutlinedInput
                     id="__dashboard_admin__form_createuser_step2__address"
                     label="Address"
+                    autoComplete="address-level4"
                     inputRef={address}
                     // defaultValue={address.current}
                     // Not sure why it is re-rendering while focusing on poppers, for now just gonna *hack* it
@@ -553,200 +563,223 @@ const PersonalInfoStep = ({ handleStepperBack, handleStepperNext }) => {
     );
 };
 
-const UserInfoStep = ({ handleStepperBack, handleStepperNext }) => {
-    const context = useContext(CreateUserContext);
 
+const StudentAccount = ({ handleStepperBack, handleStepperNext }) => {
+    const context = useContext(CreateUserContext);
+    const classes = useState(context.temp.step3.classes[0]);
+
+    useEffect(() => {
+        !classes[0] ? axios.get('api/class/all/').then(response => { classes[1](response.data.data); context.temp.step3.classes[1](response.data.data); }) : undefined;
+    }, []); // eslint-disable-line
+
+    const student_ParentUsername = useRef(context.student.parentUsername[0]);
+    const student_Class = useState(context.student.class[0]);
+    const student_RollNo = useRef(context.student.rollNo[0]);
+    const student_Fee = useRef(context.student.fee[0]);
+    const student_InvalidUsernameError = useState(false);
+    const student_ExistingUsernameError = useState(false);
+
+    const checkExistingParentUsernameValidation = () => {
+        if (student_ParentUsername.current.value !== '') {
+            axios.get('api/user/', { params : { username : student_ParentUsername.current.value } })
+                .then(response => { (response.status === 200 && response.data.data.user_type === 'p') ? student_ExistingUsernameError[1](false) : (response.status === 200 && response.data.data.user_type !== 'p' ? student_ExistingUsernameError[1](true) : undefined); })
+                .catch(e => { e.response.status === 404 ? student_ExistingUsernameError[1](true) : undefined; });
+        } else student_ExistingUsernameError[1](false);
+    };
+
+    const checkUsernameStringValidation = () => {
+        if (student_ParentUsername.current.value !== '') {
+            student_ParentUsername.current.value.split('').map(val => {
+                const cc = val.charCodeAt();
+                !((48 <= cc && cc <= 57) || (65 <= cc && cc <= 90) || (cc === 95) || (97 <= cc && cc <= 122)) ? student_InvalidUsernameError[1](true) : student_InvalidUsernameError[1](false);
+            });
+        } else student_InvalidUsernameError[1](false);
+    };
+
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        context.student.parentUsername[1](student_ParentUsername.current.value);
+        context.student.class[1](student_Class[0]);
+        context.student.rollNo[1](student_RollNo.current.value);
+        context.student.fee[1](student_Fee.current.value);
+
+        handleStepperNext();
+    };
+
+    return (
+        <form autoComplete="off" onSubmit={handleSubmit}>
+            <FormControl margin="normal" sx={{ width : '100%' }}>
+                <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_parentusername" error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>Parent{`'`}s Username</InputLabel>
+                <OutlinedInput
+                    id="__dashboard_admin__form_createuser_step3__student_parentusername"
+                    aria-describedby="__dashboard_admin__form_createuser_step3__student_parentusername_helper"
+                    label="Parent's Username"
+                    autoComplete="off"
+                    inputRef={student_ParentUsername}
+                    defaultValue={student_ParentUsername.current}
+                    inputProps={{ pattern : '[A-Za-z0-9_]+', title : 'Username can only contain alphabets, digits and underscore (_). Eg., John_123.' }}
+                    error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}
+                    onChange={() => { checkExistingParentUsernameValidation(); checkUsernameStringValidation(); }}
+                />
+                <FormHelperText id="__dashboard_admin__form_createuser_step3__student_parentusername_helper" error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>
+                    {student_InvalidUsernameError[0] ? 'Username can only contain alphabets, digits and underscore (_). Eg., John_123.' : null}
+                    {student_ExistingUsernameError[0] ? 'No Parent account exists with this username or existing account is not a parent account.' : null}
+                </FormHelperText>
+            </FormControl>
+            <FormControl margin="normal" sx={{ width : '100%' }}>
+                <Autocomplete
+                    autoHighlight
+                    options={classes[0] ? classes[0] : []}
+                    getOptionLabel={option => `${option.grade}${option.section ? ` - ${option.section}` : ''}`}
+                    filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` - ${option.section}` : ''}`, trim : true })}
+                    isOptionEqualToValue={(option, value) => option.grade === value.grade && option.section === value.section}
+                    value={student_Class[0]}
+                    onChange={(e, newValue) => student_Class[1](newValue)}
+                    renderOption={(props, option) => (
+                        <Box {...props} component="div" key={option.id}>
+                            <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
+                                {option.grade}{option.section ? ` - ${option.section}` : ''}
+                            </Typography>
+                        </Box>
+                    )}
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            label="Class"
+                            inputProps={{
+                                ...params.inputProps,
+                                autoComplete: 'off',
+                            }}
+                        />
+                    )}
+                />
+            </FormControl>
+            <Container sx={{ display : 'flex', flexDirection : 'row', gap : '20px' }} disableGutters>
+                <FormControl margin="normal" sx={{ width : '100%' }} required>
+                    <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_rollno">Roll No.</InputLabel>
+                    <OutlinedInput
+                        id="__dashboard_admin__form_createuser_step3__student_rollno"
+                        type="number"
+                        label="Roll No."
+                        autoComplete="off"
+                        inputRef={student_RollNo}
+                    />
+                </FormControl>
+                <FormControl margin="normal" sx={{ width : '100%' }} required>
+                    <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_fee">Fee</InputLabel>
+                    <OutlinedInput
+                        id="__dashboard_admin__form_createuser_step3__student_fee"
+                        type="number"
+                        label="Fee"
+                        autoComplete="off"
+                        inputRef={student_Fee}
+                    />
+                </FormControl>
+            </Container>
+            <Container style={{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', marginTop : '40px' }}>
+                <Button onClick={handleStepperBack}>Back</Button>
+                <LoadingButton variant="contained" type="submit" disabled={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>Submit</LoadingButton>
+            </Container>
+        </form>
+    );
+};
+
+const TeacherAccount = ({ handleStepperBack, handleStepperNext }) => {
+    const context = useContext(CreateUserContext);
     const classes = useState(context.temp.step3.classes[0]);
     const subjects = useState(context.temp.step3.subjects[0]);
 
     useEffect(() => {
-        !classes[0] ? axios.get('api/class/all/').then(response => { classes[1](response.data.data); context.temp.step3.subjects[1](response.data.data); }) : undefined;
-        !subjects[0] ? axios.get('api/subject/all/').then(response => { subjects[1](response.data.data); context.temp.step3.classes[1](response.data.data); }) : undefined;
+        !classes[0] ? axios.get('api/class/all/').then(response => { classes[1](response.data.data); context.temp.step3.classes[1](response.data.data); }) : undefined;
+        !subjects[0] ? axios.get('api/subject/all/').then(response => { subjects[1](response.data.data); context.temp.step3.subjects[1](response.data.data); }) : undefined;
     }, []); // eslint-disable-line
 
-    const getComponentFromUserType = () => {
-        switch (context.userType[0]) {
-            case 's':
-                return <StudentAccount />;
-            case 't':
-                return <TeacherAccount />;
-            case 'p':
-                return <ParentAccount />;
-            case 'm':
-                return <ManagementAccount />;
-            default:
-                return null;
-        }
+    const teacher_Subject = useState(context.teacher.subject[0]);
+    const teacher_Classes = useState(context.teacher.classes[0]);
+    const teacher_OwnsClass = useState(context.teacher.ownsClass[0]);
+    const teacher_Salary = useRef(context.teacher.salary[0]);
+
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        context.teacher.subject[1](teacher_Subject[0]);
+        context.teacher.classes[1](teacher_Classes[0]);
+        context.teacher.ownsClass[1](teacher_OwnsClass[0]);
+        context.teacher.salary[1](teacher_Salary.current.value);
+
+        handleStepperNext();
     };
 
-    const StudentAccount = () => {
-        const student_ParentUsername = useRef(context.student.parentUsername[0]);
-        const student_Class = useState(context.student.class[0]);
-        const student_RollNo = useRef(context.student.rollNo[0]);
-        const student_Fee = useRef(context.student.fee[0]);
-        const student_InvalidUsernameError = useState(false);
-        const student_ExistingUsernameError = useState(false);
-
-        const checkExistingParentUsernameValidation = () => {
-            if (student_ParentUsername.current.value !== '') {
-                axios.get('api/user/', { params : { username : student_ParentUsername.current.value } })
-                    .then(response => { (response.status === 200 && response.data.data.user_type === 'p') ? student_ExistingUsernameError[1](false) : (response.status === 200 && response.data.data.user_type !== 'p' ? student_ExistingUsernameError[1](true) : undefined); })
-                    .catch(e => { e.response.status === 404 ? student_ExistingUsernameError[1](true) : undefined; });
-            } else student_ExistingUsernameError[1](false);
-        };
-
-        const checkUsernameStringValidation = () => {
-            if (student_ParentUsername.current.value !== '') {
-                student_ParentUsername.current.value.split('').map(val => {
-                    const cc = val.charCodeAt();
-                    !((48 <= cc && cc <= 57) || (65 <= cc && cc <= 90) || (cc === 95) || (97 <= cc && cc <= 122)) ? student_InvalidUsernameError[1](true) : student_InvalidUsernameError[1](false);
-                });
-            } else student_InvalidUsernameError[1](false);
-        };
-
-        const handleSubmit = e => {
-            e.preventDefault();
-
-            context.student.parentUsername[1](student_ParentUsername.current.value);
-            context.student.class[1](student_Class[0]);
-            context.student.rollNo[1](student_RollNo.current.value);
-            context.student.fee[1](student_Fee.current.value);
-
-            handleStepperNext();
-        };
-
-        return (
-            <form autoComplete="off" onSubmit={handleSubmit}>
-                <FormControl margin="normal" sx={{ width : '100%' }}>
-                    <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_parentusername" error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>Parent{`'`}s Username</InputLabel>
-                    <OutlinedInput
-                        id="__dashboard_admin__form_createuser_step3__student_parentusername"
-                        aria-describedby="__dashboard_admin__form_createuser_step3__student_parentusername_helper"
-                        label="Parent's Username"
-                        inputRef={student_ParentUsername}
-                        defaultValue={student_ParentUsername.current}
-                        inputProps={{ pattern : '[A-Za-z0-9_]+', title : 'Username can only contain alphabets, digits and underscore (_). Eg., John_123.' }}
-                        error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}
-                        onChange={() => { checkExistingParentUsernameValidation(); checkUsernameStringValidation(); }}
-                    />
-                    <FormHelperText id="__dashboard_admin__form_createuser_step3__student_parentusername_helper" error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>
-                        {student_InvalidUsernameError[0] ? 'Username can only contain alphabets, digits and underscore (_). Eg., John_123.' : null}
-                        {student_ExistingUsernameError[0] ? 'No Parent account exists with this username or existing account is not a parent account.' : null}
-                    </FormHelperText>
-                </FormControl>
-                <FormControl margin="normal" sx={{ width : '100%' }}>
-                    <Autocomplete
-                        autoHighlight
-                        options={classes[0] ? classes[0] : []}
-                        getOptionLabel={option => `${option.grade}${option.section ? ` - ${option.section}` : ''}`}
-                        filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` - ${option.section}` : ''}`, trim : true })}
-                        isOptionEqualToValue={(option, value) => option.grade === value.grade && option.section === value.section}
-                        value={student_Class[0]}
-                        onChange={(e, newValue) => student_Class[1](newValue)}
-                        renderOption={(props, option) => {
-                            <Box {...props} component="div" key={option.id}>
-                                <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
-                                    {option.grade}{option.section ? ` - ${option.section}` : ''}
-                                </Typography>
-                            </Box>;
-                        }}
-                        renderInput={params => (
-                            <TextField
-                                {...params}
-                                label="Class"
-                                inputProps={{
-                                    ...params.inputProps,
-                                    autoComplete: 'new-password',
-                                }}
-                            />
-                        )}
-                    />
-                </FormControl>
-                <Container sx={{ display : 'flex', flexDirection : 'row', gap : '20px' }} disableGutters>
-                    <FormControl margin="normal" sx={{ width : '100%' }} required>
-                        <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_rollno">Roll No.</InputLabel>
-                        <OutlinedInput
-                            id="__dashboard_admin__form_createuser_step3__student_rollno"
-                            type="number"
-                            inputRef={student_RollNo}
-                            label="Roll No."
+    return (
+        <form autoComplete="off" onSubmit={handleSubmit}>
+            <FormControl margin="normal" sx={{ width : '100%' }}>
+                <Autocomplete
+                    autoHighlight
+                    options={subjects[0] ? subjects[0] : []}
+                    getOptionLabel={option => `${option.name} (${option.code})`}
+                    filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.name} (${option.code})`, trim : true })}
+                    isOptionEqualToValue={(option, value) => option.name === value.name && option.code === value.code}
+                    value={teacher_Subject[0]}
+                    onChange={(e, newValue) => teacher_Subject[1](newValue)}
+                    renderOption={(props, option) => {
+                        <Box {...props} component="div" key={option.id}>
+                            <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
+                                {option.name} ({option.code})
+                            </Typography>
+                        </Box>;
+                    }}
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            label="Subject"
+                            inputProps={{
+                                ...params.inputProps,
+                                autoComplete: 'off',
+                            }}
                         />
-                    </FormControl>
-                    <FormControl margin="normal" sx={{ width : '100%' }} required>
-                        <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_fee">Fee</InputLabel>
-                        <OutlinedInput
-                            id="__dashboard_admin__form_createuser_step3__student_fee"
-                            type="number"
-                            inputRef={student_Fee}
-                            label="Fee"
+                    )}
+                />
+            </FormControl>
+            <FormControl margin="normal" sx={{ width : '100%' }}>
+                <Autocomplete
+                    autoHighlight
+                    multiple
+                    options={classes[0] ? classes[0] : []}
+                    getOptionLabel={option => `${option.grade}${option.section ? ` ${option.section}` : ''}`}
+                    filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` ${option.section}` : ''}`, trim : true })}
+                    isOptionEqualToValue={(option, value) => option.grade === value.grade && option.section === value.section}
+                    value={teacher_Classes[0]}
+                    onChange={(e, newValue) => teacher_Classes[1](newValue)}
+                    renderOption={(props, option) => {
+                        <Box {...props} component="div" key={option.id}>
+                            <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
+                                {option.grade}{option.section ? ` ${option.section}` : ''}
+                            </Typography>
+                        </Box>;
+                    }}
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            label="Classes"
+                            inputProps={{
+                                ...params.inputProps,
+                                autoComplete: 'off',
+                            }}
                         />
-                    </FormControl>
-                </Container>
-                <Container style={{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', marginTop : '40px' }}>
-                    <Button onClick={handleStepperBack}>Back</Button>
-                    <LoadingButton variant="contained" type="submit" disabled={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>Submit</LoadingButton>
-                </Container>
-            </form>
-        );
-    };
-
-    const TeacherAccount = () => {
-        const teacher_Subject = useState(context.teacher.subject[0]);
-        const teacher_Classes = useState(context.teacher.classes[0]);
-        const teacher_OwnsClass = useState(context.teacher.ownsClass[0]);
-        const teacher_Salary = useRef(context.teacher.salary[0]);
-
-        const handleSubmit = e => {
-            e.preventDefault();
-
-            context.teacher.subject[1](teacher_Subject[0]);
-            context.teacher.classes[1](teacher_Classes[0]);
-            context.teacher.ownsClass[1](teacher_OwnsClass[0]);
-            context.teacher.salary[1](teacher_Salary.current.value);
-
-            handleStepperNext();
-        };
-
-        return (
-            <form autoComplete="off" onSubmit={handleSubmit}>
+                    )}
+                />
+            </FormControl>
+            <Container sx={{ display : 'flex', flexDirection : 'row', gap : '20px' }} disableGutters>
                 <FormControl margin="normal" sx={{ width : '100%' }}>
                     <Autocomplete
                         autoHighlight
-                        options={subjects[0] ? subjects[0] : []}
-                        getOptionLabel={option => `${option.name} (${option.code})`}
-                        filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.name} (${option.code})`, trim : true })}
-                        isOptionEqualToValue={(option, value) => option.name === value.name && option.code === value.code}
-                        value={teacher_Subject[0]}
-                        onChange={(e, newValue) => teacher_Subject[1](newValue)}
-                        renderOption={(props, option) => {
-                            <Box {...props} component="div" key={option.id}>
-                                <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
-                                    {option.name} ({option.code})
-                                </Typography>
-                            </Box>;
-                        }}
-                        renderInput={params => (
-                            <TextField
-                                {...params}
-                                label="Subject"
-                                inputProps={{
-                                    ...params.inputProps,
-                                    autoComplete: 'new-password',
-                                }}
-                            />
-                        )}
-                    />
-                </FormControl>
-                <FormControl margin="normal" sx={{ width : '100%' }}>
-                    <Autocomplete
-                        autoHighlight
-                        multiple
                         options={classes[0] ? classes[0] : []}
                         getOptionLabel={option => `${option.grade}${option.section ? ` ${option.section}` : ''}`}
                         filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` ${option.section}` : ''}`, trim : true })}
                         isOptionEqualToValue={(option, value) => option.grade === value.grade && option.section === value.section}
-                        value={teacher_Classes[0]}
-                        onChange={(e, newValue) => teacher_Classes[1](newValue)}
+                        value={teacher_OwnsClass[0]}
+                        onChange={(e, newValue) => teacher_OwnsClass[1](newValue)}
                         renderOption={(props, option) => {
                             <Box {...props} component="div" key={option.id}>
                                 <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
@@ -757,101 +790,83 @@ const UserInfoStep = ({ handleStepperBack, handleStepperNext }) => {
                         renderInput={params => (
                             <TextField
                                 {...params}
-                                label="Classes"
+                                label="Owns Class"
                                 inputProps={{
                                     ...params.inputProps,
-                                    autoComplete: 'new-password',
+                                    autoComplete: 'off',
                                 }}
                             />
                         )}
                     />
                 </FormControl>
-                <Container sx={{ display : 'flex', flexDirection : 'row', gap : '20px' }} disableGutters>
-                    <FormControl margin="normal" sx={{ width : '100%' }}>
-                        <Autocomplete
-                            autoHighlight
-                            options={classes[0] ? classes[0] : []}
-                            getOptionLabel={option => `${option.grade}${option.section ? ` ${option.section}` : ''}`}
-                            filterOptions={createFilterOptions({ ignoreCase : true, stringify : option => `${option.grade}${option.section ? ` ${option.section}` : ''}`, trim : true })}
-                            isOptionEqualToValue={(option, value) => option.grade === value.grade && option.section === value.section}
-                            value={teacher_OwnsClass[0]}
-                            onChange={(e, newValue) => teacher_OwnsClass[1](newValue)}
-                            renderOption={(props, option) => {
-                                <Box {...props} component="div" key={option.id}>
-                                    <Typography variant="subtitle1" sx={{ marginLeft : '10px' }}>
-                                        {option.grade}{option.section ? ` ${option.section}` : ''}
-                                    </Typography>
-                                </Box>;
-                            }}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    label="Owns Class"
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        autoComplete: 'new-password',
-                                    }}
-                                />
-                            )}
-                        />
-                    </FormControl>
-                    <FormControl margin="normal" sx={{ width : '100%' }} required>
-                        <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__teacher_salary">Salary</InputLabel>
-                        <OutlinedInput
-                            id="__dashboard_admin__form_createuser_step3__teacher_salary"
-                            type="number"
-                            inputRef={teacher_Salary}
-                            label="Salary"
-                        />
-                    </FormControl>
-                </Container>
-                <Container style={{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', marginTop : '40px' }}>
-                    <Button onClick={handleStepperBack}>Back</Button>
-                    <LoadingButton variant="contained" type="submit">Submit</LoadingButton>
-                </Container>
-            </form>
-        );
-    };
-
-    const ParentAccount = () => {
-        useEffect(() => handleStepperNext(), []);
-        return null;
-    };
-
-    const ManagementAccount = () => {
-        const management_Salary = useRef(context.management.salary[0]);
-
-        const handleSubmit = e => {
-            e.preventDefault();
-
-            context.management.salary[1](management_Salary.current.value);
-
-            handleStepperNext();
-        };
-
-        return (
-            <form onSubmit={handleSubmit}>
                 <FormControl margin="normal" sx={{ width : '100%' }} required>
-                    <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__management_salary">Salary</InputLabel>
+                    <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__teacher_salary">Salary</InputLabel>
                     <OutlinedInput
-                        id="__dashboard_admin__form_createuser_step3__management_salary"
+                        id="__dashboard_admin__form_createuser_step3__teacher_salary"
                         type="number"
-                        inputRef={management_Salary}
                         label="Salary"
+                        autoComplete="off"
+                        inputRef={teacher_Salary}
                     />
                 </FormControl>
-                <Container style={{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', marginTop : '40px' }}>
-                    <Button onClick={handleStepperBack}>Back</Button>
-                    <LoadingButton variant="contained" type="submit">Submit</LoadingButton>
-                </Container>
-            </form>
-        );
+            </Container>
+            <Container style={{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', marginTop : '40px' }}>
+                <Button onClick={handleStepperBack}>Back</Button>
+                <LoadingButton variant="contained" type="submit">Submit</LoadingButton>
+            </Container>
+        </form>
+    );
+};
+
+const ParentAccount = ({ handleStepperNext }) => {
+    useEffect(() => handleStepperNext(), []); // eslint-disable-line
+    return null;
+};
+
+const ManagementAccount = ({ handleStepperBack, handleStepperNext }) => {
+    const context = useContext(CreateUserContext);
+
+    const management_Salary = useRef(context.management.salary[0]);
+
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        context.management.salary[1](management_Salary.current.value);
+
+        handleStepperNext();
     };
 
-    const [ currentComponent, setCurrentComponent ] = useState(null);
-    useEffect(() => setCurrentComponent(getComponentFromUserType()), []); // eslint-disable-line
+    return (
+        <form onSubmit={handleSubmit}>
+            <FormControl margin="normal" sx={{ width : '100%' }} required>
+                <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__management_salary">Salary</InputLabel>
+                <OutlinedInput
+                    id="__dashboard_admin__form_createuser_step3__management_salary"
+                    type="number"
+                    label="Salary"
+                    autoComplete="off"
+                    inputRef={management_Salary}
+                />
+            </FormControl>
+            <Container style={{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', marginTop : '40px' }}>
+                <Button onClick={handleStepperBack}>Back</Button>
+                <LoadingButton variant="contained" type="submit">Submit</LoadingButton>
+            </Container>
+        </form>
+    );
+};
 
-    return currentComponent;
+const UserInfoStep = ({ handleStepperBack, handleStepperNext }) => {
+    const context = useContext(CreateUserContext);
+
+    return (
+        <>
+            {context.userType[0] === 's' ? <StudentAccount handleStepperBack={handleStepperBack} handleStepperNext={handleStepperNext} /> : null}
+            {context.userType[0] === 't' ? <TeacherAccount handleStepperBack={handleStepperBack} handleStepperNext={handleStepperNext} /> : null}
+            {context.userType[0] === 'p' ? <ParentAccount handleStepperNext={handleStepperNext} /> : null}
+            {context.userType[0] === 'm' ? <ManagementAccount handleStepperBack={handleStepperBack} handleStepperNext={handleStepperNext} /> : null}
+        </>
+    );
 };
 
 const FinalStep = ({ handleStart }) => {

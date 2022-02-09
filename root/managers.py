@@ -27,8 +27,8 @@ if TYPE_CHECKING:
         Management as ManagementModel,
     )
 
-    from api.views.subject.models import Subject as SubjectModel
     from api.views.klass.models import Class as ClassModel
+    from api.views.subject.models import Subject as SubjectModel
 
 
 class StudentManager(models.Manager):
@@ -55,6 +55,10 @@ class StudentManager(models.Manager):
             "fee": fee,
         }
 
+        for key, value in FIELDS.copy().items():
+            if not value:
+                FIELDS.pop(key)
+
         missing_fields = []
         for required_field in self.REQUIRED_FIELDS:
             if not FIELDS.get(required_field):
@@ -62,11 +66,11 @@ class StudentManager(models.Manager):
         if missing_fields:
             raise MissingRequiredFields(missing_fields=missing_fields)
 
-        if isinstance(FIELDS["student"], int):
+        if FIELDS.get("student") and isinstance(FIELDS["student"], int):
             FIELDS["student_id"] = FIELDS.pop("student")
-        if isinstance(FIELDS["parent"], int):
+        if FIELDS.get("parent") and isinstance(FIELDS["parent"], int):
             FIELDS["parent_id"] = FIELDS.pop("parent")
-        if isinstance(FIELDS["grade"], int):
+        if FIELDS.get("grade") and isinstance(FIELDS["grade"], int):
             FIELDS["grade_id"] = FIELDS.pop("grade")
 
         if user := FIELDS.get("student"):
@@ -76,7 +80,7 @@ class StudentManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["student"])
 
-        if not 1000 < FIELDS["year_of_enroll"] <= datetime.now().year:
+        if FIELDS.get("year_of_enroll") and not (1000 < FIELDS["year_of_enroll"] <= datetime.now().year):
             raise ValidationError("Invalid year_of_enroll")
 
         student: StudentModel = self.model(**FIELDS, **extra_fields)
@@ -138,6 +142,10 @@ class TeacherManager(models.Manager):
             "owns_class": owns_class,
         }
 
+        for key, value in FIELDS.copy().items():
+            if not value:
+                FIELDS.pop(key)
+
         missing_fields = []
         for required_field in self.REQUIRED_FIELDS:
             if not FIELDS.get(required_field):
@@ -145,11 +153,11 @@ class TeacherManager(models.Manager):
         if missing_fields:
             raise MissingRequiredFields(missing_fields=missing_fields)
 
-        if isinstance(FIELDS["teacher"], int):
+        if FIELDS.get("teacher") and isinstance(FIELDS["teacher"], int):
             FIELDS["teacher_id"] = FIELDS.pop("teacher")
-        if isinstance(FIELDS["subject"], int):
+        if FIELDS.get("subject") and isinstance(FIELDS["subject"], int):
             FIELDS["subject_id"] = FIELDS.pop("subject")
-        if isinstance(FIELDS["owns_class"], int):
+        if FIELDS.get("owns_class") and isinstance(FIELDS["owns_class"], int):
             FIELDS["owns_class_id"] = FIELDS.pop("owns_class")
 
         if user := FIELDS.get("teacher"):
@@ -159,7 +167,7 @@ class TeacherManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["teacher"])
 
-        if not 1000 < FIELDS["year_of_joining"] <= datetime.now().year:
+        if FIELDS.get("year_of_joining") and not (1000 < FIELDS["year_of_joining"] <= datetime.now().year):
             raise ValidationError("Invalid year_of_joining")
 
         teacher: TeacherModel = self.model(**FIELDS, **extra_fields)
@@ -187,6 +195,10 @@ class ParentManager(models.Manager):
             "parent": parent,
         }
 
+        for key, value in FIELDS.copy().items():
+            if not value:
+                FIELDS.pop(key)
+
         missing_fields = []
         for required_field in self.REQUIRED_FIELDS:
             if not FIELDS.get(required_field):
@@ -194,7 +206,7 @@ class ParentManager(models.Manager):
         if missing_fields:
             raise MissingRequiredFields(missing_fields=missing_fields)
 
-        if isinstance(FIELDS["parent"], int):
+        if FIELDS.get("parent") and isinstance(FIELDS["parent"], int):
             FIELDS["parent_id"] = FIELDS.pop("parent")
 
         if user := FIELDS.get("parent"):
@@ -229,6 +241,10 @@ class ManagementManager(models.Manager):
             "salary": salary,
         }
 
+        for key, value in FIELDS.copy().items():
+            if not value:
+                FIELDS.pop(key)
+
         missing_fields = []
         for required_field in self.REQUIRED_FIELDS:
             if not FIELDS.get(required_field):
@@ -236,7 +252,7 @@ class ManagementManager(models.Manager):
         if missing_fields:
             raise MissingRequiredFields(missing_fields=missing_fields)
 
-        if isinstance(FIELDS["management"], int):
+        if FIELDS.get("management") and isinstance(FIELDS["management"], int):
             FIELDS["management_id"] = FIELDS.pop("management")
 
         if user := FIELDS.get("management"):
@@ -246,7 +262,7 @@ class ManagementManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["management"])
 
-        if not 1000 < FIELDS["year_of_joining"] <= datetime.now().year:
+        if FIELDS.get("year_of_joining") and not (1000 < FIELDS["year_of_joining"] <= datetime.now().year):
             raise ValidationError("Invalid year_of_joining")
 
         management: ManagementModel = self.model(**FIELDS, **extra_fields)

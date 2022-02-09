@@ -10,11 +10,13 @@ from rest_framework.response import Response
 from admin.permissions import IsStaff
 from utils.py import http_responses as r
 from root.serializers import StudentSerializer
-from root.models import User as UserModel, Student as StudentModel
+from root.models import User as UserModel, Parent as ParentModel
 from utils.py.exceptions import AlreadyExists, MissingRequiredFields
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
+
+    from root.models import Student as StudentModel
 
 
 class StudentViewSet(APIView):
@@ -44,8 +46,11 @@ class StudentViewSet(APIView):
         for key in FIELDS:
             data[key] = request.data.get(key)
 
-        if isinstance(data["parent"], str):
-            data["parent"] = UserModel.objects.get(username=data["parent"])
+        if data["parent"] and isinstance(data["parent"], str):
+            try:
+                data["parent"] = ParentModel.objects.get(parent__username=data["parent"])["parent"]
+            except ParentModel.DoesNotExist:
+                return r.HTTP404Response("No parent account found with the given parent username")
 
         try:
             student: StudentModel = UserModel.objects.create(**data)
