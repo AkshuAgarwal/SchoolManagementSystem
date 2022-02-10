@@ -7,7 +7,7 @@ import axios from '../../../utils/js/axios';
 
 export default function CreateClass() {
     const [ loading, setLoading ] = useState(false);
-    const [ showAlert, setShowAlert ] = useState(false);
+    const [ alertData, setAlertData ] = useState({ show : false, severity : '', text : '' });
     const [ openSnackbar, setOpenSnackbar ] = useState(false);
     const [ existingClassError, setExistingClassError ] = useState(false);
 
@@ -15,21 +15,25 @@ export default function CreateClass() {
     const sectionRef = useRef(null);
 
     const checkExistingClass = () => {
-        axios.get(
-            'api/class/',
-            { params : { grade : gradeRef.current.value, section : sectionRef.current.value } }
-        ).then(response => {
-            if (response.status === 200) {
-                setExistingClassError(true);
-            }
-        }).catch(e => {
-            if (e.response.status === 400 || e.response.status === 404) {
-                setExistingClassError(false);
-            }
-        });
+        if (gradeRef.current?.value) {
+            axios.get(
+                'api/class/',
+                { params : { grade : gradeRef.current.value, section : sectionRef.current.value } }
+            ).then(response => {
+                if (response.status === 200) {
+                    setExistingClassError(true);
+                }
+            }).catch(e => {
+                if (e.response.status === 400 || e.response.status === 404) {
+                    setExistingClassError(false);
+                }
+            });
+        } else {
+            setExistingClassError(false);
+        }
     };
 
-    const handleSubmit = async e => {
+    const handleSubmit = e => {
         e.preventDefault();
         setLoading(true);
 
@@ -39,10 +43,13 @@ export default function CreateClass() {
         ).then(response => {
             if (response.status === 201) {
                 setLoading(false);
-                setShowAlert(true);
+                setAlertData({ show : true, severity : 'success', text : 'Created Class Successfully' });
                 setOpenSnackbar(true);
             }
         }).catch(() => {
+            if (e.response.status === 400){
+                setAlertData({ show : true, severity : 'error', text : 'Class already exists with the given data' });
+            }
             setLoading(false);
         });
     };
@@ -62,9 +69,9 @@ export default function CreateClass() {
             }}>
                 <Typography variant="h5">Create Class</Typography>
                 <Container sx={{ marginTop : '30px', maxWidth : { xs : '90%', sm : '80%', md : '60%', lg : '45%' } }}>
-                    <Collapse in={showAlert}>
-                        <Alert severity="success" onClose={() => { setShowAlert(false); }} sx={{ width : '100%', marginBottom : '8px' }}>
-                                Created Class Successfully
+                    <Collapse in={alertData.show}>
+                        <Alert severity={alertData.severity} onClose={() => { setAlertData({ show : false, severity : '', text : '' }); }} sx={{ width : '100%', marginBottom : '8px' }}>
+                            {alertData.text}
                         </Alert>
                     </Collapse>
                     <form onSubmit={handleSubmit}>
@@ -82,7 +89,7 @@ export default function CreateClass() {
                                 { existingClassError ? 'Class already exists with the given grade and section' : null }
                             </FormHelperText>
                         </FormControl>
-                        <FormControl margin="normal" sx={{ width : '100%' }} >
+                        <FormControl margin="normal" sx={{ width : '100%' }}>
                             <InputLabel htmlFor="__dashboard_admin__form_createclass__section" error={existingClassError}>Section</InputLabel>
                             <OutlinedInput
                                 id="__dashboard_admin__form_createclass__section"
