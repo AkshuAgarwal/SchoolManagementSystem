@@ -609,7 +609,7 @@ const StudentAccount = ({ handleStepperBack, handleStepperNext }) => {
 
     return (
         <form autoComplete="off" onSubmit={handleSubmit}>
-            <FormControl margin="normal" sx={{ width : '100%' }}>
+            <FormControl margin="normal" sx={{ width : '100%' }} required>
                 <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__student_parentusername" error={student_InvalidUsernameError[0] || student_ExistingUsernameError[0]}>Parent{`'`}s Username</InputLabel>
                 <OutlinedInput
                     id="__dashboard_admin__form_createuser_step3__student_parentusername"
@@ -627,7 +627,7 @@ const StudentAccount = ({ handleStepperBack, handleStepperNext }) => {
                     {student_ExistingUsernameError[0] ? 'No Parent account exists with this username or existing account is not a parent account.' : null}
                 </FormHelperText>
             </FormControl>
-            <FormControl margin="normal" sx={{ width : '100%' }}>
+            <FormControl margin="normal" sx={{ width : '100%' }} required>
                 <Autocomplete
                     autoHighlight
                     options={classes[0] ? classes[0] : []}
@@ -646,6 +646,7 @@ const StudentAccount = ({ handleStepperBack, handleStepperNext }) => {
                     renderInput={params => (
                         <TextField
                             {...params}
+                            required
                             label="Class"
                             inputProps={{
                                 ...params.inputProps,
@@ -713,7 +714,7 @@ const TeacherAccount = ({ handleStepperBack, handleStepperNext }) => {
 
     return (
         <form autoComplete="off" onSubmit={handleSubmit}>
-            <FormControl margin="normal" sx={{ width : '100%' }}>
+            <FormControl margin="normal" sx={{ width : '100%' }} required>
                 <Autocomplete
                     autoHighlight
                     options={subjects[0] ? subjects[0] : []}
@@ -732,6 +733,7 @@ const TeacherAccount = ({ handleStepperBack, handleStepperNext }) => {
                     renderInput={params => (
                         <TextField
                             {...params}
+                            required
                             label="Subject"
                             inputProps={{
                                 ...params.inputProps,

@@ -32,14 +32,14 @@ if TYPE_CHECKING:
 
 
 class StudentManager(models.Manager):
-    REQUIRED_FIELDS = ["student", "roll_no", "year_of_enroll", "fee"]
+    REQUIRED_FIELDS = ["student", "parent", "grade", "roll_no", "year_of_enroll", "fee"]
 
     def create(
         self,
         *,
         student: Union[int, UserModel],
-        parent: Optional[Union[int, UserModel]] = None,
-        grade: Optional[Union[int, ClassModel]] = None,
+        parent: Union[int, UserModel] = None,
+        grade: Union[int, ClassModel] = None,
         roll_no: int,
         year_of_enroll: int,
         fee: int,
@@ -91,14 +91,14 @@ class StudentManager(models.Manager):
 
 
 class TeacherManager(models.Manager):
-    REQUIRED_FIELDS = ["teacher", "year_of_joining", "salary"]
+    REQUIRED_FIELDS = ["teacher", "subject", "year_of_joining", "salary"]
 
     @overload
     def create(
         self,
         *,
         teacher: Union[int, UserModel],
-        subject: Optional[Union[int, SubjectModel]] = ...,
+        subject: Union[int, SubjectModel] = ...,
         year_of_joining: int,
         salary: int,
         classes: Optional[List[Union[int, ClassModel]]] = ...,
@@ -113,7 +113,7 @@ class TeacherManager(models.Manager):
         self,
         *,
         teacher: Union[int, UserModel],
-        subject: Optional[Union[int, SubjectModel]] = ...,
+        subject: Union[int, SubjectModel] = ...,
         year_of_joining: int,
         salary: int,
         owns_class: Optional[Union[int, ClassModel]] = ...,
@@ -126,7 +126,7 @@ class TeacherManager(models.Manager):
         self,
         *,
         teacher: Union[int, UserModel],
-        subject: Optional[Union[int, SubjectModel]] = None,
+        subject: Union[int, SubjectModel] = None,
         year_of_joining: int,
         salary: int,
         classes: Optional[List[Union[int, ClassModel]]] = None,
