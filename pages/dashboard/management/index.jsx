@@ -5,12 +5,14 @@ import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 
 import { Backdrop, CircularProgress, Container, NoSsr } from '@mui/material';
+import { DashboardOutlined as DashboardIcon, LibraryBooksOutlined as LibraryBooksIcon, PersonOutlined as PersonIcon, SchoolOutlined as SchoolIcon } from '@mui/icons-material';
 
 import { Sidebar } from '../../../components';
 import { AuthContext } from '../../../utils/js/context';
 
 import SearchUser from './searchUser';
 import CreateClass from './createClass';
+import CreateSubject from './createSubject';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -27,13 +29,36 @@ export default function Management() {
     };
 
     const pages = {
-        // Format of an item element:
-        // { id: '', icon : null, avatar : null, text : '', onClick : () => {}, pageComponent : null }
         items: [
-            { id : 'search-user', text : 'Search User', pageComponent : <SearchUser /> },
-            { id : 'create-class', text : 'Create Class', pageComponent : <CreateClass /> },
+            {
+                type  : 'list',
+                id    : 'sidebar-user-manage',
+                text  : 'User',
+                icon  : <PersonIcon />,
+                items : [
+                    { type : 'listitem', id : 'search-user', text : 'Search User', pageComponent : <SearchUser /> },
+                ],
+            },
+            {
+                type  : 'list',
+                id    : 'sidebar-class-manage',
+                text  : 'Class',
+                icon  : <SchoolIcon />,
+                items : [
+                    { type : 'listitem', id : 'create-class', text : 'Create Class', pageComponent : <CreateClass /> },
+                ],
+            },
+            {
+                type  : 'list',
+                id    : 'sidebar-subject-manage',
+                text  : 'Subject',
+                icon  : <LibraryBooksIcon />,
+                items : [
+                    { type : 'listitem', id : 'create-subject', text : 'Create Subject', pageComponent : <CreateSubject /> },
+                ],
+            },
         ],
-        defaultItem: { id : 'dashboard', text : 'Dashboard' }
+        defaultItem: { id : 'dashboard', text : 'Dashboard', icon : <DashboardIcon /> },
     };
 
     useEffect(() => {
@@ -58,17 +83,22 @@ export default function Management() {
             if (router.query.page === pages.defaultItem.id) { // Page query exists and is equal to default page
                 setCurrentComponent(pages.defaultItem.pageComponent);
                 return;
-            } else {
-                for (let i = 0; i <= pages.items.length; i++) { // Page query exists and is equal to one of the pages other than default page
-                    if (i < pages.items.length) {
-                        if (router.query.page === pages.items[i].id) {
+            } else { // Page query exists but is not equal to default page
+                for (let i = 0; i < pages.items.length; i++) {
+                    if (pages.items[i].type === 'list') { // Found sublist while iterating
+                        for (let j = 0; j < pages.items[i].items.length; j++) {
+                            if (pages.items[i].items[j].type === 'listitem') { // Found item inside sublist
+                                if (router.query.page === pages.items[i].items[j].id) { // Page query matches to an item in sublist
+                                    setCurrentComponent(pages.items[i].items[j].pageComponent);
+                                    return;
+                                }
+                            }
+                        }
+                    } else if (pages.items[i].type === 'listitem') { // Found item while iterating
+                        if (router.query.page === pages.items[i].id) { // Page query matches to the item
                             setCurrentComponent(pages.items[i].pageComponent);
                             return;
                         }
-                    } else { // Page query exists but is invalid
-                        shallowRedirectToPage(pages.defaultItem.id);
-                        setCurrentComponent(pages.defaultItem.pageComponent);
-                        return;
                     }
                 }
             }

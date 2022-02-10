@@ -1,23 +1,28 @@
 import { createContext, useState } from 'react';
 
 const SidebarContext = createContext({
-    selected    : null,
-    setSelected : () => {},
-    open        : false,
-    setOpen     : () => {},
+    open              : false,
+    setOpen           : () => {},
+    openedSubLists    : [],
+    setOpenedSubLists : () => {},
+    selected          : null,
+    setSelected       : () => {},
 });
 
 export default SidebarContext;
 
 export const SidebarProvider = ({ children }) => {
     const [ sidebarOpen, setSidebarOpen ] = useState(false);
+    const [ openedSubLists, setOpenedSubLists ] = useState([]);
     const [ selectedItem, setSelectedItem ] = useState(null);
 
     const contextData = {
-        selected    : selectedItem,
-        setSelected : setSelectedItem,
-        open        : sidebarOpen,
-        setOpen     : setSidebarOpen,
+        open              : sidebarOpen,
+        setOpen           : setSidebarOpen,
+        openedSubLists    : openedSubLists,
+        setOpenedSubLists : setOpenedSubLists,
+        selected          : selectedItem,
+        setSelected       : setSelectedItem,
     };
 
     return (
