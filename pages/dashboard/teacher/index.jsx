@@ -44,13 +44,13 @@ export default function Teacher() {
     useEffect(() => {
         if (authContext.documentLoaded) {
             if (rendering) {
-                // if (!authContext.loggedIn) {
-                //     router.replace('/login');
-                // } else if (authContext.userData.user_type !== 't') {
-                //     router.replace('/dashboard');
-                // } else {
-                setRendering(false);
-                // }
+                if (!authContext.loggedIn) {
+                    router.replace('/login');
+                } else if (authContext.userData.user_type !== 't') {
+                    router.replace('/dashboard');
+                } else {
+                    setRendering(false);
+                }
             }
         }
     }, [ authContext.documentLoaded ]); // eslint-disable-line
