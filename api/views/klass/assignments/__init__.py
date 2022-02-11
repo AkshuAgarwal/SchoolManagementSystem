@@ -24,6 +24,7 @@ class ClassAssignmentsViewSet(APIView):
         date = request.query_params.get("date")
         if date:
             date = dateparser(date).date()
+        newest_first = request.query_params.get("newest-first")
 
         try:
             if id:
@@ -37,15 +38,14 @@ class ClassAssignmentsViewSet(APIView):
             return r.HTTP404Response("No class found with the given data")
 
         if date:
-            data = [
-                AssignmentSerializer(assignment, context={"request": request}).data
-                for assignment in klass.get_assignments_by_date(date)
-            ]
+            assignments = klass.get_assignments_by_date(date)
         else:
-            data = [
-                AssignmentSerializer(assignment, context={"request": request}).data
-                for assignment in klass.get_assignments()
-            ]
+            assignments = klass.get_assignments()
+
+        if newest_first and newest_first.lower() == "true":
+            assignments = assignments.order_by("-assigned_at")
+
+        data = [AssignmentSerializer(assignment, context={"request": request}).data for assignment in assignments]
 
         return Response(
             {
