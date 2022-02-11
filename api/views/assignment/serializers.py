@@ -5,6 +5,10 @@ from root.serializers import ClassSerializer, FileAssetsSerializer, TeacherSeria
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
+    assigned_by = TeacherSerializer()
+    assigned_to = ClassSerializer(many=True)
+    file = serializers.SerializerMethodField()
+
     def __init__(self, *args, **kwargs) -> None:
         fields = kwargs.pop("fields", None)
 
@@ -18,9 +22,6 @@ class AssignmentSerializer(serializers.ModelSerializer):
 
         for field in {"assigned_by"}:
             self.fields[field].context.update(self.context)
-
-    assigned_by = TeacherSerializer()
-    assigned_to = ClassSerializer(many=True)
 
     def get_file(self, obj: AssignmentModel) -> str:
         data = FileAssetsSerializer(

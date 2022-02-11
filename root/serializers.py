@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from rest_framework.request import Request
 
 
-class FileAssetsSerializer(serializers.Serializer):
+class FileAssetsSerializer(serializers.ModelSerializer):
     file = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs) -> None:
