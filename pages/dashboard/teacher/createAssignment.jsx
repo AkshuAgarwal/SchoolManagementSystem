@@ -51,12 +51,12 @@ export default function CreateAssignment() {
 
         const dataURI = await getURIFromFile(file[0]);
         axios.post('api/assignment/', {
-            title          : titleRef.current.value,
-            assigned_by    : authContext.userData.id,
-            assigned_to    : assignedTo[0].map(val => val.id),
-            submissionDate : submissionDate[0],
-            file           : dataURI,
-            message        : messageRef.current.value,
+            title           : titleRef.current.value,
+            assigned_by     : authContext.userData.id,
+            assigned_to     : assignedTo[0].map(val => val.id),
+            submission_date : submissionDate[0],
+            file            : dataURI,
+            message         : messageRef.current.value,
         }).then(response => {
             if (response.status === 201) {
                 setLoading(false);
@@ -129,6 +129,7 @@ export default function CreateAssignment() {
                         <FormControl margin="normal" sx={{ width : '100%' }}>
                             <LocalizationProvider dateAdapter={AdapterMoment}>
                                 <DatePicker
+                                    disablePast
                                     label="Submission Date"
                                     value={submissionDate[0] ? moment(submissionDate[0]) : null}
                                     onChange={newValue => { submissionDate[1](moment(newValue).toISOString()); }}
