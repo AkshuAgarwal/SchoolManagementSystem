@@ -142,7 +142,7 @@ export default function Navbar() {
                                         <MenuList sx={{ 'padding' : '0 10px' }}>
                                             <Stack spacing={1} direction="column">
                                                 <Typography variant="subtitle1" component="p">Hi, {authContext.userData.username}</Typography>
-                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/profile'); }}>
+                                                <Button onClick={() => { handleCloseUserMenu(); router.push('/@me/profile'); }}>
                                                 Profile
                                                 </Button>
                                                 <Button onClick={() => { handleCloseUserMenu(); router.push('/logout'); }}>
