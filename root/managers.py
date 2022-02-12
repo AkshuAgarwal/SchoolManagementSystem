@@ -224,13 +224,14 @@ class ParentManager(models.Manager):
 
 
 class ManagementManager(models.Manager):
-    REQUIRED_FIELDS = ["management", "year_of_joining", "salary"]
+    REQUIRED_FIELDS = ["management", "year_of_joining", "role", "salary"]
 
     def create(
         self,
         *,
         management: Union[int, UserModel],
         year_of_joining: int,
+        role: str,
         salary: int,
         nosave: Optional[bool] = False,
         **extra_fields: Any,
@@ -238,6 +239,7 @@ class ManagementManager(models.Manager):
         FIELDS = {
             "management": management,
             "year_of_joining": year_of_joining,
+            "role": role,
             "salary": salary,
         }
 
@@ -364,6 +366,7 @@ class UserManager(_BUM):
         address: Optional[str] = ...,
         password: str,
         year_of_joining: int,
+        role: str,
         salary: int,
     ) -> ManagementModel:
         ...
@@ -391,6 +394,7 @@ class UserManager(_BUM):
         classes: Optional[List[Union[int, ClassModel]]] = None,
         owns_class: Optional[Union[int, ClassModel]] = None,
         year_of_joining: Optional[int] = None,
+        role: Optional[str] = None,
         salary: Optional[int] = None,
     ) -> Union[StudentModel, TeacherModel, ParentModel, ManagementModel]:
         USER_FIELDS = {
@@ -431,6 +435,7 @@ class UserManager(_BUM):
         elif user_type == "m":
             USERTYPE_FIELDS = {
                 "salary": salary,
+                "role": role,
                 "year_of_joining": year_of_joining,
             }
             user = apps.get_model("root.Management").objects.create(management=raw_user, **USERTYPE_FIELDS, nosave=True)

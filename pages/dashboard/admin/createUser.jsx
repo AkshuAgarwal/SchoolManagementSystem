@@ -44,7 +44,8 @@ const _blankData = {
         ownsClass : null,
     },
     management: {
-        salary: null,
+        role   : null,
+        salary : null,
     },
 
     temp: {
@@ -97,7 +98,8 @@ const CreateUserProvider = ({ children }) => {
             ownsClass : useState(_blankData.teacher.ownsClass),
         },
         management: {
-            salary: useState(_blankData.management.salary),
+            role   : useState(_blankData.management.role),
+            salary : useState(_blankData.management.salary),
         },
 
         temp: {
@@ -828,11 +830,13 @@ const ParentAccount = ({ handleStepperNext }) => {
 const ManagementAccount = ({ handleStepperBack, handleStepperNext }) => {
     const context = useContext(CreateUserContext);
 
+    const management_Role = useRef(context.management.role[0]);
     const management_Salary = useRef(context.management.salary[0]);
 
     const handleSubmit = e => {
         e.preventDefault();
 
+        context.management.role[1](management_Role.current.value);
         context.management.salary[1](management_Salary.current.value);
 
         handleStepperNext();
@@ -840,6 +844,15 @@ const ManagementAccount = ({ handleStepperBack, handleStepperNext }) => {
 
     return (
         <form onSubmit={handleSubmit}>
+            <FormControl margin="normal" sx={{ width : '100%' }} required>
+                <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__management_role">Role</InputLabel>
+                <OutlinedInput
+                    id="__dashboard_admin__form_createuser_step3__management_role"
+                    label="Role"
+                    autoComplete="off"
+                    inputRef={management_Role}
+                />
+            </FormControl>
             <FormControl margin="normal" sx={{ width : '100%' }} required>
                 <InputLabel htmlFor="__dashboard_admin__form_createuser_step3__management_salary">Salary</InputLabel>
                 <OutlinedInput
@@ -930,6 +943,7 @@ const FinalStep = ({ handleStart }) => {
                     userData = {
                         ...userData,
                         year_of_joining : new Date().getFullYear(),
+                        role            : context.management.role[0],
                         salary          : context.management.salary[0],
                     };
                     break;

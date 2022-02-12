@@ -216,7 +216,7 @@ export default function Profile() {
                                                         <>
                                                             <Grid container item>
                                                                 <Grid item xs={6}>Role</Grid>
-                                                                <Grid item xs={6}>{userTypeData.role ? userTypeData.role : '-'}</Grid>
+                                                                <Grid item xs={6}>{userTypeData.role}</Grid>
                                                             </Grid>
                                                             <Grid container item>
                                                                 <Grid item xs={6}>Year of Joining</Grid>
