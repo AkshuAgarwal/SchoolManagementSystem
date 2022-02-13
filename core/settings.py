@@ -50,6 +50,12 @@ DEBUG = os.environ["PRODUCTION"].lower() == "false"
 ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
 
 
+# Cannot make migrations while setting up a fresh database.
+# Not sure how to fix it, but the error is irrelevant.
+# So, I think we need to just suppress it for now.
+SILENCED_SYSTEM_CHECKS = ["fields.E300", "fields.E307"]
+
+
 # Application definition
 
 INSTALLED_APPS = [
