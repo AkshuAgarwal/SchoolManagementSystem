@@ -495,10 +495,11 @@ class UserManager(_BUM):
         # Formatting
         FIELDS["email_id"] = self.normalize_email(FIELDS["email_id"])
 
-        try:
-            FIELDS["date_of_birth"] = dateparser.parse(FIELDS["date_of_birth"]).date()
-        except dateparser.ParserError:
-            raise ValidationError(message=_("Invalid Date format for date_of_birth"), code="invalid")
+        if not isinstance(FIELDS["date_of_birth"], datetime.date):
+            try:
+                FIELDS["date_of_birth"] = dateparser.parse(FIELDS["date_of_birth"]).date()
+            except dateparser.ParserError:
+                raise ValidationError(message=_("Invalid Date format for date_of_birth"), code="invalid")
 
         # Format/Value validity checking
         if not all(ord(char) < 128 for char in FIELDS["password"]):
@@ -621,10 +622,11 @@ class UserManager(_BUM):
         # Formatting
         FIELDS["email_id"] = self.normalize_email(FIELDS["email_id"])
 
-        try:
-            FIELDS["date_of_birth"] = dateparser.parse(FIELDS["date_of_birth"]).date()
-        except dateparser.ParserError:
-            raise ValidationError(message=_("Invalid Date format for date_of_birth"), code="invalid")
+        if not isinstance(FIELDS["date_of_birth"], datetime.date):
+            try:
+                FIELDS["date_of_birth"] = dateparser.parse(FIELDS["date_of_birth"]).date()
+            except dateparser.ParserError:
+                raise ValidationError(message=_("Invalid Date format for date_of_birth"), code="invalid")
 
         # Format/Value validity checking
         if not all(ord(char) < 128 for char in FIELDS["password"]):
