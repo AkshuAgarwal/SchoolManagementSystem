@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 import json
+import yaml
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -256,6 +257,14 @@ CSRF_COOKIE_PATH = "/"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
+
+
+# Logging
+with open("logging.yaml", "r") as stream:
+    _data = stream.read()
+    _data = _data.format(LOGS_DIR=_LOGS_DIR.as_posix())
+
+LOGGING = yaml.load(_data, Loader=yaml.FullLoader)
 
 
 # RestFramework Configuration
