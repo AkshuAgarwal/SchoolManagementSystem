@@ -695,7 +695,6 @@ class UserManager(_BUM):
 
         password = FIELDS.pop("password")
         user: UserModel = self.model(**FIELDS, **extra_fields)
-        validate_password(password, user)
         user.set_password(password)
         user.save()
 
