@@ -60,6 +60,7 @@ SILENCED_SYSTEM_CHECKS = ["fields.E300", "fields.E307"]
 # Application definition
 
 INSTALLED_APPS = [
+    "overwrites.apps.OverwritesConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "corsheaders",
