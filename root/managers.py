@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, List, Literal, Optional, Union, TYPE_CHECKING, overload
 
-from datetime import datetime
+import datetime
 from dateutil import parser as dateparser
 
 from django.apps import apps
