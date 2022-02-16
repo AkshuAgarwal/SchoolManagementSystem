@@ -29,8 +29,6 @@ class Command(CreateSuperUserCommand):
             if param.default == param.empty and param.name in self.UserModel.REQUIRED_FIELDS:
                 self._SUPERUSER_PARAMS.append(param.name)
 
-        print(self._SUPERUSER_PARAMS)
-
     def handle(self, *args: Any, **options: Any):
         username = options[self.UserModel.USERNAME_FIELD]
         database = options["database"]
