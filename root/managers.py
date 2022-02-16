@@ -14,8 +14,8 @@ from django.core.validators import RegexValidator, EmailValidator
 from django.contrib.auth.base_user import BaseUserManager as _BUM
 from django.contrib.auth.password_validation import validate_password
 
-from utils.py.exceptions import AlreadyExists, MissingRequiredFields
 from utils.py.utils import DataURI
+from utils.py.exceptions import AlreadyExists, MissingRequiredFields
 
 if TYPE_CHECKING:
     from .models import (
@@ -80,7 +80,7 @@ class StudentManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["student"])
 
-        if FIELDS.get("year_of_enroll") and not (1000 < FIELDS["year_of_enroll"] <= datetime.now().year):
+        if FIELDS.get("year_of_enroll") and not (1000 < FIELDS["year_of_enroll"] <= datetime.datetime.now().year):
             raise ValidationError("Invalid year_of_enroll")
 
         student: StudentModel = self.model(**FIELDS, **extra_fields)
@@ -167,7 +167,7 @@ class TeacherManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["teacher"])
 
-        if FIELDS.get("year_of_joining") and not (1000 < FIELDS["year_of_joining"] <= datetime.now().year):
+        if FIELDS.get("year_of_joining") and not (1000 < FIELDS["year_of_joining"] <= datetime.datetime.now().year):
             raise ValidationError("Invalid year_of_joining")
 
         teacher: TeacherModel = self.model(**FIELDS, **extra_fields)
@@ -264,7 +264,7 @@ class ManagementManager(models.Manager):
         if _existing_users:
             raise AlreadyExists(colliding_fields=["management"])
 
-        if FIELDS.get("year_of_joining") and not (1000 < FIELDS["year_of_joining"] <= datetime.now().year):
+        if FIELDS.get("year_of_joining") and not (1000 < FIELDS["year_of_joining"] <= datetime.datetime.now().year):
             raise ValidationError("Invalid year_of_joining")
 
         management: ManagementModel = self.model(**FIELDS, **extra_fields)
@@ -559,7 +559,7 @@ class UserManager(_BUM):
 
                 _image = ImageFile(
                     file=uri.stream,
-                    name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
+                    name=f"avatar_{FIELDS['username']}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
                 )
 
                 asset = ImageAssets.objects.create(image=_image)
@@ -683,7 +683,7 @@ class UserManager(_BUM):
 
                 _image = ImageFile(
                     file=uri.stream,
-                    name=f"avatar_{FIELDS['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
+                    name=f"avatar_{FIELDS['username']}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{extension}",
                 )
 
                 asset = ImageAssets.objects.create(image=_image)
