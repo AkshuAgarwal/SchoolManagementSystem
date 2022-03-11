@@ -116,9 +116,14 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+if os.environ["DB_ENGINE"] == "postgresql":
+    _DB_ENGINE = "django.db.backends.postgresql_psycopg2"
+elif os.environ["DB_ENGINE"] == "mysql":
+    _DB_ENGINE = "django.db.backends.mysql"
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": _DB_ENGINE,
         "USER": os.environ["DB_USER"],
         "PASSWORD": os.environ["DB_PASS"],
         "HOST": os.environ["DB_HOST"],

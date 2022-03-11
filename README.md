@@ -230,6 +230,8 @@
 
     - **SITE_URL** - URL of the frontend site
 
+    - **DB_ENGINE** - Database Engine to use (`mysql`/`postgresql`)
+
     - **DB_HOST** - Database Host Name
 
     - **DB_PORT** - Database Port
