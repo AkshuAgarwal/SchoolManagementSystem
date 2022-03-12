@@ -87,7 +87,7 @@
 
 - Python 3.9 or above
 - Node.js 16 or above
-- PostgreSQL 13 or above
+- PostgreSQL 13 or above (or MySQL 8.0 or above)
 - Redis 3.0 or above
 
 > The project is originally created on software versions listed above and is not tested on other versions. So there might be chances that the project also works fine with different versions.
@@ -97,7 +97,7 @@
 
 ## Setup Guide
 
-- Install and setup [Redis](https://redis.io/) and [PostgreSQL](https://www.postgresql.org/).
+- Install and setup [Redis](https://redis.io/) and [PostgreSQL](https://www.postgresql.org/) (or [MySQL](https://www.mysql.com/)).
 
 - The project uses [Poetry](https://python-poetry.org/) as the default package manager, so it is recommended to have poetry installed in your system. In case you prefer to use [Pip](https://pypi.org/project/pip/) instead of poetry, refer to [Using pip as the package manager](#using-pip-as-the-package-manager).
 
@@ -155,7 +155,7 @@
 - Start the project:
     - Start Redis Server on the given url listed in `.env`.
 
-    - Make sure the PostgreSQL server is running on the same credentials mentioned in `.env`.
+    - Make sure the PostgreSQL/MySQL server is running on the same credentials mentioned in `.env`.
 
     - Open a terminal and start the Django server:
         ```bat
