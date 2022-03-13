@@ -4,9 +4,16 @@ from typing import Any, Optional
 import os
 import io
 import re
+import sys
 import json
+import time
+import random
+import string
+import datetime
 import textwrap
+import itertools
 import mimetypes
+import threading
 from base64 import b64encode, b64decode
 from urllib.parse import quote, unquote
 
@@ -17,8 +24,16 @@ def get_asset_directory_path(_, filename: str) -> str:
     VALID_PATHS = ["assignment", "avatar"]
     for path in VALID_PATHS:
         if filename.startswith(path):
-            return f"{path}/{filename}"
-    return f"untitled/{filename}"
+            return (
+                f"{path}/"
+                f"{datetime.date.today().strftime('%Y/%m')}/"
+                f"{''.join([random.choice(string.ascii_letters + string.digits) for _ in range(10)])}_{filename}"
+            )
+    return (
+        "untitled/"
+        f"{datetime.date.today().strftime('%Y/%m')}/"
+        f"{''.join([random.choice(string.ascii_letters + string.digits) for _ in range(10)])}_{filename}"
+    )
 
 
 MIMETYPE_REGEX = r"[\w]+\/[\w\-\+\.]+"
@@ -143,3 +158,43 @@ class DataURI(str):
             data = unquote(match.group("data"))
 
         return mimetype, name, charset, bool(match.group("base64")), data
+
+
+class SpinnerMessage:
+    spinner_cycle = itertools.cycle(["-", "/", "|", "\\"])
+
+    def __init__(
+        self, initial_message: str, finish_message: Optional[str] = None, stdout: Optional[io.TextIOBase] = sys.stdout
+    ) -> None:
+        self.initial_message = initial_message + " "
+        self.finish_message = finish_message
+        self.stdout = stdout
+
+        self.spin_thread = threading.Thread(target=self.init_spin)
+        self.stop_running = threading.Event()
+
+    def __enter__(self) -> None:
+        self.start()
+
+    def __exit__(self, exc_type, exc_value, exc_tb) -> Optional[bool]:
+        self.stop()
+        if exc_type is not None:
+            return False
+
+    def start(self) -> None:
+        self.spin_thread.start()
+
+    def stop(self) -> None:
+        self.stop_running.set()
+        self.spin_thread.join()
+
+    def init_spin(self) -> None:
+        while not self.stop_running.is_set():
+            self.stdout.write(self.initial_message + next(self.spinner_cycle) + "\r")
+            self.stdout.flush()
+            time.sleep(0.25)
+
+        if self.finish_message:
+            self.stdout.write(self.finish_message + " " * (len(self.initial_message) + 1 - len(self.finish_message)))
+        else:
+            self.stdout.write(" " * (len(self.initial_message) + 1) + "\r")
