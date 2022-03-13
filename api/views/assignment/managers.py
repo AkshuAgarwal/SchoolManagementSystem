@@ -25,7 +25,7 @@ class AssignmentManager(models.Manager):
         assigned_by: Union[int, TeacherModel],
         assigned_to: List[Union[int, ClassModel]],
         submission_date: Optional[Union[str, date]] = None,
-        file: Union[int, FileAssetsModel],
+        file: Union[int, str, DataURI, FileAssetsModel],
         message: Optional[str] = None,
         nosave: Optional[bool] = False,
         **extra_fields: Any,
@@ -44,7 +44,7 @@ class AssignmentManager(models.Manager):
             FIELDS["submission_date"] = dateparser(FIELDS["submission_date"]).date()
         if isinstance(FIELDS["file"], int):
             FIELDS["file_id"] = FIELDS.pop("file")
-        else:
+        elif not isinstance(FIELDS["file"], FileAssetsModel):
             uri = DataURI(FIELDS["file"])
 
             extension = uri.extension
