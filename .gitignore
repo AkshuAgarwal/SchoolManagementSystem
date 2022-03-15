@@ -163,7 +163,6 @@ cython_debug/
 build
 
 # Builds
-/public
 /out
 /out-tsc
 
@@ -256,3 +255,7 @@ test.*
 test
 /test
 test/
+
+# Private Files
+public/images/gallery/*
+!public/images/gallery/sample_image_*.*
