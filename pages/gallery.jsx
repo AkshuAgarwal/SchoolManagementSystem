@@ -3,17 +3,22 @@
 * extensions (jpg/jpeg/png/gif) will be imported automatically and displayed into the ImageList.
 */
 
-import fs from 'fs';
-import path from 'path';
-
 import Head from 'next/head';
 import getConfig from 'next/config';
 
-import { Box, Container, ImageList, ImageListItem, Typography } from '@mui/material';
+import { Box, Container, ImageList, ImageListItem, ImageListItemBar, Typography } from '@mui/material';
+
+import galleryMetadata from '../public/images/gallery/_metadata.json';
 
 const { publicRuntimeConfig } = getConfig();
 
-export default function Gallery({ images }) {
+const GALLERY_PATH = '/images/gallery';
+let IMAGES = [];
+galleryMetadata.map(value => {
+    IMAGES.push({ label : value.label, href : `${GALLERY_PATH}/${value.href}` });
+});
+
+export default function Gallery() {
     return (
         <>
             <Head>
@@ -35,15 +40,18 @@ export default function Gallery({ images }) {
                     <Container sx={{ marginTop : '30px', maxWidth : { xs : '100%', sm : '95%', md : '90%', lg : '85%' } }}>
                         <ImageList variant="woven" cols={2} gap={8}>
                             {
-                                images.map((val, index) => (
+                                IMAGES.map((item, index) => (
                                     <ImageListItem key={index} sx={{ position : 'relative' }}>
                                         {/* eslint-disable @next/next/no-img-element */}
                                         <img
-                                            src={val}
-                                            alt={val.split('/').slice(3).join()}
+                                            src={item.href}
+                                            alt={item.label}
                                             layout="fill"
                                         />
                                         {/* eslint-enable */}
+                                        <ImageListItemBar
+                                            title={item.label}
+                                        />
                                     </ImageListItem>
                                 ))
                             }
@@ -53,24 +61,4 @@ export default function Gallery({ images }) {
             </Container>
         </>
     );
-}
-
-export function getStaticProps() {
-    const GALLERY_PATH = 'images/gallery';
-    const GALLERY_DIRECTORY = path.join(process.cwd(), 'public', GALLERY_PATH);
-
-    let pattern = /^.*\.(jpg|jpeg|png|gif)$/i;
-    let IMAGES = [];
-
-    fs.readdirSync(GALLERY_DIRECTORY).forEach(file => {
-        if (pattern.test(file)) {
-            IMAGES.push(`/${GALLERY_PATH}/${file}`);
-        }
-    });
-
-    return {
-        props: {
-            images: IMAGES
-        },
-    };
 }

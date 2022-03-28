@@ -257,5 +257,5 @@ test
 test/
 
 # Private Files
-public/images/gallery/*
-!public/images/gallery/sample_image_*.*
+# Any file in `public` directory prefixed with `__gi__` will be gitignored
+public/**/__gi__*
