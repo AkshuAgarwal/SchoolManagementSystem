@@ -6,9 +6,16 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
     __import__("dotenv").load_dotenv(".env")
+
+    # Until we set the Django Secret Key as a variable, a temporary 'fake' settings file
+    # will work in place of original one to allow Django to run the command properly
+    if not os.environ.get("DJANGO_SECRET_KEY"):
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.fake_settings")
+    else:
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+
     __import__("django").setup()
 
     from django.core.management.commands.runserver import Command as runserver

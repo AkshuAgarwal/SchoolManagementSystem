@@ -11,9 +11,10 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:
         secret_key = SECRET_KEY_INSECURE_PREFIX + get_random_secret_key()
+        self.stdout.write("Secret Key: " + self.style.SUCCESS(secret_key) + "\n\n")
         self.stdout.write(
-            "Secret Key: %s\n\n"
-            "Note that this key is generated automatically by Django. "
-            "You should generate a long and random SECRET_KEY, otherwise many of Django’s security-critical features will be vulnerable to attack"
-            % secret_key
+            self.style.WARNING(
+                "Note that this key is generated automatically by Django. "
+                "You should generate a long and random SECRET_KEY, otherwise many of Django’s security-critical features will be vulnerable to attack"
+            )
         )
