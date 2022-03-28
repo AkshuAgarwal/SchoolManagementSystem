@@ -83,12 +83,14 @@ export default function Navbar() {
                         <>
                             {router.pathname !== '/' ? <Button onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
                             {!router.pathname.startsWith('/dashboard') ? <Button onClick={() => { closeNavMenu(); router.push('/dashboard'); }}>Dashboard</Button> : null}
+                            {router.pathname !== '/gallery' ? <Button onClick={() => { closeNavMenu(); router.push('/gallery'); }}>Gallery</Button> : null}
                             {router.pathname !== '/about' ? <Button onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
                             {router.pathname !== '/contact' ? <Button onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
                         </>
                     ) : (
                         <>
                             {router.pathname !== '/' ? <Button onClick={() => { closeNavMenu(); router.push('/'); }}>Home</Button> : null}
+                            {router.pathname !== '/gallery' ? <Button onClick={() => { closeNavMenu(); router.push('/gallery'); }}>Gallery</Button> : null}
                             {router.pathname !== '/about' ? <Button onClick={() => { closeNavMenu(); router.push('/about'); }}>About</Button> : null}
                             {router.pathname !== '/contact' ? <Button onClick={() => { closeNavMenu(); router.push('/contact'); }}>Contact Us</Button> : null}
                             {router.pathname !== '/login' ? <Button onClick={() => { closeNavMenu(); router.push('/login'); }}>Login</Button> : null}
